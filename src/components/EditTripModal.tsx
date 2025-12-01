@@ -4,20 +4,24 @@ import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAuth } from "../hooks/auth";
-import { useCreateTrip } from "../hooks/useTrips";
+import { useUpdateTrip } from "../hooks/useTrips";
 import { tripSchema } from "../schemas/tripSchema";
+import type { Trip } from "../types/trip";
 
-type CreateTripForm = z.infer<typeof tripSchema>;
+type EditTripForm = z.infer<typeof tripSchema>;
 
-interface CreateTripModalProps {
+interface EditTripModalProps {
   opened: boolean;
   onClose: () => void;
+  trip: Trip | null;
 }
 
-export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
-  const { user } = useAuth();
-  const createTrip = useCreateTrip();
+export const EditTripModal = ({
+  opened,
+  onClose,
+  trip,
+}: EditTripModalProps) => {
+  const updateTrip = useUpdateTrip();
 
   const form = useForm({
     resolver: zodResolver(tripSchema),
@@ -28,31 +32,29 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     mode: "onChange",
   });
 
-  // Reset form khi modal mở
   useEffect(() => {
-    if (opened) {
+    if (trip && opened) {
       form.reset({
-        name: "",
-        startDate: new Date(),
+        name: trip.name,
+        startDate: new Date(trip.startDate),
       });
     }
-  }, [opened, form]);
+  }, [trip, opened, form]);
 
-  const onSubmit = async (data: CreateTripForm) => {
-    if (!user?.uid) return;
+  const onSubmit = async (data: EditTripForm) => {
+    if (!trip?.id) return;
 
     try {
-      await createTrip.mutateAsync({
-        name: data.name,
-        startDate: data.startDate,
-        creator: user.uid,
-        creatorName: user.displayName || undefined,
-        creatorPhoto: user.photoURL || undefined,
+      await updateTrip.mutateAsync({
+        tripId: trip.id,
+        updates: {
+          name: data.name,
+          startDate: data.startDate,
+        },
       });
-      form.reset();
       onClose();
     } catch (error) {
-      console.error("Error creating trip:", error);
+      console.error("Error updating trip:", error);
     }
   };
 
@@ -65,7 +67,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Tạo chuyến đi mới"
+      title="Chỉnh sửa chuyến đi"
       centered
       size="md"
     >
@@ -73,7 +75,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
         <Stack gap="md">
           <TextInput
             label="Tên chuyến đi"
-            placeholder="Ví dụ: Du lịch Đà Nẵng 2024"
+            placeholder="Nhập tên chuyến đi"
             {...form.register("name")}
             error={form.formState.errors.name?.message}
             size="md"
@@ -101,7 +103,6 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
                   error={fieldState.error?.message}
                   size="md"
                   locale="vi"
-                  minDate={new Date()}
                   clearable={false}
                   valueFormat="DD/MM/YYYY"
                 />
@@ -113,8 +114,8 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
             <Button variant="light" onClick={handleClose}>
               Hủy
             </Button>
-            <Button type="submit" loading={createTrip.isPending}>
-              Tạo chuyến đi
+            <Button type="submit" loading={updateTrip.isPending}>
+              Lưu thay đổi
             </Button>
           </Group>
         </Stack>
