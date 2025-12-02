@@ -30,10 +30,10 @@ export const useAuth = () => {
         color: "green",
       });
       return result.user;
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         title: "Lỗi đăng nhập",
-        message: error.message,
+        message: error instanceof Error ? error.message : "Lỗi không xác định",
         color: "red",
       });
       throw error;
@@ -48,10 +48,10 @@ export const useAuth = () => {
         message: "Hẹn gặp lại bạn!",
         color: "blue",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       notifications.show({
         title: "Lỗi đăng xuất",
-        message: error.message,
+        message: error instanceof Error ? error.message : "Lỗi không xác định",
         color: "red",
       });
       throw error;
