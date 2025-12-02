@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Button,
@@ -8,11 +9,13 @@ import {
   Divider,
   Group,
   Loader,
+  Menu,
   Paper,
   SimpleGrid,
   Stack,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { format } from "date-fns";
@@ -21,9 +24,12 @@ import {
   ArrowLeft,
   Calendar,
   DollarSign,
+  Edit,
   MapPin,
+  MoreHorizontal,
   Plus,
   Share2,
+  Trash2,
   User,
   UserPlus,
   Users,
@@ -35,8 +41,14 @@ import { AddParticipantModal } from "../components/AddParticipantModal";
 import { ExpenseCard } from "../components/ExpenseCard";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
-import { useDeleteExpense, useExpenses, useTrip } from "../hooks/useTrips";
-import type { Expense } from "../types/trip";
+import {
+  useDeleteExpense,
+  useDeleteTrip,
+  useExpenses,
+  useTrip,
+} from "../hooks/useTrips";
+import type { Expense, Trip } from "../types/trip";
+import { EditTripModal } from "../components/EditTripModal";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -51,6 +63,7 @@ const Trip = () => {
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { data: expenses, isLoading: expensesLoading } = useExpenses(tripId);
   const deleteExpense = useDeleteExpense();
+  const deleteTrip = useDeleteTrip();
 
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
@@ -58,6 +71,39 @@ const Trip = () => {
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(
     null
   );
+  const [editModalOpened, setEditModalOpened] = useState(false);
+  const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
+
+  const handleEditTrip = (trip: Trip) => {
+    setEditingTrip(trip);
+    setEditModalOpened(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpened(false);
+    setEditingTrip(null);
+  };
+
+  const handleDeleteTrip = () => {
+    modals.openConfirmModal({
+      title: "Xóa chuyến đi",
+      children: (
+        <Text size="sm">
+          Bạn có chắc chắn muốn xóa chuyến đi "{trip?.name}"? Hành động này
+          không thể hoàn tác.
+        </Text>
+      ),
+      labels: { confirm: "Xóa", cancel: "Hủy" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        if (tripId) {
+          deleteTrip.mutate(tripId, {
+            onSuccess: () => navigate("/"),
+          });
+        }
+      },
+    });
+  };
 
   const handleToggleExpenseDetail = (participantId: string) => {
     setExpandedParticipant((prev) =>
@@ -138,17 +184,11 @@ const Trip = () => {
           <Group justify="space-between">
             <Button
               variant="subtle"
+              color="white"
               leftSection={<ArrowLeft size={18} />}
               onClick={() => navigate("/")}
             >
               Quay lại
-            </Button>
-            <Button
-              variant="light"
-              leftSection={<Share2 size={18} />}
-              onClick={() => setShareModalOpened(true)}
-            >
-              Chia sẻ
             </Button>
           </Group>
 
@@ -156,37 +196,72 @@ const Trip = () => {
           <Card shadow="lg" radius="xl" p="xl" withBorder>
             <Stack gap="md">
               <Group justify="space-between" align="flex-start">
-                <div>
+                <Group gap="lg" justify="space-between" className="w-full">
                   <Badge
                     leftSection={<MapPin size={14} />}
                     variant="light"
                     color="blue"
                     size="lg"
-                    mb="xs"
                   >
                     Chuyến đi
                   </Badge>
-                  <Title order={2}>{trip.name}</Title>
-                </div>
+                  <Group gap="xs">
+                    <Tooltip label="Chia sẻ">
+                      <ActionIcon
+                        variant="subtle"
+                        color="blue"
+                        onClick={() => setShareModalOpened(true)}
+                      >
+                        <Share2 size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Menu shadow="md" width={150}>
+                      <Menu.Target>
+                        <ActionIcon variant="subtle" color="gray">
+                          <MoreHorizontal size={16} />
+                        </ActionIcon>
+                      </Menu.Target>
+                      <Menu.Dropdown>
+                        <Menu.Item
+                          leftSection={<Edit size={14} />}
+                          onClick={() => handleEditTrip(trip)}
+                        >
+                          Chỉnh sửa
+                        </Menu.Item>
+                        <Menu.Item
+                          leftSection={<Trash2 size={14} />}
+                          color="red"
+                          onClick={handleDeleteTrip}
+                        >
+                          Xóa
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
+                  </Group>
+                </Group>
+              </Group>
+
+              <Title order={2}>{trip.name}</Title>
+
+              <Group gap="md">
+                <Group gap="xs">
+                  {trip.creatorPhoto ? (
+                    <Avatar src={trip.creatorPhoto} size="sm" radius="xl" />
+                  ) : (
+                    <Avatar size="sm" radius="xl" color="blue">
+                      <User size={16} />
+                    </Avatar>
+                  )}
+                  <Text size="sm" c="dimmed">
+                    Tạo bởi: {trip.creatorName}
+                  </Text>
+                </Group>
                 <Group gap="xs">
                   <Calendar size={16} className="text-gray-500" />
                   <Text size="sm" c="dimmed">
                     {format(trip.startDate, "dd/MM/yyyy", { locale: vi })}
                   </Text>
                 </Group>
-              </Group>
-
-              <Group gap="xs">
-                {trip.creatorPhoto ? (
-                  <Avatar src={trip.creatorPhoto} size="sm" radius="xl" />
-                ) : (
-                  <Avatar size="sm" radius="xl" color="blue">
-                    <User size={16} />
-                  </Avatar>
-                )}
-                <Text size="sm" c="dimmed">
-                  Tạo bởi: {trip.creatorName}
-                </Text>
               </Group>
 
               <Divider />
@@ -311,6 +386,12 @@ const Trip = () => {
         onClose={() => setShareModalOpened(false)}
         tripId={tripId || ""}
         tripName={trip?.name || ""}
+      />
+
+      <EditTripModal
+        opened={editModalOpened}
+        onClose={handleCloseEditModal}
+        trip={editingTrip}
       />
     </div>
   );
