@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Avatar,
   Badge,
   Button,
@@ -10,12 +9,10 @@ import {
   Group,
   Loader,
   Paper,
-  Progress,
   SimpleGrid,
   Stack,
   Text,
   Title,
-  Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { format } from "date-fns";
@@ -27,7 +24,6 @@ import {
   MapPin,
   Plus,
   Share2,
-  Trash2,
   User,
   UserPlus,
   Users,
@@ -36,6 +32,8 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddParticipantModal } from "../components/AddParticipantModal";
+import { ExpenseCard } from "../components/ExpenseCard";
+import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { useDeleteExpense, useExpenses, useTrip } from "../hooks/useTrips";
 import type { Expense } from "../types/trip";
@@ -57,6 +55,21 @@ const Trip = () => {
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
   const [shareModalOpened, setShareModalOpened] = useState(false);
+  const [expandedParticipant, setExpandedParticipant] = useState<string | null>(
+    null
+  );
+
+  const handleToggleExpenseDetail = (participantId: string) => {
+    setExpandedParticipant((prev) =>
+      prev === participantId ? null : participantId
+    );
+  };
+
+  const getParticipantExpenses = (participantId: string) => {
+    return (
+      expenses?.filter((expense) => expense.paidBy === participantId) || []
+    );
+  };
 
   const handleDeleteExpense = (expense: Expense) => {
     modals.openConfirmModal({
@@ -121,7 +134,7 @@ const Trip = () => {
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
       <Container size="lg" className="py-8">
         <Stack gap="lg">
-          {/* Back Button */}
+          {/* Header */}
           <Group justify="space-between">
             <Button
               variant="subtle"
@@ -163,7 +176,6 @@ const Trip = () => {
                 </Group>
               </Group>
 
-              {/* Creator Info */}
               <Group gap="xs">
                 {trip.creatorPhoto ? (
                   <Avatar src={trip.creatorPhoto} size="sm" radius="xl" />
@@ -179,7 +191,6 @@ const Trip = () => {
 
               <Divider />
 
-              {/* Total Expense - Highlight */}
               <Paper
                 radius="lg"
                 p="xl"
@@ -194,6 +205,14 @@ const Trip = () => {
               </Paper>
             </Stack>
           </Card>
+          <Button
+            leftSection={<Plus size={18} />}
+            size="md"
+            fullWidth
+            onClick={() => setExpenseModalOpened(true)}
+          >
+            Thêm chi tiêu
+          </Button>
 
           {/* Participants Section */}
           <Card shadow="md" radius="lg" p="lg" withBorder>
@@ -216,39 +235,15 @@ const Trip = () => {
 
             <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
               {trip.participants?.map((participant) => (
-                <Paper key={participant.id} radius="md" p="md" withBorder>
-                  <Group justify="space-between" mb="xs">
-                    <Group>
-                      {participant.photoURL ? (
-                        <Avatar
-                          src={participant.photoURL}
-                          size="md"
-                          radius="xl"
-                        />
-                      ) : (
-                        <Avatar size="md" radius="xl" color="blue">
-                          {participant.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                      )}
-                      <div>
-                        <Text fw={500}>{participant.name}</Text>
-                        <Text size="sm" c="dimmed">
-                          {formatCurrency(participant.totalSpent)}
-                        </Text>
-                      </div>
-                    </Group>
-                  </Group>
-                  <Progress
-                    value={
-                      maxSpent > 0
-                        ? (participant.totalSpent / maxSpent) * 100
-                        : 0
-                    }
-                    color="blue"
-                    size="sm"
-                    radius="xl"
-                  />
-                </Paper>
+                <ParticipantCard
+                  key={participant.id}
+                  participant={participant}
+                  expenses={getParticipantExpenses(participant.id)}
+                  maxSpent={maxSpent}
+                  isExpanded={expandedParticipant === participant.id}
+                  onToggle={() => handleToggleExpenseDetail(participant.id)}
+                  onDeleteExpense={handleDeleteExpense}
+                />
               ))}
             </SimpleGrid>
           </Card>
@@ -258,15 +253,10 @@ const Trip = () => {
             <Group justify="space-between" mb="md">
               <Group>
                 <DollarSign size={20} className="text-green-600" />
-                <Title order={4}>Chi tiêu ({expenses?.length || 0})</Title>
+                <Title order={4}>
+                  Tất cả chi tiêu ({expenses?.length || 0})
+                </Title>
               </Group>
-              <Button
-                leftSection={<Plus size={16} />}
-                size="sm"
-                onClick={() => setExpenseModalOpened(true)}
-              >
-                Thêm chi tiêu
-              </Button>
             </Group>
 
             {expensesLoading ? (
@@ -276,44 +266,11 @@ const Trip = () => {
             ) : expenses && expenses.length > 0 ? (
               <Stack gap="sm">
                 {expenses.map((expense) => (
-                  <Paper
+                  <ExpenseCard
                     key={expense.id}
-                    radius="md"
-                    p="md"
-                    withBorder
-                    className="hover:shadow-md transition-shadow"
-                  >
-                    <Group justify="space-between">
-                      <div>
-                        <Text fw={500}>{expense.description}</Text>
-                        <Group gap="xs">
-                          <Text size="sm" c="dimmed">
-                            {expense.paidByName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            •{" "}
-                            {format(expense.createdAt, "dd/MM/yyyy HH:mm", {
-                              locale: vi,
-                            })}
-                          </Text>
-                        </Group>
-                      </div>
-                      <Group gap="sm">
-                        <Text fw={600} c="green">
-                          {formatCurrency(expense.amount)}
-                        </Text>
-                        <Tooltip label="Xóa chi tiêu">
-                          <ActionIcon
-                            variant="subtle"
-                            color="red"
-                            onClick={() => handleDeleteExpense(expense)}
-                          >
-                            <Trash2 size={16} />
-                          </ActionIcon>
-                        </Tooltip>
-                      </Group>
-                    </Group>
-                  </Paper>
+                    expense={expense}
+                    onDelete={handleDeleteExpense}
+                  />
                 ))}
               </Stack>
             ) : (
