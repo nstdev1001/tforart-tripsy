@@ -49,7 +49,7 @@ const JoinTrip = () => {
   // Loading states
   if (authLoading || inviteLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Center>
             <Stack align="center" gap="md">
@@ -65,7 +65,7 @@ const JoinTrip = () => {
   // Error states
   if (error || !invite) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
@@ -87,7 +87,7 @@ const JoinTrip = () => {
 
   if (isExpired) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
@@ -105,7 +105,7 @@ const JoinTrip = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen">
       <Container size="sm" className="py-16">
         <Card shadow="lg" radius="lg" p="xl">
           <Stack align="center" gap="lg">

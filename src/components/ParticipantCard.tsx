@@ -44,7 +44,7 @@ export const ParticipantCard = ({
       p="md"
       shadow="md"
       withBorder
-      className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] hover:border-blue-300"
+      className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.01] hover:border-blue-300"
       onClick={onToggle}
     >
       <Group justify="space-between" mb="xs">

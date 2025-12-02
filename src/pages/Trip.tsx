@@ -97,7 +97,7 @@ const Trip = () => {
 
   if (tripLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="lg" className="py-8">
           <Center>
             <Stack align="center" gap="md">
@@ -112,7 +112,7 @@ const Trip = () => {
 
   if (!trip) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="lg" className="py-8">
           <Paper shadow="md" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
@@ -131,7 +131,7 @@ const Trip = () => {
   );
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen">
       <Container size="lg" className="py-8">
         <Stack gap="lg">
           {/* Header */}
@@ -233,7 +233,7 @@ const Trip = () => {
               </Button>
             </Group>
 
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+            <SimpleGrid cols={{ base: 1, sm: 1 }} spacing="md">
               {trip.participants?.map((participant) => (
                 <ParticipantCard
                   key={participant.id}
