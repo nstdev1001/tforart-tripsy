@@ -2,7 +2,6 @@ import {
   ActionIcon,
   Avatar,
   Collapse,
-  Divider,
   Group,
   Paper,
   Progress,
@@ -74,14 +73,12 @@ export const ParticipantCard = ({
         color="blue"
         size="sm"
         radius="xl"
-        mb={isExpanded ? "md" : 0}
       />
 
       {/* Collapse chi tiết chi tiêu */}
-      <Collapse in={isExpanded}>
-        <Divider my="sm" />
+      <Collapse in={isExpanded} transitionDuration={200}>
         {expenses.length > 0 ? (
-          <Stack gap="xs">
+          <Stack gap="xs" mt="md">
             <Text size="sm" fw={500} c="dimmed">
               Chi tiết ({expenses.length} khoản)
             </Text>
