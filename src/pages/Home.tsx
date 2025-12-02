@@ -147,9 +147,7 @@ export const Home = () => {
           {/* Trips Grid */}
           {trips && trips.length > 0 && (
             <>
-              <Text size="sm" className="text-white">
-                Tổng số chuyến đi: {trips.length}
-              </Text>
+              <p className="text-white">Tổng số chuyến đi: {trips.length}</p>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
                 {trips.map((trip) => (
                   <TripCard key={trip.id} trip={trip} onEdit={handleEditTrip} />
