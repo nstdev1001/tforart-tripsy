@@ -1,7 +1,9 @@
 import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { tripService } from "../services/tripServices";
+import { expenseService, inviteService, tripService } from "../services";
 import type { CreateExpenseData, CreateTripData } from "../types/trip";
+
+// ============ TRIP HOOKS ============
 
 export const useTrips = (userId?: string) => {
   return useQuery({
@@ -16,22 +18,6 @@ export const useTrip = (tripId?: string) => {
     queryKey: ["trip", tripId],
     queryFn: () => tripService.getTripById(tripId!),
     enabled: !!tripId,
-  });
-};
-
-export const useExpenses = (tripId?: string) => {
-  return useQuery({
-    queryKey: ["expenses", tripId],
-    queryFn: () => tripService.getExpenses(tripId!),
-    enabled: !!tripId,
-  });
-};
-
-export const useInvite = (inviteId?: string) => {
-  return useQuery({
-    queryKey: ["invite", inviteId],
-    queryFn: () => tripService.getInvite(inviteId!),
-    enabled: !!inviteId,
   });
 };
 
@@ -114,12 +100,57 @@ export const useDeleteTrip = () => {
   });
 };
 
+export const useAddParticipant = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      tripId,
+      participant,
+    }: {
+      tripId: string;
+      participant: { name: string; userId?: string; photoURL?: string };
+    }) => tripService.addParticipant(tripId, participant),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
+      queryClient.invalidateQueries({ queryKey: ["trips"] });
+      notifications.show({
+        title: "Thành công",
+        message: "Thêm thành viên thành công!",
+        color: "green",
+      });
+    },
+    onError: (error: Error) => {
+      const message =
+        error.message === "Thành viên với tên này đã tồn tại"
+          ? error.message
+          : "Không thể thêm thành viên!";
+      notifications.show({
+        title: "Lỗi",
+        message,
+        color: "red",
+      });
+      console.error("Error adding participant:", error);
+    },
+  });
+};
+
+// ============ EXPENSE HOOKS ============
+
+export const useExpenses = (tripId?: string) => {
+  return useQuery({
+    queryKey: ["expenses", tripId],
+    queryFn: () => expenseService.getExpenses(tripId!),
+    enabled: !!tripId,
+  });
+};
+
 export const useAddExpense = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (expenseData: CreateExpenseData) =>
-      tripService.addExpense(expenseData),
+      expenseService.addExpense(expenseData),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({
@@ -157,7 +188,7 @@ export const useDeleteExpense = () => {
       tripId: string;
       amount: number;
       paidBy: string;
-    }) => tripService.deleteExpense(expenseId, tripId, amount, paidBy),
+    }) => expenseService.deleteExpense(expenseId, tripId, amount, paidBy),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({
@@ -181,9 +212,19 @@ export const useDeleteExpense = () => {
   });
 };
 
+// ============ INVITE HOOKS ============
+
+export const useInvite = (inviteId?: string) => {
+  return useQuery({
+    queryKey: ["invite", inviteId],
+    queryFn: () => inviteService.getInvite(inviteId!),
+    enabled: !!inviteId,
+  });
+};
+
 export const useCreateInvite = () => {
   return useMutation({
-    mutationFn: (tripId: string) => tripService.createInvite(tripId),
+    mutationFn: (tripId: string) => inviteService.createInvite(tripId),
     onSuccess: () => {
       notifications.show({
         title: "Thành công",
@@ -206,7 +247,7 @@ export const useAcceptInvite = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (inviteId: string) => tripService.acceptInvite(inviteId),
+    mutationFn: (inviteId: string) => inviteService.acceptInvite(inviteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       notifications.show({
@@ -228,41 +269,6 @@ export const useAcceptInvite = () => {
         color: "red",
       });
       console.error("Error accepting invite:", error);
-    },
-  });
-};
-
-export const useAddParticipant = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      tripId,
-      participant,
-    }: {
-      tripId: string;
-      participant: { name: string; userId?: string; photoURL?: string };
-    }) => tripService.addParticipant(tripId, participant),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
-      queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Thêm thành viên thành công!",
-        color: "green",
-      });
-    },
-    onError: (error: Error) => {
-      const message =
-        error.message === "Thành viên với tên này đã tồn tại"
-          ? error.message
-          : "Không thể thêm thành viên!";
-      notifications.show({
-        title: "Lỗi",
-        message,
-        color: "red",
-      });
-      console.error("Error adding participant:", error);
     },
   });
 };
