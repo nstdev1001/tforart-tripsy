@@ -40,12 +40,14 @@ export const Login = () => {
           p="md"
           className="backdrop-blur-md bg-white/90 border border-white/20"
         >
-          <Stack align="center" gap="md">
-            <Image src="/logo.svg" alt="Tripsy Logo" />
-            <Text size="sm" ta="center">
-              Nền tảng quản lý chi tiêu nhóm
-              <br /> cho chuyến đi của bạn
-            </Text>
+          <Stack align="center" gap="xl">
+            <div className="flex flex-col gap-1">
+              <Image src="/logo.svg" alt="Tripsy Logo" />
+              <Text size="sm" ta="center" c="grey" fw={300}>
+                Nền tảng quản lý chi tiêu nhóm
+                <br /> cho chuyến đi của bạn
+              </Text>
+            </div>
             <Divider
               w="100%"
               label="Đăng nhập để tiếp tục"
@@ -89,7 +91,13 @@ export const Login = () => {
         </Card>
 
         {/* Footer */}
-        <Text ta="center" size="xs" mt="lg">
+        <Text
+          ta="center"
+          size="xs"
+          mt="lg"
+          c="white"
+          className="drop-shadow-2xl"
+        >
           © 2024 Tripsy
           <br />
           Made by Nguyen Son Tung
