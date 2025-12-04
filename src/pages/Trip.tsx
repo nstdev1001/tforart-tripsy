@@ -30,17 +30,24 @@ import { AddParticipantModal } from "../components/AddParticipantModal";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { useCurrency } from "../hooks/useCurrency";
-import { useDeleteTrip, useTrip } from "../hooks/useTrips";
+import {
+  useDeleteTrip,
+  useRemoveParticipant,
+  useTrip,
+} from "../hooks/useTrips";
 import type { Expense } from "../types/trip";
 import { useDeleteExpense, useExpenses } from "../hooks/useExpense";
+import { useAuth } from "../hooks/auth";
 
 const TripPage = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { data: expenses, isLoading: expensesLoading } = useExpenses(tripId);
   const deleteExpense = useDeleteExpense();
   const deleteTrip = useDeleteTrip();
+  const deleteParticipant = useRemoveParticipant();
   const { formatCurrency } = useCurrency();
 
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
@@ -81,6 +88,25 @@ const TripPage = () => {
             amount: expense.amount,
             paidBy: expense.paidBy,
           });
+        }
+      },
+    });
+  };
+
+  const handleDeleteParticipant = (participantId: string) => {
+    modals.openConfirmModal({
+      title: "Xóa thành viên",
+      children: (
+        <Text size="sm">
+          Bạn có chắc chắn muốn xóa thành viên này? Tất cả chi tiêu liên quan sẽ
+          bị mất.
+        </Text>
+      ),
+      labels: { confirm: "Xóa", cancel: "Hủy" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        if (tripId) {
+          deleteParticipant.mutate({ tripId, participantId });
         }
       },
     });
@@ -203,7 +229,6 @@ const TripPage = () => {
         </Container>
       </div>
 
-      {/* Total Card - Nổi lên trên header */}
       <Container size="sm" className="-mt-12">
         <Card shadow="xl" radius="xl" p="lg" className="bg-white">
           <Group justify="space-between" align="center">
@@ -244,8 +269,10 @@ const TripPage = () => {
               expenses={getParticipantExpenses(participant.id)}
               maxSpent={maxSpent}
               isExpanded={expandedParticipant === participant.id}
+              currentUserId={user?.uid}
               onToggle={() => handleToggleExpenseDetail(participant.id)}
               onDeleteExpense={handleDeleteExpense}
+              onDeleteParticipant={handleDeleteParticipant}
             />
           ))}
 

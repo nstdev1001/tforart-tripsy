@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Trash2, UserMinus } from "lucide-react";
 import type { Expense, Participant } from "../types/trip";
 
 const formatCurrency = (amount: number) => {
@@ -26,8 +26,10 @@ interface ParticipantCardProps {
   expenses: Expense[];
   maxSpent: number;
   isExpanded: boolean;
+  currentUserId?: string;
   onToggle: () => void;
   onDeleteExpense: (expense: Expense) => void;
+  onDeleteParticipant: (participantId: string) => void;
 }
 
 export const ParticipantCard = ({
@@ -35,9 +37,13 @@ export const ParticipantCard = ({
   expenses,
   maxSpent,
   isExpanded,
+  currentUserId,
   onToggle,
   onDeleteExpense,
+  onDeleteParticipant,
 }: ParticipantCardProps) => {
+  const isCurrentUser = participant.userId === currentUserId;
+
   return (
     <Paper
       radius="md"
@@ -57,15 +63,39 @@ export const ParticipantCard = ({
             </Avatar>
           )}
           <div>
-            <Text fw={500}>{participant.name}</Text>
+            <Text fw={500}>
+              {participant.name}
+              {isCurrentUser && (
+                <Text span size="xs" c="dimmed" ml={4}>
+                  (Bạn)
+                </Text>
+              )}
+            </Text>
             <Text size="sm" c="dimmed">
               {formatCurrency(participant.totalSpent)}
             </Text>
           </div>
         </Group>
-        <ActionIcon variant="subtle" color="gray">
-          {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </ActionIcon>
+        <Group gap="xs">
+          {!isCurrentUser && (
+            <Tooltip label="Xóa thành viên">
+              <ActionIcon
+                variant="subtle"
+                color="red"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteParticipant(participant.id);
+                }}
+              >
+                <UserMinus size={16} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+          <ActionIcon variant="subtle" color="gray">
+            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </ActionIcon>
+        </Group>
       </Group>
 
       <Progress

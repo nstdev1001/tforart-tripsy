@@ -146,6 +146,9 @@ export const useRemoveParticipant = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({ queryKey: ["trips"] });
+      queryClient.invalidateQueries({
+        queryKey: ["expenses", variables.tripId],
+      });
       notifications.show({
         title: "Thành công",
         message: "Xóa thành viên thành công!",

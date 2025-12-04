@@ -9,12 +9,14 @@ import {
   query,
   Timestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 import type { CreateTripData, Trip } from "../types/trip";
 import { parseDate } from "./helpers";
 
 const TRIPS_COLLECTION = "trips";
+const EXPENSES_COLLECTION = "expenses";
 
 export const tripService = {
   async createTrip(tripData: CreateTripData): Promise<Trip> {
@@ -191,20 +193,57 @@ export const tripService = {
     tripId: string,
     participantId: string
   ): Promise<void> {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error("User not authenticated");
+    }
+
+    if (participantId === currentUser.uid) {
+      throw new Error("Không thể xóa chính bạn khỏi chuyến đi");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     const tripSnap = await getDoc(tripRef);
 
     if (!tripSnap.exists()) {
       throw new Error("Trip not found");
     }
+
     const tripData = tripSnap.data();
     const participants = tripData.participants || [];
+
+    const participantToRemove = participants.find(
+      (p: any) => p.id === participantId
+    );
+
+    if (!participantToRemove) {
+      throw new Error("Participant not found");
+    }
+
+    const expensesQuery = query(
+      collection(db, EXPENSES_COLLECTION),
+      where("tripId", "==", tripId),
+      where("paidBy", "==", participantId)
+    );
+    const expensesSnapshot = await getDocs(expensesQuery);
+
+    const deletePromises = expensesSnapshot.docs.map((expenseDoc) =>
+      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id))
+    );
+    await Promise.all(deletePromises);
+
     const updatedParticipants = participants.filter(
       (p: any) => p.id !== participantId
     );
 
+    const newTotalExpense = Math.max(
+      0,
+      (tripData.totalExpense || 0) - (participantToRemove.totalSpent || 0)
+    );
+
     await updateDoc(tripRef, {
       participants: updatedParticipants,
+      totalExpense: newTotalExpense,
       updatedAt: Timestamp.fromDate(new Date()),
     });
   },
