@@ -15,7 +15,7 @@ import { Calendar, MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/auth";
-import { useAcceptInvite, useInvite } from "../hooks/useTrips";
+import { useAcceptInvite, useInvite } from "../hooks/useInvite";
 
 const JoinTrip = () => {
   const { inviteId } = useParams<{ inviteId: string }>();

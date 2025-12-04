@@ -12,8 +12,8 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../hooks/auth";
-import { useAddExpense } from "../hooks/useTrips";
 import type { Participant } from "../types/trip";
+import { useAddExpense } from "../hooks/useExpense";
 
 const expenseSchema = z.object({
   amount: z.number().min(1000, "Số tiền phải lớn hơn 1,000đ"),

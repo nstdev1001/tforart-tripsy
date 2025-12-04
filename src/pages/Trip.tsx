@@ -30,13 +30,9 @@ import { AddParticipantModal } from "../components/AddParticipantModal";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { useCurrency } from "../hooks/useCurrency";
-import {
-  useDeleteExpense,
-  useDeleteTrip,
-  useExpenses,
-  useTrip,
-} from "../hooks/useTrips";
+import { useDeleteTrip, useTrip } from "../hooks/useTrips";
 import type { Expense } from "../types/trip";
+import { useDeleteExpense, useExpenses } from "../hooks/useExpense";
 
 const TripPage = () => {
   const { tripId } = useParams<{ tripId: string }>();

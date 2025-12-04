@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { Check, Copy, Share2 } from "lucide-react";
 import { useState } from "react";
-import { useCreateInvite } from "../hooks/useTrips";
+import { useCreateInvite } from "../hooks/useInvite";
 
 interface ShareTripModalProps {
   opened: boolean;

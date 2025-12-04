@@ -186,4 +186,26 @@ export const tripService = {
       updatedAt: Timestamp.fromDate(new Date()),
     });
   },
+
+  async removeParticipant(
+    tripId: string,
+    participantId: string
+  ): Promise<void> {
+    const tripRef = doc(db, TRIPS_COLLECTION, tripId);
+    const tripSnap = await getDoc(tripRef);
+
+    if (!tripSnap.exists()) {
+      throw new Error("Trip not found");
+    }
+    const tripData = tripSnap.data();
+    const participants = tripData.participants || [];
+    const updatedParticipants = participants.filter(
+      (p: any) => p.id !== participantId
+    );
+
+    await updateDoc(tripRef, {
+      participants: updatedParticipants,
+      updatedAt: Timestamp.fromDate(new Date()),
+    });
+  },
 };
