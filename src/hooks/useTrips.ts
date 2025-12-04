@@ -132,3 +132,33 @@ export const useAddParticipant = () => {
     },
   });
 };
+
+export const useRemoveParticipant = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      tripId,
+      participantId,
+    }: {
+      tripId: string;
+      participantId: string;
+    }) => tripService.removeParticipant(tripId, participantId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
+      queryClient.invalidateQueries({ queryKey: ["trips"] });
+      notifications.show({
+        title: "Thành công",
+        message: "Xóa thành viên thành công!",
+        color: "green",
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        title: "Lỗi",
+        message: "Không thể xóa thành viên!",
+        color: "red",
+      });
+      console.error("Error removing participant:", error);
+    },
+  });
+};
