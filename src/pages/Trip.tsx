@@ -7,7 +7,6 @@ import {
   Container,
   Group,
   Loader,
-  Menu,
   Paper,
   Stack,
   Text,
@@ -16,21 +15,14 @@ import {
 import { modals } from "@mantine/modals";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import {
-  ChevronLeft,
-  ClipboardList,
-  MoreVertical,
-  Plus,
-  Share2,
-  Trash2,
-  UserPlus,
-} from "lucide-react";
+import { ChevronLeft, ClipboardList, Plus, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddParticipantModal } from "../components/AddParticipantModal";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
+import { TripMenu } from "../components/TripMenu";
 import { TripSummaryModal } from "../components/TripSummaryModal";
 import { useAuth } from "../hooks/auth";
 import { useCurrency } from "../hooks/useCurrency";
@@ -117,24 +109,11 @@ const TripPage = () => {
   };
 
   const handleDeleteTrip = () => {
-    modals.openConfirmModal({
-      title: "Xóa chuyến đi",
-      children: (
-        <Text size="sm">
-          Bạn có chắc chắn muốn xóa chuyến đi "{trip?.name}"? Tất cả dữ liệu sẽ
-          bị mất.
-        </Text>
-      ),
-      labels: { confirm: "Xóa", cancel: "Hủy" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        if (tripId) {
-          deleteTrip.mutate(tripId, {
-            onSuccess: () => navigate("/"),
-          });
-        }
-      },
-    });
+    if (tripId) {
+      deleteTrip.mutate(tripId, {
+        onSuccess: () => navigate("/"),
+      });
+    }
   };
 
   if (tripLoading || expensesLoading) {
@@ -176,7 +155,6 @@ const TripPage = () => {
 
   return (
     <div className="min-h-screen pb-8">
-      {/* Header Section với background xanh hoặc xám nếu đã kết thúc */}
       <div
         className={`pb-16 pt-4 rounded-b-4xl ${
           isEnded
@@ -196,42 +174,14 @@ const TripPage = () => {
               >
                 <ChevronLeft size={24} />
               </ActionIcon>
-              <Menu shadow="md" width={200}>
-                <Menu.Target>
-                  <ActionIcon
-                    variant="transparent"
-                    c="white"
-                    size="lg"
-                    className="text-white hover:bg-white/20"
-                  >
-                    <MoreVertical size={24} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<Share2 size={16} />}
-                    onClick={() => setShareModalOpened(true)}
-                  >
-                    Chia sẻ
-                  </Menu.Item>
-                  {!isEnded && (
-                    <Menu.Item
-                      leftSection={<UserPlus size={16} />}
-                      onClick={() => setParticipantModalOpened(true)}
-                    >
-                      Thêm thành viên
-                    </Menu.Item>
-                  )}
-                  <Menu.Divider />
-                  <Menu.Item
-                    color="red"
-                    leftSection={<Trash2 size={16} />}
-                    onClick={handleDeleteTrip}
-                  >
-                    Xóa chuyến đi
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+              <TripMenu
+                tripName={trip.name}
+                isEnded={isEnded}
+                variant="page"
+                onShare={() => setShareModalOpened(true)}
+                onAddParticipant={() => setParticipantModalOpened(true)}
+                onDelete={handleDeleteTrip}
+              />
             </Group>
 
             {/* Trip Name */}
