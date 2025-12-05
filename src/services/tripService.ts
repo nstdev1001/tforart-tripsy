@@ -62,6 +62,37 @@ export const tripService = {
     };
   },
 
+  async getTripById(tripId: string): Promise<Trip | null> {
+    try {
+      const tripRef = doc(db, TRIPS_COLLECTION, tripId);
+      const tripSnap = await getDoc(tripRef);
+
+      if (!tripSnap.exists()) {
+        return null;
+      }
+
+      const data = tripSnap.data();
+
+      return {
+        id: tripSnap.id,
+        name: data.name || "",
+        creator: data.creator || "",
+        creatorName: data.creatorName || "Unknown",
+        creatorPhoto: data.creatorPhoto || "",
+        participants: data.participants || [],
+        totalExpense: data.totalExpense || 0,
+        startDate: parseDate(data.startDate),
+        endDate: data.endDate ? parseDate(data.endDate) : undefined,
+        isEnded: data.isEnded || false,
+        createdAt: parseDate(data.createdAt),
+        updatedAt: parseDate(data.updatedAt),
+      };
+    } catch (error) {
+      console.error("Error fetching trip:", error);
+      throw error;
+    }
+  },
+
   async getTrips(userId: string): Promise<Trip[]> {
     try {
       const currentUser = auth.currentUser;
@@ -84,6 +115,8 @@ export const tripService = {
             participants: data.participants || [],
             totalExpense: data.totalExpense || 0,
             startDate: parseDate(data.startDate),
+            endDate: data.endDate ? parseDate(data.endDate) : undefined,
+            isEnded: data.isEnded || false,
             createdAt: parseDate(data.createdAt),
             updatedAt: parseDate(data.updatedAt),
           };
@@ -98,35 +131,6 @@ export const tripService = {
       return trips;
     } catch (error) {
       console.error("Error fetching trips:", error);
-      throw error;
-    }
-  },
-
-  async getTripById(tripId: string): Promise<Trip | null> {
-    try {
-      const tripRef = doc(db, TRIPS_COLLECTION, tripId);
-      const tripSnap = await getDoc(tripRef);
-
-      if (!tripSnap.exists()) {
-        return null;
-      }
-
-      const data = tripSnap.data();
-
-      return {
-        id: tripSnap.id,
-        name: data.name || "",
-        creator: data.creator || "",
-        creatorName: data.creatorName || "Unknown",
-        creatorPhoto: data.creatorPhoto || "",
-        participants: data.participants || [],
-        totalExpense: data.totalExpense || 0,
-        startDate: parseDate(data.startDate),
-        createdAt: parseDate(data.createdAt),
-        updatedAt: parseDate(data.updatedAt),
-      };
-    } catch (error) {
-      console.error("Error fetching trip:", error);
       throw error;
     }
   },
@@ -244,6 +248,15 @@ export const tripService = {
     await updateDoc(tripRef, {
       participants: updatedParticipants,
       totalExpense: newTotalExpense,
+      updatedAt: Timestamp.fromDate(new Date()),
+    });
+  },
+
+  async endTrip(tripId: string): Promise<void> {
+    const tripRef = doc(db, TRIPS_COLLECTION, tripId);
+    await updateDoc(tripRef, {
+      isEnded: true,
+      endDate: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
     });
   },

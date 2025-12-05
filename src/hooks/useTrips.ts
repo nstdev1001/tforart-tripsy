@@ -165,3 +165,28 @@ export const useRemoveParticipant = () => {
     },
   });
 };
+
+export const useEndTrip = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tripId: string) => tripService.endTrip(tripId),
+    onSuccess: (_, tripId) => {
+      queryClient.invalidateQueries({ queryKey: ["trips"] });
+      queryClient.invalidateQueries({ queryKey: ["trip", tripId] });
+      notifications.show({
+        title: "Thành công",
+        message: "Chuyến đi đã kết thúc!",
+        color: "green",
+      });
+    },
+    onError: (error) => {
+      notifications.show({
+        title: "Lỗi",
+        message: "Không thể kết thúc chuyến đi!",
+        color: "red",
+      });
+      console.error("Error ending trip:", error);
+    },
+  });
+};

@@ -27,6 +27,7 @@ interface ParticipantCardProps {
   maxSpent: number;
   isExpanded: boolean;
   currentUserId?: string;
+  isEndTrip?: boolean;
   onToggle: () => void;
   onDeleteExpense: (expense: Expense) => void;
   onDeleteParticipant: (participantId: string) => void;
@@ -38,6 +39,7 @@ export const ParticipantCard = ({
   maxSpent,
   isExpanded,
   currentUserId,
+  isEndTrip = false,
   onToggle,
   onDeleteExpense,
   onDeleteParticipant,
@@ -77,7 +79,7 @@ export const ParticipantCard = ({
           </div>
         </Group>
         <Group gap="xs">
-          {!isCurrentUser && (
+          {!isCurrentUser && !isEndTrip && (
             <Tooltip label="Xóa thành viên">
               <ActionIcon
                 variant="subtle"
@@ -135,19 +137,21 @@ export const ParticipantCard = ({
                     <Text size="sm" fw={600} c="green">
                       {formatCurrency(expense.amount)}
                     </Text>
-                    <Tooltip label="Xóa">
-                      <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteExpense(expense);
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </ActionIcon>
-                    </Tooltip>
+                    {!isEndTrip && (
+                      <Tooltip label="Xóa">
+                        <ActionIcon
+                          variant="subtle"
+                          color="red"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteExpense(expense);
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
                   </Group>
                 </Group>
               </Paper>
