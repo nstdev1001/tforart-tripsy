@@ -1,12 +1,11 @@
 import {
   Avatar,
   Button,
-  Center,
   Container,
   Group,
-  Loader,
   Paper,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   Title,
@@ -16,6 +15,7 @@ import { useState } from "react";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
 import { TripCard } from "../components/TripCard";
+import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useTrips } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
@@ -93,16 +93,16 @@ export const Home = () => {
             </Button>
           </Group>
 
-          {/* Loading State */}
+          {/* Loading State - Skeleton */}
           {isLoading && (
-            <Paper shadow="md" radius="lg" p="xl">
-              <Center>
-                <Stack align="center" gap="md">
-                  <Loader size="lg" />
-                  <Text c="dimmed">Đang tải danh sách chuyến đi...</Text>
-                </Stack>
-              </Center>
-            </Paper>
+            <>
+              <Skeleton height={20} width={150} radius="sm" />
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+                {[...Array(6)].map((_, index) => (
+                  <TripCardSkeleton key={index} />
+                ))}
+              </SimpleGrid>
+            </>
           )}
 
           {/* Error State */}

@@ -3,10 +3,8 @@ import {
   Badge,
   Button,
   Card,
-  Center,
   Container,
   Group,
-  Loader,
   Paper,
   Stack,
   Text,
@@ -24,6 +22,7 @@ import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { TripMenu } from "../components/TripMenu";
 import { TripSummaryModal } from "../components/TripSummaryModal";
+import { TripPageSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useCurrency } from "../hooks/useCurrency";
 import { useDeleteExpense, useExpenses } from "../hooks/useExpense";
@@ -117,18 +116,7 @@ const TripPage = () => {
   };
 
   if (tripLoading || expensesLoading) {
-    return (
-      <div className="min-h-screen">
-        <Container size="sm" className="py-8">
-          <Center>
-            <Stack align="center" gap="md">
-              <Loader size="lg" />
-              <Text c="dimmed">Đang tải thông tin chuyến đi...</Text>
-            </Stack>
-          </Center>
-        </Container>
-      </div>
-    );
+    return <TripPageSkeleton />;
   }
 
   if (!trip) {
