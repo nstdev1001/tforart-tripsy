@@ -1,62 +1,69 @@
 import {
   ActionIcon,
-  Avatar,
   Badge,
   Button,
   Card,
   Center,
   Container,
-  Divider,
   Group,
   Loader,
   Paper,
-  Progress,
-  SimpleGrid,
   Stack,
   Text,
   Title,
-  Tooltip,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import {
-  ArrowLeft,
-  Calendar,
-  DollarSign,
-  MapPin,
-  Plus,
-  Share2,
-  Trash2,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { ChevronLeft, ClipboardList, Plus, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddParticipantModal } from "../components/AddParticipantModal";
+import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
-import { useDeleteExpense, useExpenses, useTrip } from "../hooks/useTrips";
+import { TripMenu } from "../components/TripMenu";
+import { TripSummaryModal } from "../components/TripSummaryModal";
+import { useAuth } from "../hooks/auth";
+import { useCurrency } from "../hooks/useCurrency";
+import { useDeleteExpense, useExpenses } from "../hooks/useExpense";
+import {
+  useDeleteTrip,
+  useRemoveParticipant,
+  useTrip,
+} from "../hooks/useTrips";
 import type { Expense } from "../types/trip";
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
-
-const Trip = () => {
-  const { tripId } = useParams<{ tripId: string }>();
+const TripPage = () => {
+  const { tripId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { data: expenses, isLoading: expensesLoading } = useExpenses(tripId);
   const deleteExpense = useDeleteExpense();
+  const deleteTrip = useDeleteTrip();
+  const deleteParticipant = useRemoveParticipant();
+  const { formatCurrency } = useCurrency();
 
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
   const [shareModalOpened, setShareModalOpened] = useState(false);
+  const [summaryModalOpened, setSummaryModalOpened] = useState(false);
+  const [expandedParticipant, setExpandedParticipant] = useState<string | null>(
+    null
+  );
+
+  const handleToggleExpenseDetail = (participantId: string) => {
+    setExpandedParticipant((prev) =>
+      prev === participantId ? null : participantId
+    );
+  };
+
+  const getParticipantExpenses = (participantId: string) => {
+    return (
+      expenses?.filter((expense) => expense.paidBy === participantId) || []
+    );
+  };
 
   const handleDeleteExpense = (expense: Expense) => {
     modals.openConfirmModal({
@@ -82,10 +89,37 @@ const Trip = () => {
     });
   };
 
-  if (tripLoading) {
+  const handleDeleteParticipant = (participantId: string) => {
+    modals.openConfirmModal({
+      title: "Xóa thành viên",
+      children: (
+        <Text size="sm">
+          Bạn có chắc chắn muốn xóa thành viên này? Tất cả chi tiêu liên quan sẽ
+          bị mất.
+        </Text>
+      ),
+      labels: { confirm: "Xóa", cancel: "Hủy" },
+      confirmProps: { color: "red" },
+      onConfirm: () => {
+        if (tripId) {
+          deleteParticipant.mutate({ tripId, participantId });
+        }
+      },
+    });
+  };
+
+  const handleDeleteTrip = () => {
+    if (tripId) {
+      deleteTrip.mutate(tripId, {
+        onSuccess: () => navigate("/"),
+      });
+    }
+  };
+
+  if (tripLoading || expensesLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
-        <Container size="lg" className="py-8">
+      <div className="min-h-screen">
+        <Container size="sm" className="py-8">
           <Center>
             <Stack align="center" gap="md">
               <Loader size="lg" />
@@ -99,8 +133,8 @@ const Trip = () => {
 
   if (!trip) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
-        <Container size="lg" className="py-8">
+      <div className="min-h-screen">
+        <Container size="sm" className="py-8">
           <Paper shadow="md" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="xl">😢</Text>
@@ -113,225 +147,136 @@ const Trip = () => {
     );
   }
 
+  const totalExpense = trip.totalExpense || 0;
   const maxSpent = Math.max(
     ...(trip.participants?.map((p) => p.totalSpent) || [1])
   );
+  const isEnded = trip.isEnded || false;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
-      <Container size="lg" className="py-8">
-        <Stack gap="lg">
-          {/* Back Button */}
-          <Group justify="space-between">
-            <Button
-              variant="subtle"
-              leftSection={<ArrowLeft size={18} />}
-              onClick={() => navigate("/")}
-            >
-              Quay lại
-            </Button>
-            <Button
-              variant="light"
-              leftSection={<Share2 size={18} />}
-              onClick={() => setShareModalOpened(true)}
-            >
-              Chia sẻ
-            </Button>
-          </Group>
-
-          {/* Trip Info Card */}
-          <Card shadow="lg" radius="xl" p="xl" withBorder>
-            <Stack gap="md">
-              <Group justify="space-between" align="flex-start">
-                <div>
-                  <Badge
-                    leftSection={<MapPin size={14} />}
-                    variant="light"
-                    color="blue"
-                    size="lg"
-                    mb="xs"
-                  >
-                    Chuyến đi
-                  </Badge>
-                  <Title order={2}>{trip.name}</Title>
-                </div>
-                <Group gap="xs">
-                  <Calendar size={16} className="text-gray-500" />
-                  <Text size="sm" c="dimmed">
-                    {format(trip.startDate, "dd/MM/yyyy", { locale: vi })}
-                  </Text>
-                </Group>
-              </Group>
-
-              {/* Creator Info */}
-              <Group gap="xs">
-                {trip.creatorPhoto ? (
-                  <Avatar src={trip.creatorPhoto} size="sm" radius="xl" />
-                ) : (
-                  <Avatar size="sm" radius="xl" color="blue">
-                    <User size={16} />
-                  </Avatar>
-                )}
-                <Text size="sm" c="dimmed">
-                  Tạo bởi: {trip.creatorName}
-                </Text>
-              </Group>
-
-              <Divider />
-
-              {/* Total Expense - Highlight */}
-              <Paper
-                radius="lg"
-                p="xl"
-                className="bg-linear-to-r from-blue-500 to-purple-600 text-center"
+    <div className="min-h-screen pb-8">
+      <div
+        className={`pb-16 pt-4 rounded-b-4xl ${
+          isEnded
+            ? "bg-linear-to-br from-gray-400 via-gray-500 to-gray-600"
+            : "bg-linear-to-br from-blue-500 via-blue-600 to-indigo-600"
+        }`}
+      >
+        <Container size="sm">
+          <Stack gap="md">
+            {/* Navigation */}
+            <Group justify="space-between">
+              <ActionIcon
+                variant="transparent"
+                c="white"
+                size="lg"
+                onClick={() => navigate("/")}
               >
-                <Text size="sm" className="text-blue-100 mb-2">
-                  Tổng chi tiêu
-                </Text>
-                <Title order={1} className="text-white">
-                  {formatCurrency(trip.totalExpense || 0)}
-                </Title>
-              </Paper>
-            </Stack>
-          </Card>
-
-          {/* Participants Section */}
-          <Card shadow="md" radius="lg" p="lg" withBorder>
-            <Group justify="space-between" mb="md">
-              <Group>
-                <Users size={20} className="text-blue-600" />
-                <Title order={4}>
-                  Thành viên ({trip.participants?.length || 0})
-                </Title>
-              </Group>
-              <Button
-                leftSection={<UserPlus size={16} />}
-                variant="light"
-                size="sm"
-                onClick={() => setParticipantModalOpened(true)}
-              >
-                Thêm thành viên
-              </Button>
+                <ChevronLeft size={24} />
+              </ActionIcon>
+              <TripMenu
+                tripName={trip.name}
+                isEnded={isEnded}
+                variant="page"
+                onShare={() => setShareModalOpened(true)}
+                onAddParticipant={() => setParticipantModalOpened(true)}
+                onDelete={handleDeleteTrip}
+              />
             </Group>
 
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              {trip.participants?.map((participant) => (
-                <Paper key={participant.id} radius="md" p="md" withBorder>
-                  <Group justify="space-between" mb="xs">
-                    <Group>
-                      {participant.photoURL ? (
-                        <Avatar
-                          src={participant.photoURL}
-                          size="md"
-                          radius="xl"
-                        />
-                      ) : (
-                        <Avatar size="md" radius="xl" color="blue">
-                          {participant.name.charAt(0).toUpperCase()}
-                        </Avatar>
-                      )}
-                      <div>
-                        <Text fw={500}>{participant.name}</Text>
-                        <Text size="sm" c="dimmed">
-                          {formatCurrency(participant.totalSpent)}
-                        </Text>
-                      </div>
-                    </Group>
-                  </Group>
-                  <Progress
-                    value={
-                      maxSpent > 0
-                        ? (participant.totalSpent / maxSpent) * 100
-                        : 0
-                    }
-                    color="blue"
-                    size="sm"
-                    radius="xl"
-                  />
-                </Paper>
-              ))}
-            </SimpleGrid>
-          </Card>
+            {/* Trip Name */}
+            <Group gap="xs">
+              <Title order={2} className="text-white">
+                {trip.name}
+              </Title>
+              {isEnded && (
+                <Badge color="dark" variant="filled" size="sm">
+                  Đã kết thúc
+                </Badge>
+              )}
+            </Group>
+          </Stack>
+        </Container>
+      </div>
 
-          {/* Expenses Section */}
-          <Card shadow="md" radius="lg" p="lg" withBorder>
-            <Group justify="space-between" mb="md">
-              <Group>
-                <DollarSign size={20} className="text-green-600" />
-                <Title order={4}>Chi tiêu ({expenses?.length || 0})</Title>
-              </Group>
+      <Container size="sm" className="-mt-12">
+        <Card shadow="xl" radius="xl" p="lg" className="bg-white">
+          <Group justify="space-between" align="flex-start">
+            <Stack gap={4}>
+              <Text size="sm" c="dimmed">
+                Tổng chi tiêu
+              </Text>
+              <Title
+                order={1}
+                className={`text-transparent bg-clip-text ${
+                  isEnded
+                    ? "bg-linear-to-r from-gray-500 to-gray-600"
+                    : "bg-linear-to-r from-blue-600 to-indigo-600"
+                }`}
+              >
+                {formatCurrency(totalExpense)}
+              </Title>
+              <Text size="xs" c="dimmed">
+                {format(trip.startDate, "dd/MM/yyyy", { locale: vi })}
+                {trip.endDate && (
+                  <> - {format(trip.endDate, "dd/MM/yyyy", { locale: vi })}</>
+                )}
+              </Text>
               <Button
-                leftSection={<Plus size={16} />}
-                size="sm"
+                variant="light"
+                size="xs"
+                radius="xl"
+                leftSection={<ClipboardList size={14} />}
+                className="mt-2"
+                onClick={() => setSummaryModalOpened(true)}
+              >
+                Tổng kết chuyến đi
+              </Button>
+            </Stack>
+            {!isEnded && (
+              <ActionIcon
+                size={56}
+                radius="xl"
+                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
                 onClick={() => setExpenseModalOpened(true)}
               >
-                Thêm chi tiêu
-              </Button>
-            </Group>
-
-            {expensesLoading ? (
-              <Center py="xl">
-                <Loader size="md" />
-              </Center>
-            ) : expenses && expenses.length > 0 ? (
-              <Stack gap="sm">
-                {expenses.map((expense) => (
-                  <Paper
-                    key={expense.id}
-                    radius="md"
-                    p="md"
-                    withBorder
-                    className="hover:shadow-md transition-shadow"
-                  >
-                    <Group justify="space-between">
-                      <div>
-                        <Text fw={500}>{expense.description}</Text>
-                        <Group gap="xs">
-                          <Text size="sm" c="dimmed">
-                            {expense.paidByName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            •{" "}
-                            {format(expense.createdAt, "dd/MM/yyyy HH:mm", {
-                              locale: vi,
-                            })}
-                          </Text>
-                        </Group>
-                      </div>
-                      <Group gap="sm">
-                        <Text fw={600} c="green">
-                          {formatCurrency(expense.amount)}
-                        </Text>
-                        <Tooltip label="Xóa chi tiêu">
-                          <ActionIcon
-                            variant="subtle"
-                            color="red"
-                            onClick={() => handleDeleteExpense(expense)}
-                          >
-                            <Trash2 size={16} />
-                          </ActionIcon>
-                        </Tooltip>
-                      </Group>
-                    </Group>
-                  </Paper>
-                ))}
-              </Stack>
-            ) : (
-              <Paper radius="md" p="xl" className="text-center bg-gray-50">
-                <Stack align="center" gap="md">
-                  <Text size="xl">💰</Text>
-                  <Text c="dimmed">Chưa có chi tiêu nào</Text>
-                  <Button
-                    leftSection={<Plus size={16} />}
-                    variant="light"
-                    onClick={() => setExpenseModalOpened(true)}
-                  >
-                    Thêm chi tiêu đầu tiên
-                  </Button>
-                </Stack>
-              </Paper>
+                <Plus size={28} className="text-white" />
+              </ActionIcon>
             )}
-          </Card>
+          </Group>
+        </Card>
+      </Container>
+
+      {/* Content Section */}
+      <Container size="sm" className="mt-6">
+        <Stack gap="md">
+          {/* Participants List */}
+          {trip.participants?.map((participant) => (
+            <ParticipantCard
+              key={participant.id}
+              participant={participant}
+              expenses={getParticipantExpenses(participant.id)}
+              maxSpent={maxSpent}
+              isExpanded={expandedParticipant === participant.id}
+              currentUserId={user?.uid}
+              isEndTrip={isEnded}
+              onToggle={() => handleToggleExpenseDetail(participant.id)}
+              onDeleteExpense={handleDeleteExpense}
+              onDeleteParticipant={handleDeleteParticipant}
+            />
+          ))}
+
+          {/* Add Participant Button */}
+          {!isEnded && (
+            <Button
+              variant="subtle"
+              leftSection={<UserPlus size={18} />}
+              onClick={() => setParticipantModalOpened(true)}
+              className="text-gray-600"
+            >
+              Thêm thành viên
+            </Button>
+          )}
         </Stack>
       </Container>
 
@@ -355,8 +300,17 @@ const Trip = () => {
         tripId={tripId || ""}
         tripName={trip?.name || ""}
       />
+
+      <TripSummaryModal
+        opened={summaryModalOpened}
+        onClose={() => setSummaryModalOpened(false)}
+        tripId={tripId || ""}
+        participants={trip.participants || []}
+        totalExpense={totalExpense}
+        isEnded={isEnded}
+      />
     </div>
   );
 };
 
-export default Trip;
+export default TripPage;

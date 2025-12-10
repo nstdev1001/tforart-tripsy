@@ -11,7 +11,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { LogOut, Plane, Plus } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
@@ -45,7 +45,7 @@ export const Home = () => {
           <Paper
             shadow="lg"
             radius="xl"
-            p="xl"
+            p="xs"
             className=" from-blue-500 to-purple-600"
           >
             <Group justify="space-between">
@@ -58,7 +58,7 @@ export const Home = () => {
                 />
                 <div>
                   <Text size="xl" fw={700} className="text-white">
-                    Xin chào, {user?.displayName}! 👋
+                    Hi, {user?.displayName}! 👋
                   </Text>
                   <Text size="sm" className="text-blue-100">
                     {user?.email}
@@ -79,14 +79,13 @@ export const Home = () => {
           {/* Title and Action */}
           <Group justify="space-between" align="center">
             <Group>
-              <Plane size={32} className="text-blue-600" />
-              <Title order={1} className="text-gray-800">
-                Chuyến đi của tôi
+              <Title order={1} className="text-white">
+                My trips
               </Title>
             </Group>
             <Button
               leftSection={<Plus size={20} />}
-              size="lg"
+              size="compact-sm"
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
@@ -148,9 +147,7 @@ export const Home = () => {
           {/* Trips Grid */}
           {trips && trips.length > 0 && (
             <>
-              <Text size="sm" c="dimmed">
-                Tổng số chuyến đi: {trips.length}
-              </Text>
+              <p className="text-white">Tổng số chuyến đi: {trips.length}</p>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
                 {trips.map((trip) => (
                   <TripCard key={trip.id} trip={trip} onEdit={handleEditTrip} />

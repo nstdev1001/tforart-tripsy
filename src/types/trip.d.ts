@@ -30,6 +30,8 @@ export interface Trip {
   id?: string;
   name: string;
   startDate: Date;
+  endDate?: Date;
+  isEnded?: boolean;
   creator: string;
   creatorName?: string;
   creatorPhoto?: string;
@@ -53,4 +55,10 @@ export interface CreateExpenseData {
   description: string;
   paidBy: string;
   paidByName: string;
+}
+
+export interface Settlement {
+  from: Participant;
+  to: Participant;
+  amount: number;
 }

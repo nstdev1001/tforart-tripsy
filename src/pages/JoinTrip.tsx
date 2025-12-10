@@ -11,21 +11,28 @@ import {
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { Calendar, MapPin, User } from "lucide-react";
+import { Calendar, CheckCircle, MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/auth";
-import { useAcceptInvite, useInvite } from "../hooks/useTrips";
+import { useAcceptInvite, useInvite } from "../hooks/useInvite";
+import { useTrip } from "../hooks/useTrips";
 
 const JoinTrip = () => {
   const { inviteId } = useParams<{ inviteId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { data: invite, isLoading: inviteLoading, error } = useInvite(inviteId);
+  const { data: trip, isLoading: tripLoading } = useTrip(invite?.tripId);
   const acceptInvite = useAcceptInvite();
   const [isJoining, setIsJoining] = useState(false);
 
-  // Nếu chưa đăng nhập, redirect đến login với redirect URL
+  // Check if user is already a participant
+  const isAlreadyJoined = trip?.participants?.some(
+    (p) => p.userId === user?.uid
+  );
+
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       const redirectUrl = `/invite/${inviteId}`;
@@ -46,15 +53,21 @@ const JoinTrip = () => {
     }
   };
 
+  const handleGoToTrip = () => {
+    if (invite?.tripId) {
+      navigate(`/trip/${invite.tripId}`);
+    }
+  };
+
   // Loading states
-  if (authLoading || inviteLoading) {
+  if (authLoading || inviteLoading || tripLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Center>
             <Stack align="center" gap="md">
               <Loader size="lg" />
-              <Text c="dimmed">Đang tải thông tin...</Text>
+              <Text c="dimmed">Loading...</Text>
             </Stack>
           </Center>
         </Container>
@@ -65,16 +78,16 @@ const JoinTrip = () => {
   // Error states
   if (error || !invite) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="4xl">😢</Text>
-              <Title order={3}>Link mời không hợp lệ</Title>
+              <Title order={3}>Invalid invite link</Title>
               <Text c="dimmed">
-                Link mời có thể đã hết hạn hoặc không tồn tại.
+                The invite link may have expired or does not exist.
               </Text>
-              <Button onClick={() => navigate("/")}>Về trang chủ</Button>
+              <Button onClick={() => navigate("/")}>Go to Home</Button>
             </Stack>
           </Card>
         </Container>
@@ -87,16 +100,57 @@ const JoinTrip = () => {
 
   if (isExpired) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen">
         <Container size="sm" className="py-16">
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="4xl">⏰</Text>
-              <Title order={3}>Link mời đã hết hạn</Title>
+              <Title order={3}>Invite link has expired</Title>
               <Text c="dimmed">
-                Vui lòng yêu cầu chủ chuyến đi tạo link mời mới.
+                Please ask the trip owner to create a new invite link.
               </Text>
-              <Button onClick={() => navigate("/")}>Về trang chủ</Button>
+              <Button onClick={() => navigate("/")}>Go to Home</Button>
+            </Stack>
+          </Card>
+        </Container>
+      </div>
+    );
+  }
+
+  // Already joined - show different UI
+  if (isAlreadyJoined) {
+    return (
+      <div className="min-h-screen">
+        <Container size="sm" className="py-16">
+          <Card shadow="lg" radius="lg" p="xl">
+            <Stack align="center" gap="lg">
+              <div className="text-center">
+                <CheckCircle
+                  size={64}
+                  className="text-green-500 mb-4 mx-auto"
+                />
+                <Title order={2} mb="xs">
+                  You're already in this trip!
+                </Title>
+                <Text c="dimmed">
+                  You have already joined <br /> "
+                  <span className="font-semibold">{invite.tripName}</span>".
+                </Text>
+              </div>
+
+              <Stack gap="sm" className="w-full">
+                <Button size="lg" fullWidth onClick={handleGoToTrip}>
+                  Go to Trip
+                </Button>
+
+                <Button
+                  variant="subtle"
+                  fullWidth
+                  onClick={() => navigate("/")}
+                >
+                  Go to Home
+                </Button>
+              </Stack>
             </Stack>
           </Card>
         </Container>
@@ -105,7 +159,7 @@ const JoinTrip = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen">
       <Container size="sm" className="py-16">
         <Card shadow="lg" radius="lg" p="xl">
           <Stack align="center" gap="lg">
@@ -114,7 +168,7 @@ const JoinTrip = () => {
                 ✈️
               </Text>
               <Title order={2} mb="xs">
-                Bạn được mời tham gia chuyến đi
+                You're invited to join a trip
               </Title>
             </div>
 
@@ -135,14 +189,14 @@ const JoinTrip = () => {
                 <Group gap="xs">
                   <User size={16} className="text-gray-500" />
                   <Text size="sm" c="dimmed">
-                    Được mời bởi: {invite.invitedByName}
+                    Invited by: {invite.invitedByName}
                   </Text>
                 </Group>
 
                 <Group gap="xs">
                   <Calendar size={16} className="text-gray-500" />
                   <Text size="sm" c="dimmed">
-                    Link hết hạn:{" "}
+                    Link expires:{" "}
                     {format(invite.expiresAt, "dd/MM/yyyy HH:mm", {
                       locale: vi,
                     })}
@@ -158,11 +212,11 @@ const JoinTrip = () => {
                 onClick={handleJoinTrip}
                 loading={isJoining}
               >
-                Tham gia chuyến đi
+                Join Trip
               </Button>
 
               <Button variant="subtle" fullWidth onClick={() => navigate("/")}>
-                Quay về trang chủ
+                Go to Home
               </Button>
             </Stack>
           </Stack>

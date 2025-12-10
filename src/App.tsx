@@ -10,7 +10,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Home } from "./pages/Home";
 import JoinTrip from "./pages/JoinTrip";
 import { Login } from "./pages/Login";
-import Trip from "./pages/Trip";
+import TripPage from "./pages/Trip";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +36,7 @@ function App() {
                 path="/trip/:tripId"
                 element={
                   <ProtectedRoute>
-                    <Trip />
+                    <TripPage />
                   </ProtectedRoute>
                 }
               />

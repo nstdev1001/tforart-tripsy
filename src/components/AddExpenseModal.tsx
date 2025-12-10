@@ -8,11 +8,12 @@ import {
   Stack,
   TextInput,
 } from "@mantine/core";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../hooks/auth";
-import { useAddExpense } from "../hooks/useTrips";
 import type { Participant } from "../types/trip";
+import { useAddExpense } from "../hooks/useExpense";
 
 const expenseSchema = z.object({
   amount: z.number().min(1000, "Số tiền phải lớn hơn 1,000đ"),
@@ -38,14 +39,26 @@ export const AddExpenseModal = ({
   const { user } = useAuth();
   const addExpense = useAddExpense();
 
+  // Tìm participant tương ứng với user hiện tại
+  const currentUserParticipant = participants.find(
+    (p) => p.userId === user?.uid
+  );
+
   const form = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: 0,
       description: "",
-      paidBy: user?.uid || "",
+      paidBy: "",
     },
   });
+
+  // Set default paidBy khi modal mở và có user
+  useEffect(() => {
+    if (opened && currentUserParticipant) {
+      form.setValue("paidBy", currentUserParticipant.userId);
+    }
+  }, [opened, currentUserParticipant, form]);
 
   const onSubmit = async (data: ExpenseForm) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
