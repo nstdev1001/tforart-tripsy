@@ -14,6 +14,7 @@ import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
+import SimpleFooter from "../components/SimpleFooter";
 import { TripCard } from "../components/TripCard";
 import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
@@ -85,7 +86,7 @@ export const Home = () => {
             </Group>
             <Button
               leftSection={<Plus size={20} />}
-              size="compact-sm"
+              size="xs"
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
@@ -156,6 +157,8 @@ export const Home = () => {
             </>
           )}
         </Stack>
+        {/* Footer */}
+        <SimpleFooter />
       </Container>
 
       <CreateTripModal

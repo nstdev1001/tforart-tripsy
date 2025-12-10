@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import SimpleFooter from "../components/SimpleFooter";
 import { useAuth } from "../hooks/auth";
 
 export const Login = () => {
@@ -91,17 +92,7 @@ export const Login = () => {
         </Card>
 
         {/* Footer */}
-        <Text
-          ta="center"
-          size="xs"
-          mt="lg"
-          c="white"
-          className="drop-shadow-2xl"
-        >
-          © 2024 Tripsy
-          <br />
-          Made by Nguyen Son Tung
-        </Text>
+        <SimpleFooter />
       </Container>
     </div>
   );

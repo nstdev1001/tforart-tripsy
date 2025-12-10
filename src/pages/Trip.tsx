@@ -192,10 +192,10 @@ const TripPage = () => {
           {/* Add Participant Button */}
           {!isEnded && (
             <Button
-              variant="subtle"
+              variant="transparent"
+              color="white"
               leftSection={<UserPlus size={18} />}
               onClick={() => setParticipantModalOpened(true)}
-              className="text-gray-600"
             >
               Thêm thành viên
             </Button>
