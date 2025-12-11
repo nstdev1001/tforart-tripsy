@@ -28,6 +28,7 @@ import { useCurrency } from "../hooks/useCurrency";
 import { useExpenses } from "../hooks/useExpense";
 import { useTripActions } from "../hooks/useTripActions";
 import { useTrip } from "../hooks/useTrips";
+import { useVibrate } from "../hooks/useVibrate";
 
 const TripPage = () => {
   const { tripId } = useParams();
@@ -37,6 +38,7 @@ const TripPage = () => {
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { isLoading: expensesLoading } = useExpenses(tripId);
   const { formatCurrency } = useCurrency();
+  const { vibrateMedium } = useVibrate();
 
   const {
     expandedParticipant,
@@ -51,6 +53,11 @@ const TripPage = () => {
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
   const [shareModalOpened, setShareModalOpened] = useState(false);
   const [summaryModalOpened, setSummaryModalOpened] = useState(false);
+
+  const handleOpenExpenseModal = () => {
+    vibrateMedium();
+    setExpenseModalOpened(true);
+  };
 
   if (tripLoading || expensesLoading) {
     return <TripPageSkeleton />;
@@ -164,8 +171,8 @@ const TripPage = () => {
               <ActionIcon
                 size={56}
                 radius="xl"
-                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
-                onClick={() => setExpenseModalOpened(true)}
+                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all active:scale-95"
+                onClick={handleOpenExpenseModal}
               >
                 <Plus size={28} className="text-white" />
               </ActionIcon>
