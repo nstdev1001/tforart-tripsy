@@ -15,6 +15,7 @@ import { useState } from "react";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
 import SimpleFooter from "../components/SimpleFooter";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { TripCard } from "../components/TripCard";
 import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
@@ -39,7 +40,7 @@ export const Home = () => {
   };
 
   return (
-    <div className="min-h-screen  from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen from-blue-50 via-white to-purple-50">
       <Container size="lg" className="py-8">
         <Stack gap="lg">
           {/* Header Card */}
@@ -47,7 +48,7 @@ export const Home = () => {
             shadow="lg"
             radius="xl"
             p="xs"
-            className=" from-blue-500 to-purple-600"
+            className="from-blue-500 to-purple-600"
           >
             <Group justify="space-between">
               <Group>
@@ -66,14 +67,17 @@ export const Home = () => {
                   </Text>
                 </div>
               </Group>
-              <Button
-                leftSection={<LogOut size={18} />}
-                variant="white"
-                color="red"
-                onClick={signOut}
-              >
-                Đăng xuất
-              </Button>
+              <Group gap="xs">
+                <ThemeToggle />
+                <Button
+                  leftSection={<LogOut size={18} />}
+                  variant="white"
+                  color="red"
+                  onClick={signOut}
+                >
+                  Đăng xuất
+                </Button>
+              </Group>
             </Group>
           </Paper>
 

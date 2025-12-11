@@ -9,6 +9,7 @@ import {
   Stack,
   Text,
   Title,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -32,6 +33,7 @@ const TripPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { colorScheme } = useMantineColorScheme();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { isLoading: expensesLoading } = useExpenses(tripId);
   const { formatCurrency } = useCurrency();
@@ -123,7 +125,7 @@ const TripPage = () => {
       </div>
 
       <Container size="sm" className="-mt-12">
-        <Card shadow="xl" radius="xl" p="lg" className="bg-white">
+        <Card shadow="xl" radius="xl" p="lg">
           <Group justify="space-between" align="flex-start">
             <Stack gap={4}>
               <Text size="sm" c="dimmed">
@@ -134,6 +136,8 @@ const TripPage = () => {
                 className={`text-transparent bg-clip-text ${
                   isEnded
                     ? "bg-linear-to-r from-gray-500 to-gray-600"
+                    : colorScheme === "dark"
+                    ? "bg-linear-to-r from-blue-400 to-cyan-400"
                     : "bg-linear-to-r from-blue-600 to-indigo-600"
                 }`}
               >
