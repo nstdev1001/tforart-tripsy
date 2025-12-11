@@ -5,7 +5,7 @@ export type ColorSchemeMode = "light" | "dark" | "system";
 
 export const useColorScheme = () => {
   const [mode, setMode] = useLocalStorage<ColorSchemeMode>({
-    key: "tripsy-color-scheme",
+    key: "tforart-tripsy-color-scheme",
     defaultValue: "system",
   });
 
