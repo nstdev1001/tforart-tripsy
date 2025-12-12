@@ -3,16 +3,14 @@ import {
   Badge,
   Button,
   Card,
-  Center,
   Container,
   Group,
-  Loader,
   Paper,
   Stack,
   Text,
   Title,
+  useMantineColorScheme,
 } from "@mantine/core";
-import { modals } from "@mantine/modals";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ChevronLeft, ClipboardList, Plus, UserPlus } from "lucide-react";
@@ -24,111 +22,45 @@ import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { TripMenu } from "../components/TripMenu";
 import { TripSummaryModal } from "../components/TripSummaryModal";
+import { TripPageSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useCurrency } from "../hooks/useCurrency";
-import { useDeleteExpense, useExpenses } from "../hooks/useExpense";
-import {
-  useDeleteTrip,
-  useRemoveParticipant,
-  useTrip,
-} from "../hooks/useTrips";
-import type { Expense } from "../types/trip";
+import { useExpenses } from "../hooks/useExpense";
+import { useTripActions } from "../hooks/useTripActions";
+import { useTrip } from "../hooks/useTrips";
+import { useVibrate } from "../hooks/useVibrate";
 
 const TripPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { colorScheme } = useMantineColorScheme();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
-  const { data: expenses, isLoading: expensesLoading } = useExpenses(tripId);
-  const deleteExpense = useDeleteExpense();
-  const deleteTrip = useDeleteTrip();
-  const deleteParticipant = useRemoveParticipant();
+  const { isLoading: expensesLoading } = useExpenses(tripId);
   const { formatCurrency } = useCurrency();
+  const { vibrateMedium } = useVibrate();
+
+  const {
+    expandedParticipant,
+    handleToggleExpenseDetail,
+    getParticipantExpenses,
+    handleDeleteExpense,
+    handleDeleteParticipant,
+    handleDeleteTrip,
+  } = useTripActions(tripId);
 
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
   const [shareModalOpened, setShareModalOpened] = useState(false);
   const [summaryModalOpened, setSummaryModalOpened] = useState(false);
-  const [expandedParticipant, setExpandedParticipant] = useState<string | null>(
-    null
-  );
 
-  const handleToggleExpenseDetail = (participantId: string) => {
-    setExpandedParticipant((prev) =>
-      prev === participantId ? null : participantId
-    );
-  };
-
-  const getParticipantExpenses = (participantId: string) => {
-    return (
-      expenses?.filter((expense) => expense.paidBy === participantId) || []
-    );
-  };
-
-  const handleDeleteExpense = (expense: Expense) => {
-    modals.openConfirmModal({
-      title: "Xóa chi tiêu",
-      children: (
-        <Text size="sm">
-          Bạn có chắc chắn muốn xóa chi tiêu "{expense.description}" (
-          {formatCurrency(expense.amount)})?
-        </Text>
-      ),
-      labels: { confirm: "Xóa", cancel: "Hủy" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        if (expense.id && tripId) {
-          deleteExpense.mutate({
-            expenseId: expense.id,
-            tripId,
-            amount: expense.amount,
-            paidBy: expense.paidBy,
-          });
-        }
-      },
-    });
-  };
-
-  const handleDeleteParticipant = (participantId: string) => {
-    modals.openConfirmModal({
-      title: "Xóa thành viên",
-      children: (
-        <Text size="sm">
-          Bạn có chắc chắn muốn xóa thành viên này? Tất cả chi tiêu liên quan sẽ
-          bị mất.
-        </Text>
-      ),
-      labels: { confirm: "Xóa", cancel: "Hủy" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        if (tripId) {
-          deleteParticipant.mutate({ tripId, participantId });
-        }
-      },
-    });
-  };
-
-  const handleDeleteTrip = () => {
-    if (tripId) {
-      deleteTrip.mutate(tripId, {
-        onSuccess: () => navigate("/"),
-      });
-    }
+  const handleOpenExpenseModal = () => {
+    vibrateMedium();
+    setExpenseModalOpened(true);
   };
 
   if (tripLoading || expensesLoading) {
-    return (
-      <div className="min-h-screen">
-        <Container size="sm" className="py-8">
-          <Center>
-            <Stack align="center" gap="md">
-              <Loader size="lg" />
-              <Text c="dimmed">Đang tải thông tin chuyến đi...</Text>
-            </Stack>
-          </Center>
-        </Container>
-      </div>
-    );
+    return <TripPageSkeleton />;
   }
 
   if (!trip) {
@@ -200,7 +132,7 @@ const TripPage = () => {
       </div>
 
       <Container size="sm" className="-mt-12">
-        <Card shadow="xl" radius="xl" p="lg" className="bg-white">
+        <Card shadow="xl" radius="xl" p="lg">
           <Group justify="space-between" align="flex-start">
             <Stack gap={4}>
               <Text size="sm" c="dimmed">
@@ -211,6 +143,8 @@ const TripPage = () => {
                 className={`text-transparent bg-clip-text ${
                   isEnded
                     ? "bg-linear-to-r from-gray-500 to-gray-600"
+                    : colorScheme === "dark"
+                    ? "bg-linear-to-r from-blue-400 to-cyan-400"
                     : "bg-linear-to-r from-blue-600 to-indigo-600"
                 }`}
               >
@@ -237,8 +171,8 @@ const TripPage = () => {
               <ActionIcon
                 size={56}
                 radius="xl"
-                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
-                onClick={() => setExpenseModalOpened(true)}
+                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all active:scale-95"
+                onClick={handleOpenExpenseModal}
               >
                 <Plus size={28} className="text-white" />
               </ActionIcon>
@@ -269,10 +203,10 @@ const TripPage = () => {
           {/* Add Participant Button */}
           {!isEnded && (
             <Button
-              variant="subtle"
+              variant="transparent"
+              color="white"
               leftSection={<UserPlus size={18} />}
               onClick={() => setParticipantModalOpened(true)}
-              className="text-gray-600"
             >
               Thêm thành viên
             </Button>

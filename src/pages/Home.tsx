@@ -1,12 +1,11 @@
 import {
   Avatar,
   Button,
-  Center,
   Container,
   Group,
-  Loader,
   Paper,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   Title,
@@ -15,7 +14,10 @@ import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
+import SimpleFooter from "../components/SimpleFooter";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { TripCard } from "../components/TripCard";
+import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useTrips } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
@@ -38,7 +40,7 @@ export const Home = () => {
   };
 
   return (
-    <div className="min-h-screen  from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen from-blue-50 via-white to-purple-50">
       <Container size="lg" className="py-8">
         <Stack gap="lg">
           {/* Header Card */}
@@ -46,7 +48,7 @@ export const Home = () => {
             shadow="lg"
             radius="xl"
             p="xs"
-            className=" from-blue-500 to-purple-600"
+            className="from-blue-500 to-purple-600"
           >
             <Group justify="space-between">
               <Group>
@@ -65,14 +67,17 @@ export const Home = () => {
                   </Text>
                 </div>
               </Group>
-              <Button
-                leftSection={<LogOut size={18} />}
-                variant="white"
-                color="red"
-                onClick={signOut}
-              >
-                Đăng xuất
-              </Button>
+              <Group gap="xs">
+                <ThemeToggle />
+                <Button
+                  leftSection={<LogOut size={18} />}
+                  variant="white"
+                  color="red"
+                  onClick={signOut}
+                >
+                  Đăng xuất
+                </Button>
+              </Group>
             </Group>
           </Paper>
 
@@ -85,7 +90,7 @@ export const Home = () => {
             </Group>
             <Button
               leftSection={<Plus size={20} />}
-              size="compact-sm"
+              size="xs"
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
@@ -93,16 +98,16 @@ export const Home = () => {
             </Button>
           </Group>
 
-          {/* Loading State */}
+          {/* Loading State - Skeleton */}
           {isLoading && (
-            <Paper shadow="md" radius="lg" p="xl">
-              <Center>
-                <Stack align="center" gap="md">
-                  <Loader size="lg" />
-                  <Text c="dimmed">Đang tải danh sách chuyến đi...</Text>
-                </Stack>
-              </Center>
-            </Paper>
+            <>
+              <Skeleton height={20} width={150} radius="sm" />
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+                {[...Array(6)].map((_, index) => (
+                  <TripCardSkeleton key={index} />
+                ))}
+              </SimpleGrid>
+            </>
           )}
 
           {/* Error State */}
@@ -156,6 +161,8 @@ export const Home = () => {
             </>
           )}
         </Stack>
+        {/* Footer */}
+        <SimpleFooter />
       </Container>
 
       <CreateTripModal

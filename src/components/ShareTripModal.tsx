@@ -68,8 +68,9 @@ export const ShareTripModal = ({
     >
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          Tạo link mời để chia sẻ chuyến đi "{tripName}" với bạn bè. Link có
-          hiệu lực trong 7 ngày.
+          Tạo link mời để chia sẻ chuyến đi "
+          <span className="font-semibold">{tripName}</span>" với bạn bè. Link có
+          hiệu lực trong 3 ngày.
         </Text>
 
         {!inviteLink ? (
