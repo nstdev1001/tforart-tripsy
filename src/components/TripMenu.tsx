@@ -12,6 +12,7 @@ import {
 interface TripMenuProps {
   tripName: string;
   isEnded?: boolean;
+  isParticipant?: boolean;
   variant?: "card" | "page";
   onEdit?: () => void;
   onShare?: () => void;
@@ -22,6 +23,7 @@ interface TripMenuProps {
 export const TripMenu = ({
   tripName,
   isEnded = false,
+  isParticipant = false,
   variant = "card",
   onEdit,
   onShare,
@@ -65,7 +67,11 @@ export const TripMenu = ({
           </Menu.Item>
         )}
         {!isEnded && onShare && (
-          <Menu.Item leftSection={<Share2 size={14} />} onClick={onShare}>
+          <Menu.Item
+            leftSection={<Share2 size={14} />}
+            onClick={onShare}
+            disabled={isParticipant}
+          >
             Chia sẻ
           </Menu.Item>
         )}
@@ -82,6 +88,7 @@ export const TripMenu = ({
           leftSection={<Trash2 size={14} />}
           color="red"
           onClick={handleDelete}
+          disabled={isParticipant}
         >
           Xóa
         </Menu.Item>

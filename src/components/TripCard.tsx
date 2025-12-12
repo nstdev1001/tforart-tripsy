@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useIsParticipant } from "../hooks/useIsParticipant";
 import { useDeleteTrip } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
 import { ShareTripModal } from "./ShareTripModal";
@@ -35,6 +36,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
   const deleteTrip = useDeleteTrip();
   const navigate = useNavigate();
   const [shareModalOpened, setShareModalOpened] = useState(false);
+  const isParticipant = useIsParticipant(trip.participants);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -85,7 +87,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
               )}
             </Group>
             <Group gap="xs">
-              {!isEnded && (
+              {!isEnded && !isParticipant && (
                 <Tooltip label="Chia sẻ">
                   <ActionIcon
                     variant="subtle"
@@ -103,6 +105,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
                 onEdit={() => onEdit(trip)}
                 onShare={() => setShareModalOpened(true)}
                 onDelete={handleDelete}
+                isParticipant={isParticipant}
               />
             </Group>
           </Group>

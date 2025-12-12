@@ -116,6 +116,7 @@ export const inviteService = {
         name: currentUser.displayName || "Unknown",
         photoURL: currentUser.photoURL || "",
         totalSpent: 0,
+        isParticipant: true,
       };
 
       await updateDoc(tripRef, {
