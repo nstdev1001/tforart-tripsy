@@ -10,13 +10,16 @@ import {
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SimpleFooter from "../components/SimpleFooter";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useAuth } from "../hooks/auth";
+import { useColorScheme } from "../hooks/useColorScheme";
 
 export const Login = () => {
   const { user, signInWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
+  const { resolvedColorScheme } = useColorScheme();
 
   useEffect(() => {
     if (user) {
@@ -32,6 +35,9 @@ export const Login = () => {
     }
   };
 
+  const logoSrc =
+    resolvedColorScheme === "dark" ? "/logo_white.svg" : "/logo.svg";
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Container size="xs" className="w-full">
@@ -39,11 +45,11 @@ export const Login = () => {
           shadow="xl"
           radius="xl"
           p="md"
-          className="backdrop-blur-md bg-white/90 border border-white/20"
+          className="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-white/20"
         >
           <Stack align="center" gap="xl">
             <div className="flex flex-col gap-1">
-              <Image src="/logo.svg" alt="Tripsy Logo" />
+              <Image src={logoSrc} alt="Tripsy Logo" />
               <Text size="sm" ta="center" c="grey" fw={300}>
                 Nền tảng quản lý chi tiêu nhóm
                 <br /> cho chuyến đi của bạn
@@ -63,7 +69,7 @@ export const Login = () => {
               radius="xl"
               fullWidth
               variant="default"
-              className="border-2 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="border-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-md"
               leftSection={<GoogleIcon />}
             >
               <Text fw={500}>Đăng nhập với Google</Text>
@@ -88,6 +94,7 @@ export const Login = () => {
                 Chính sách bảo mật
               </Text>
             </Text>
+            <ThemeToggle variant="menu" />
           </Stack>
         </Card>
 
