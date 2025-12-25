@@ -23,6 +23,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsParticipant } from "../hooks/useIsParticipant";
 import { useDeleteTrip } from "../hooks/useTrips";
+import { useVibrate } from "../hooks/useVibrate";
 import type { Trip } from "../types/trip";
 import { ShareTripModal } from "./ShareTripModal";
 import { TripMenu } from "./TripMenu";
@@ -33,6 +34,7 @@ interface TripCardProps {
 }
 
 export const TripCard = ({ trip, onEdit }: TripCardProps) => {
+  const { vibrateMedium } = useVibrate();
   const deleteTrip = useDeleteTrip();
   const navigate = useNavigate();
   const [shareModalOpened, setShareModalOpened] = useState(false);
@@ -172,7 +174,10 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
             mt="xs"
             color={isEnded ? "gray" : "blue"}
             className={isEnded ? "" : "hover:bg-blue-50"}
-            onClick={() => navigate(`/trip/${trip.id}`)}
+            onClick={() => {
+              vibrateMedium();
+              navigate(`/trip/${trip.id}`);
+            }}
           >
             Xem chi tiết
           </Button>

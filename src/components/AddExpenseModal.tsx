@@ -3,17 +3,20 @@ import {
   Button,
   Group,
   Modal,
+  NativeSelect,
   NumberInput,
   Select,
   Stack,
+  Text,
   TextInput,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../hooks/auth";
-import type { Participant } from "../types/trip";
 import { useAddExpense } from "../hooks/useExpense";
+import type { Participant } from "../types/trip";
 
 const expenseSchema = z.object({
   amount: z.number().min(1000, "Số tiền phải lớn hơn 1,000đ"),
@@ -38,6 +41,7 @@ export const AddExpenseModal = ({
 }: AddExpenseModalProps) => {
   const { user } = useAuth();
   const addExpense = useAddExpense();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Tìm participant tương ứng với user hiện tại
   const currentUserParticipant = participants.find(
@@ -92,7 +96,11 @@ export const AddExpenseModal = ({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Thêm chi tiêu"
+      title={
+        <Text fw={600} size="lg">
+          Thêm chi tiêu
+        </Text>
+      }
       centered
       size="md"
     >
@@ -112,6 +120,7 @@ export const AddExpenseModal = ({
                 step={1000}
                 thousandSeparator=","
                 suffix=" đ"
+                radius="md"
               />
             )}
           />
@@ -122,22 +131,37 @@ export const AddExpenseModal = ({
             {...form.register("description")}
             error={form.formState.errors.description?.message}
             size="md"
+            radius="md"
           />
 
           <Controller
             name="paidBy"
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Select
-                {...field}
-                label="Người chi tiêu"
-                placeholder="Chọn người chi tiêu"
-                data={participantOptions}
-                error={fieldState.error?.message}
-                size="md"
-                searchable
-              />
-            )}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  {...field}
+                  label="Người chi tiêu"
+                  data={[
+                    { value: "", label: "Chọn người chi tiêu" },
+                    ...participantOptions,
+                  ]}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                />
+              ) : (
+                <Select
+                  {...field}
+                  label="Người chi tiêu"
+                  placeholder="Chọn người chi tiêu"
+                  data={participantOptions}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                />
+              )
+            }
           />
 
           <Group justify="flex-end" mt="md">

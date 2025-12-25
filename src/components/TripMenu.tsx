@@ -35,13 +35,17 @@ export const TripMenu = ({
       title: "Xóa chuyến đi",
       children: (
         <Text size="sm">
-          Bạn có chắc chắn muốn xóa chuyến đi "{tripName}"? Hành động này không
-          thể hoàn tác.
+          Bạn có chắc chắn muốn xóa chuyến đi "
+          <Text span fw={600}>
+            {tripName}
+          </Text>
+          "? Hành động này không thể hoàn tác.
         </Text>
       ),
       labels: { confirm: "Xóa", cancel: "Hủy" },
       confirmProps: { color: "red" },
       onConfirm: onDelete,
+      centered: true,
     });
   };
 

@@ -52,6 +52,7 @@ export const useTripActions = (tripId?: string) => {
           });
         }
       },
+      centered: true,
     });
   };
 
@@ -71,6 +72,7 @@ export const useTripActions = (tripId?: string) => {
           deleteParticipant.mutate({ tripId, participantId });
         }
       },
+      centered: true,
     });
   };
 

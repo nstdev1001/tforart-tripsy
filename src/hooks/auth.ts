@@ -24,11 +24,6 @@ export const useAuth = () => {
   const signInWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      notifications.show({
-        title: "Đăng nhập thành công",
-        message: `Chào mừng ${result.user.displayName}!`,
-        color: "green",
-      });
       return result.user;
     } catch (error: unknown) {
       notifications.show({
@@ -43,11 +38,6 @@ export const useAuth = () => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      notifications.show({
-        title: "Đăng xuất thành công",
-        message: "Hẹn gặp lại bạn!",
-        color: "blue",
-      });
     } catch (error: unknown) {
       notifications.show({
         title: "Lỗi đăng xuất",

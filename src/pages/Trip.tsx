@@ -162,7 +162,10 @@ const TripPage = () => {
                 radius="xl"
                 leftSection={<ClipboardList size={14} />}
                 className="mt-2"
-                onClick={() => setSummaryModalOpened(true)}
+                onClick={() => {
+                  vibrateMedium();
+                  setSummaryModalOpened(true);
+                }}
               >
                 Tổng kết chuyến đi
               </Button>

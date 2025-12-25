@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -65,7 +65,11 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Tạo chuyến đi mới"
+      title={
+        <Text fw={600} size="lg">
+          Tạo chuyến đi mới
+        </Text>
+      }
       centered
       size="md"
     >
@@ -73,10 +77,11 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
         <Stack gap="md">
           <TextInput
             label="Tên chuyến đi"
-            placeholder="Ví dụ: Du lịch Đà Nẵng 2024"
+            placeholder="Ví dụ: Du lịch Đà Nẵng 2026"
             {...form.register("name")}
             error={form.formState.errors.name?.message}
             size="md"
+            radius="md"
           />
 
           <Controller
@@ -100,6 +105,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
                   placeholder="Chọn ngày bắt đầu"
                   error={fieldState.error?.message}
                   size="md"
+                  radius="md"
                   locale="vi"
                   minDate={new Date()}
                   clearable={false}
