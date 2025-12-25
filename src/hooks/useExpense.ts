@@ -1,7 +1,7 @@
+import { notifications } from "@mantine/notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseService } from "../services";
 import type { CreateExpenseData } from "../types/trip";
-import { notifications } from "@mantine/notifications";
 
 export const useExpenses = (tripId?: string) => {
   return useQuery({
@@ -23,11 +23,6 @@ export const useAddExpense = () => {
         queryKey: ["expenses", variables.tripId],
       });
       queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Thêm chi tiêu thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({
@@ -61,11 +56,6 @@ export const useDeleteExpense = () => {
         queryKey: ["expenses", variables.tripId],
       });
       queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Xóa chi tiêu thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({

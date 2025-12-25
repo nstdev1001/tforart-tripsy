@@ -66,6 +66,7 @@ export const AddParticipantModal = ({
             {...form.register("name")}
             error={form.formState.errors.name?.message}
             size="md"
+            radius="md"
           />
 
           <Group justify="flex-end" mt="md">

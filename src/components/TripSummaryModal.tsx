@@ -54,6 +54,7 @@ export const TripSummaryModal = ({
           onSuccess: () => onClose(),
         });
       },
+      centered: true,
     });
   };
 

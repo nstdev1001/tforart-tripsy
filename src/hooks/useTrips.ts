@@ -26,11 +26,6 @@ export const useCreateTrip = () => {
     mutationFn: tripService.createTrip,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trips", variables.creator] });
-      notifications.show({
-        title: "Thành công",
-        message: "Tạo chuyến đi mới thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({
@@ -57,11 +52,6 @@ export const useUpdateTrip = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
-      notifications.show({
-        title: "Thành công",
-        message: "Cập nhật chuyến đi thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({
@@ -81,11 +71,6 @@ export const useDeleteTrip = () => {
     mutationFn: tripService.deleteTrip,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Xóa chuyến đi thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({
@@ -112,11 +97,6 @@ export const useAddParticipant = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Thêm thành viên thành công!",
-        color: "green",
-      });
     },
     onError: (error: Error) => {
       const message =
@@ -149,11 +129,6 @@ export const useRemoveParticipant = () => {
       queryClient.invalidateQueries({
         queryKey: ["expenses", variables.tripId],
       });
-      notifications.show({
-        title: "Thành công",
-        message: "Xóa thành viên thành công!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({
@@ -174,11 +149,6 @@ export const useEndTrip = () => {
     onSuccess: (_, tripId) => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       queryClient.invalidateQueries({ queryKey: ["trip", tripId] });
-      notifications.show({
-        title: "Thành công",
-        message: "Chuyến đi đã kết thúc!",
-        color: "green",
-      });
     },
     onError: (error) => {
       notifications.show({

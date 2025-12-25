@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Group,
+  Image,
   Paper,
   SimpleGrid,
   Skeleton,
@@ -12,6 +13,7 @@ import {
 } from "@mantine/core";
 import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
+import hiGif from "../assets/hi.gif";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
 import SimpleFooter from "../components/SimpleFooter";
@@ -59,9 +61,12 @@ export const Home = () => {
                   className="border-4 border-white"
                 />
                 <div>
-                  <Text size="xl" fw={700} className="text-white">
-                    Hi, {user?.displayName}! 👋
-                  </Text>
+                  <div className="inline-flex items-start gap-2">
+                    <Text size="xl" fw={700} className="text-white">
+                      Hi, {user?.displayName}!
+                    </Text>
+                    <Image src={hiGif} alt="Waving Hand" w="1.8em" h="1.8em" />
+                  </div>
                   <Text size="sm" className="text-blue-100">
                     {user?.email}
                   </Text>

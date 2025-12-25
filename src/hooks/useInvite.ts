@@ -13,13 +13,7 @@ export const useInvite = (inviteId?: string) => {
 export const useCreateInvite = () => {
   return useMutation({
     mutationFn: (tripId: string) => inviteService.createInvite(tripId),
-    onSuccess: () => {
-      notifications.show({
-        title: "Thành công",
-        message: "Tạo link mời thành công!",
-        color: "green",
-      });
-    },
+    onSuccess: () => {},
     onError: (error) => {
       notifications.show({
         title: "Lỗi",
@@ -38,11 +32,6 @@ export const useAcceptInvite = () => {
     mutationFn: (inviteId: string) => inviteService.acceptInvite(inviteId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
-      notifications.show({
-        title: "Thành công",
-        message: "Tham gia chuyến đi thành công!",
-        color: "green",
-      });
     },
     onError: (error: Error) => {
       let message = "Không thể tham gia chuyến đi!";
