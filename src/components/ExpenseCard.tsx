@@ -2,6 +2,7 @@ import { ActionIcon, Group, Paper, Text, Tooltip } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
+import { useVibrate } from "../hooks/useVibrate";
 import type { Expense } from "../types/trip";
 
 const formatCurrency = (amount: number) => {
@@ -17,6 +18,7 @@ interface ExpenseCardProps {
 }
 
 export const ExpenseCard = ({ expense, onDelete }: ExpenseCardProps) => {
+  const { vibrateShort } = useVibrate();
   return (
     <Paper
       radius="md"
@@ -47,7 +49,10 @@ export const ExpenseCard = ({ expense, onDelete }: ExpenseCardProps) => {
             <ActionIcon
               variant="subtle"
               color="red"
-              onClick={() => onDelete(expense)}
+              onClick={() => {
+                vibrateShort();
+                onDelete(expense);
+              }}
             >
               <Trash2 size={16} />
             </ActionIcon>

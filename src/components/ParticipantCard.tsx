@@ -12,6 +12,7 @@ import {
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { ChevronDown, ChevronUp, Trash2, UserMinus } from "lucide-react";
+import { useVibrate } from "../hooks/useVibrate";
 import type { Expense, Participant } from "../types/trip";
 
 const formatCurrency = (amount: number) => {
@@ -44,6 +45,7 @@ export const ParticipantCard = ({
   onDeleteExpense,
   onDeleteParticipant,
 }: ParticipantCardProps) => {
+  const { vibrateShort } = useVibrate();
   const isCurrentUser = participant.userId === currentUserId;
 
   return (
@@ -53,7 +55,10 @@ export const ParticipantCard = ({
       shadow="md"
       withBorder
       className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.01] hover:border-blue-300"
-      onClick={onToggle}
+      onClick={() => {
+        vibrateShort();
+        onToggle();
+      }}
     >
       <Group justify="space-between" mb="xs">
         <Group>
