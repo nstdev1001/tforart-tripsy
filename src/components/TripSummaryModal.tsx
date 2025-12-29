@@ -14,6 +14,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { useCurrency } from "../hooks/useCurrency";
 import { useEndTrip } from "../hooks/useTrips";
 import { useTripSettlement } from "../hooks/useTripSettlement";
+import { useVibrate } from "../hooks/useVibrate";
 import type { Participant } from "../types/trip";
 
 interface TripSummaryModalProps {
@@ -34,11 +35,13 @@ export const TripSummaryModal = ({
   isEnded = false,
 }: TripSummaryModalProps) => {
   const { formatCurrency } = useCurrency();
+  const { vibrateSuccess, vibrateLong } = useVibrate();
   const endTrip = useEndTrip();
   const { averagePerPerson, mainSpender, settlements, getParticipantBalance } =
     useTripSettlement(participants, totalExpense);
 
   const handleEndTrip = () => {
+    vibrateLong();
     modals.openConfirmModal({
       title: "Kết thúc chuyến đi",
       children: (
@@ -51,7 +54,10 @@ export const TripSummaryModal = ({
       confirmProps: { color: "green" },
       onConfirm: () => {
         endTrip.mutate(tripId, {
-          onSuccess: () => onClose(),
+          onSuccess: () => {
+            vibrateSuccess();
+            onClose();
+          },
         });
       },
       centered: true,

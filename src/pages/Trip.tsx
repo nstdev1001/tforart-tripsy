@@ -33,12 +33,12 @@ import { useVibrate } from "../hooks/useVibrate";
 const TripPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
+  const { formatCurrency } = useCurrency();
+  const { vibrateShort, vibrateMedium, vibrateDouble } = useVibrate();
   const { user } = useAuth();
   const { colorScheme } = useMantineColorScheme();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
   const { isLoading: expensesLoading } = useExpenses(tripId);
-  const { formatCurrency } = useCurrency();
-  const { vibrateMedium } = useVibrate();
 
   const {
     expandedParticipant,
@@ -55,7 +55,7 @@ const TripPage = () => {
   const [summaryModalOpened, setSummaryModalOpened] = useState(false);
 
   const handleOpenExpenseModal = () => {
-    vibrateMedium();
+    vibrateDouble();
     setExpenseModalOpened(true);
   };
 
@@ -102,7 +102,10 @@ const TripPage = () => {
                 variant="transparent"
                 c="white"
                 size="lg"
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  vibrateShort();
+                  navigate("/");
+                }}
               >
                 <ChevronLeft size={24} />
               </ActionIcon>
