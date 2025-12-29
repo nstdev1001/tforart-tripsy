@@ -160,3 +160,23 @@ export const useEndTrip = () => {
     },
   });
 };
+
+export const useUpdateTripNotes = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ tripId, notes }: { tripId: string; notes: string }) =>
+      tripService.updateTripNotes(tripId, notes),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
+    },
+    onError: (error) => {
+      notifications.show({
+        title: "Lỗi",
+        message: "Không thể lưu ghi chú!",
+        color: "red",
+      });
+      console.error("Error updating notes:", error);
+    },
+  });
+};

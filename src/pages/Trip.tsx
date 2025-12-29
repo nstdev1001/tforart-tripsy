@@ -13,7 +13,13 @@ import {
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ChevronLeft, ClipboardList, Plus, UserPlus } from "lucide-react";
+import {
+  ChevronLeft,
+  ClipboardList,
+  NotebookPen,
+  Plus,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddExpenseModal } from "../components/AddExpenseModal";
@@ -21,6 +27,7 @@ import { AddParticipantModal } from "../components/AddParticipantModal";
 import { ParticipantCard } from "../components/ParticipantCard";
 import { ShareTripModal } from "../components/ShareTripModal";
 import { TripMenu } from "../components/TripMenu";
+import { TripNotesModal } from "../components/TripNotesModal";
 import { TripSummaryModal } from "../components/TripSummaryModal";
 import { TripPageSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
@@ -53,6 +60,7 @@ const TripPage = () => {
   const [participantModalOpened, setParticipantModalOpened] = useState(false);
   const [shareModalOpened, setShareModalOpened] = useState(false);
   const [summaryModalOpened, setSummaryModalOpened] = useState(false);
+  const [notesModalOpened, setNotesModalOpened] = useState(false);
 
   const handleOpenExpenseModal = () => {
     vibrateDouble();
@@ -159,12 +167,25 @@ const TripPage = () => {
                   <> - {format(trip.endDate, "dd/MM/yyyy", { locale: vi })}</>
                 )}
               </Text>
+            </Stack>
+            <Stack>
+              {!isEnded && (
+                <ActionIcon
+                  size={56}
+                  radius="xl"
+                  className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all active:scale-95"
+                  onClick={handleOpenExpenseModal}
+                >
+                  <Plus size={28} className="text-white" />
+                </ActionIcon>
+              )}
+            </Stack>
+            <div className="flex w-full justify-between mt-2">
               <Button
                 variant="light"
                 size="xs"
                 radius="xl"
                 leftSection={<ClipboardList size={14} />}
-                className="mt-2"
                 onClick={() => {
                   vibrateMedium();
                   setSummaryModalOpened(true);
@@ -172,17 +193,20 @@ const TripPage = () => {
               >
                 Tổng kết chuyến đi
               </Button>
-            </Stack>
-            {!isEnded && (
-              <ActionIcon
-                size={56}
+              <Button
+                variant="light"
+                size="xs"
                 radius="xl"
-                className="bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all active:scale-95"
-                onClick={handleOpenExpenseModal}
+                color="yellow"
+                leftSection={<NotebookPen size={14} />}
+                onClick={() => {
+                  vibrateMedium();
+                  setNotesModalOpened(true);
+                }}
               >
-                <Plus size={28} className="text-white" />
-              </ActionIcon>
-            )}
+                Ghi chú
+              </Button>
+            </div>
           </Group>
         </Card>
       </Container>
@@ -248,6 +272,13 @@ const TripPage = () => {
         participants={trip.participants || []}
         totalExpense={totalExpense}
         isEnded={isEnded}
+      />
+
+      <TripNotesModal
+        opened={notesModalOpened}
+        onClose={() => setNotesModalOpened(false)}
+        tripId={tripId || ""}
+        initialNotes={trip.notes || ""}
       />
     </div>
   );

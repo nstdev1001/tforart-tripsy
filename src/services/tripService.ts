@@ -84,6 +84,7 @@ export const tripService = {
         startDate: parseDate(data.startDate),
         endDate: data.endDate ? parseDate(data.endDate) : undefined,
         isEnded: data.isEnded || false,
+        notes: data.notes || "",
         createdAt: parseDate(data.createdAt),
         updatedAt: parseDate(data.updatedAt),
       };
@@ -117,6 +118,7 @@ export const tripService = {
             startDate: parseDate(data.startDate),
             endDate: data.endDate ? parseDate(data.endDate) : undefined,
             isEnded: data.isEnded || false,
+            notes: data.notes || "",
             createdAt: parseDate(data.createdAt),
             updatedAt: parseDate(data.updatedAt),
           };
@@ -257,6 +259,14 @@ export const tripService = {
     await updateDoc(tripRef, {
       isEnded: true,
       endDate: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+    });
+  },
+
+  async updateTripNotes(tripId: string, notes: string): Promise<void> {
+    const tripRef = doc(db, TRIPS_COLLECTION, tripId);
+    await updateDoc(tripRef, {
+      notes,
       updatedAt: Timestamp.fromDate(new Date()),
     });
   },
