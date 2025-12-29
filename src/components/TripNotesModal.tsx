@@ -58,7 +58,7 @@ const NotesContent = ({
         radius="lg"
         style={{
           background: isDark
-            ? "linear-gradient(to bottom right, #854d0e, #a16207)"
+            ? "linear-gradient(to bottom right, #374151, #1f2937)"
             : "linear-gradient(to bottom right, #fef9c3, #fef08a)",
         }}
       >
