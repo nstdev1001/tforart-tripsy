@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import type { User } from "firebase/auth";
 import { ChevronDown, ChevronUp, Trash2, UserMinus } from "lucide-react";
 import { useVibrate } from "../hooks/useVibrate";
 import type { Expense, Participant } from "../types/trip";
@@ -23,11 +24,12 @@ const formatCurrency = (amount: number) => {
 };
 
 interface ParticipantCardProps {
+  creatorId: string;
   participant: Participant;
   expenses: Expense[];
   maxSpent: number;
   isExpanded: boolean;
-  currentUserId?: string;
+  currentUser?: User | undefined;
   isEndTrip?: boolean;
   onToggle: () => void;
   onDeleteExpense: (expense: Expense) => void;
@@ -35,18 +37,20 @@ interface ParticipantCardProps {
 }
 
 export const ParticipantCard = ({
+  creatorId,
   participant,
   expenses,
   maxSpent,
   isExpanded,
-  currentUserId,
+  currentUser,
   isEndTrip = false,
   onToggle,
   onDeleteExpense,
   onDeleteParticipant,
 }: ParticipantCardProps) => {
   const { vibrateShort } = useVibrate();
-  const isCurrentUser = participant.userId === currentUserId;
+  const isCurrentUser = participant.userId === currentUser?.uid;
+  const isCreator = creatorId === currentUser?.uid;
 
   return (
     <Paper
@@ -84,7 +88,7 @@ export const ParticipantCard = ({
           </div>
         </Group>
         <Group gap="xs">
-          {!isCurrentUser && !isEndTrip && (
+          {!isCurrentUser && !isEndTrip && isCreator && (
             <Tooltip label="Xóa thành viên">
               <ActionIcon
                 variant="subtle"

@@ -218,11 +218,12 @@ const TripPage = () => {
           {trip.participants?.map((participant) => (
             <ParticipantCard
               key={participant.id}
+              creatorId={trip.creator}
               participant={participant}
               expenses={getParticipantExpenses(participant.id)}
               maxSpent={maxSpent}
               isExpanded={expandedParticipant === participant.id}
-              currentUserId={user?.uid}
+              currentUser={user ?? undefined}
               isEndTrip={isEnded}
               onToggle={() => handleToggleExpenseDetail(participant.id)}
               onDeleteExpense={handleDeleteExpense}

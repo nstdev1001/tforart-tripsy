@@ -67,7 +67,7 @@ const JoinTrip = () => {
           <Center>
             <Stack align="center" gap="md">
               <Loader size="lg" />
-              <Text c="dimmed">Loading...</Text>
+              <Text c="dimmed">Đang tải...</Text>
             </Stack>
           </Center>
         </Container>
@@ -83,11 +83,11 @@ const JoinTrip = () => {
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="4xl">😢</Text>
-              <Title order={3}>Invalid invite link</Title>
+              <Title order={3}>Liên kết không hợp lệ</Title>
               <Text c="dimmed">
-                The invite link may have expired or does not exist.
+                Liên kết mời có thể đã hết hạn hoặc không tồn tại.
               </Text>
-              <Button onClick={() => navigate("/")}>Go to Home</Button>
+              <Button onClick={() => navigate("/")}>Về trang chủ</Button>
             </Stack>
           </Card>
         </Container>
@@ -105,11 +105,11 @@ const JoinTrip = () => {
           <Card shadow="lg" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="4xl">⏰</Text>
-              <Title order={3}>Invite link has expired</Title>
+              <Title order={3}>Liên kết mời đã hết hạn</Title>
               <Text c="dimmed">
-                Please ask the trip owner to create a new invite link.
+                Vui lòng yêu cầu chủ chuyến đi tạo liên kết mời mới.
               </Text>
-              <Button onClick={() => navigate("/")}>Go to Home</Button>
+              <Button onClick={() => navigate("/")}>Về trang chủ</Button>
             </Stack>
           </Card>
         </Container>
@@ -130,17 +130,17 @@ const JoinTrip = () => {
                   className="text-green-500 mb-4 mx-auto"
                 />
                 <Title order={2} mb="xs">
-                  You're already in this trip!
+                  Bạn đã tham gia chuyến đi này!
                 </Title>
                 <Text c="dimmed">
-                  You have already joined <br /> "
+                  Bạn đã tham gia chuyến đi <br /> "
                   <span className="font-semibold">{invite.tripName}</span>".
                 </Text>
               </div>
 
               <Stack gap="sm" className="w-full">
                 <Button size="lg" fullWidth onClick={handleGoToTrip}>
-                  Go to Trip
+                  Đi đến chuyến đi
                 </Button>
 
                 <Button
@@ -148,7 +148,7 @@ const JoinTrip = () => {
                   fullWidth
                   onClick={() => navigate("/")}
                 >
-                  Go to Home
+                  Về trang chủ
                 </Button>
               </Stack>
             </Stack>
@@ -168,7 +168,7 @@ const JoinTrip = () => {
                 ✈️
               </Text>
               <Title order={2} mb="xs">
-                You're invited to join a trip
+                Bạn được mời tham gia chuyến đi
               </Title>
             </div>
 
@@ -189,14 +189,14 @@ const JoinTrip = () => {
                 <Group gap="xs">
                   <User size={16} className="text-gray-500" />
                   <Text size="sm" c="dimmed">
-                    Invited by: {invite.invitedByName}
+                    Được mời bởi: {invite.invitedByName}
                   </Text>
                 </Group>
 
                 <Group gap="xs">
                   <Calendar size={16} className="text-gray-500" />
                   <Text size="sm" c="dimmed">
-                    Link expires:{" "}
+                    Hết hạn:{" "}
                     {format(invite.expiresAt, "dd/MM/yyyy HH:mm", {
                       locale: vi,
                     })}
@@ -212,11 +212,11 @@ const JoinTrip = () => {
                 onClick={handleJoinTrip}
                 loading={isJoining}
               >
-                Join Trip
+                Tham gia chuyến đi
               </Button>
 
               <Button variant="subtle" fullWidth onClick={() => navigate("/")}>
-                Go to Home
+                Về trang chủ
               </Button>
             </Stack>
           </Stack>
