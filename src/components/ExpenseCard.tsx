@@ -2,15 +2,9 @@ import { ActionIcon, Group, Paper, Text, Tooltip } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
+import { useCurrency } from "../hooks/useCurrency";
 import { useVibrate } from "../hooks/useVibrate";
 import type { Expense } from "../types/trip";
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
 
 interface ExpenseCardProps {
   expense: Expense;
@@ -18,6 +12,7 @@ interface ExpenseCardProps {
 }
 
 export const ExpenseCard = ({ expense, onDelete }: ExpenseCardProps) => {
+  const { formatCurrency } = useCurrency();
   const { vibrateShort } = useVibrate();
   return (
     <Paper
