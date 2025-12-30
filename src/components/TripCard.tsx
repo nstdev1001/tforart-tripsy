@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "../hooks/useCurrency";
 import { useIsParticipant } from "../hooks/useIsParticipant";
 import { useDeleteTrip } from "../hooks/useTrips";
 import { useVibrate } from "../hooks/useVibrate";
@@ -34,18 +35,12 @@ interface TripCardProps {
 }
 
 export const TripCard = ({ trip, onEdit }: TripCardProps) => {
+  const { formatCurrency } = useCurrency();
   const { vibrateMedium } = useVibrate();
   const deleteTrip = useDeleteTrip();
   const navigate = useNavigate();
   const [shareModalOpened, setShareModalOpened] = useState(false);
   const isParticipant = useIsParticipant(trip.participants);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
 
   const isEnded = trip.isEnded || false;
 
