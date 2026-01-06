@@ -12,6 +12,7 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
+import { DEMO_TRIP, getDemoTripById, isDemoTrip } from "../data/demoData";
 import type { CreateTripData, Trip } from "../types/trip";
 import { parseDate } from "./helpers";
 
@@ -63,6 +64,12 @@ export const tripService = {
   },
 
   async getTripById(tripId: string): Promise<Trip | null> {
+    // Check if it's a demo trip first
+    const demoTrip = getDemoTripById(tripId);
+    if (demoTrip) {
+      return demoTrip;
+    }
+
     try {
       const tripRef = doc(db, TRIPS_COLLECTION, tripId);
       const tripSnap = await getDoc(tripRef);
@@ -130,7 +137,8 @@ export const tripService = {
 
       trips.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-      return trips;
+      // Add demo trip at the end of the list
+      return [...trips, DEMO_TRIP];
     } catch (error) {
       console.error("Error fetching trips:", error);
       throw error;
@@ -141,6 +149,10 @@ export const tripService = {
     tripId: string,
     updates: Partial<CreateTripData>
   ): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể chỉnh sửa chuyến đi mẫu");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     const updateData: any = {
       ...updates,
@@ -155,6 +167,10 @@ export const tripService = {
   },
 
   async deleteTrip(tripId: string): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể xóa chuyến đi mẫu");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     await deleteDoc(tripRef);
   },
@@ -163,6 +179,10 @@ export const tripService = {
     tripId: string,
     participant: { name: string; userId?: string; photoURL?: string }
   ): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể thêm thành viên vào chuyến đi mẫu");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     const tripSnap = await getDoc(tripRef);
 
@@ -199,6 +219,10 @@ export const tripService = {
     tripId: string,
     participantId: string
   ): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể xóa thành viên khỏi chuyến đi mẫu");
+    }
+
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new Error("User not authenticated");
@@ -255,6 +279,10 @@ export const tripService = {
   },
 
   async endTrip(tripId: string): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể kết thúc chuyến đi mẫu");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     await updateDoc(tripRef, {
       isEnded: true,
@@ -264,6 +292,10 @@ export const tripService = {
   },
 
   async updateTripNotes(tripId: string, notes: string): Promise<void> {
+    if (isDemoTrip(tripId)) {
+      throw new Error("Không thể chỉnh sửa ghi chú chuyến đi mẫu");
+    }
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     await updateDoc(tripRef, {
       notes,

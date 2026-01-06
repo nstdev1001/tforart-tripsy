@@ -13,6 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
+import { getDemoExpenses, isDemoExpense, isDemoTrip } from "../data/demoData";
 import type { CreateExpenseData, Expense } from "../types/trip";
 import { parseDate } from "./helpers";
 
@@ -21,6 +22,11 @@ const EXPENSES_COLLECTION = "expenses";
 
 export const expenseService = {
   async getExpenses(tripId: string): Promise<Expense[]> {
+    // Return demo expenses for demo trip
+    if (isDemoTrip(tripId)) {
+      return getDemoExpenses(tripId);
+    }
+
     try {
       const q = query(
         collection(db, EXPENSES_COLLECTION),
@@ -52,6 +58,10 @@ export const expenseService = {
   },
 
   async addExpense(expenseData: CreateExpenseData): Promise<Expense> {
+    if (isDemoTrip(expenseData.tripId)) {
+      throw new Error("Không thể thêm chi tiêu vào chuyến đi mẫu");
+    }
+
     const now = new Date();
     const expenseDoc = {
       tripId: expenseData.tripId,
@@ -100,6 +110,10 @@ export const expenseService = {
     amount: number,
     paidBy: string
   ): Promise<void> {
+    if (isDemoExpense(expenseId) || isDemoTrip(tripId)) {
+      throw new Error("Không thể xóa chi tiêu của chuyến đi mẫu");
+    }
+
     const expenseRef = doc(db, EXPENSES_COLLECTION, expenseId);
     await deleteDoc(expenseRef);
 
