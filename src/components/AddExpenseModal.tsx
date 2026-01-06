@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Badge,
   Button,
   Group,
   Modal,
@@ -11,7 +12,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { useEffect } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "../hooks/auth";
@@ -43,7 +44,10 @@ export const AddExpenseModal = ({
   const addExpense = useAddExpense();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Tìm participant tương ứng với user hiện tại
+  const [hideSuggestionsForAmount, setHideSuggestionsForAmount] = useState<
+    number | null
+  >(null);
+
   const currentUserParticipant = participants.find(
     (p) => p.userId === user?.uid
   );
@@ -51,18 +55,59 @@ export const AddExpenseModal = ({
   const form = useForm<ExpenseForm>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: 0,
+      amount: undefined,
       description: "",
       paidBy: "",
     },
   });
 
-  // Set default paidBy khi modal mở và có user
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const watchedAmount = form.watch("amount");
+
+  const amountSuggestions = useMemo(() => {
+    if (typeof watchedAmount !== "number" || Number.isNaN(watchedAmount)) {
+      return [] as number[];
+    }
+
+    if (!Number.isInteger(watchedAmount)) {
+      return [] as number[];
+    }
+
+    if (watchedAmount <= 0 || watchedAmount >= 10000) {
+      return [] as number[];
+    }
+
+    const absolute = Math.abs(watchedAmount);
+    const digits = absolute === 0 ? 1 : Math.floor(Math.log10(absolute)) + 1;
+    const startPower = Math.max(0, 5 - digits);
+
+    return [0, 1, 2].map((i) => watchedAmount * 10 ** (startPower + i));
+  }, [watchedAmount]);
+
+  const formatSuggestedAmount = (value: number) =>
+    new Intl.NumberFormat("en-US").format(value);
+
   useEffect(() => {
     if (opened && currentUserParticipant) {
       form.setValue("paidBy", currentUserParticipant.userId);
     }
   }, [opened, currentUserParticipant, form]);
+
+  useEffect(() => {
+    if (!opened) return;
+    setHideSuggestionsForAmount(null);
+  }, [opened]);
+
+  useEffect(() => {
+    if (hideSuggestionsForAmount === null) return;
+    if (typeof watchedAmount !== "number") {
+      setHideSuggestionsForAmount(null);
+      return;
+    }
+    if (watchedAmount !== hideSuggestionsForAmount) {
+      setHideSuggestionsForAmount(null);
+    }
+  }, [watchedAmount, hideSuggestionsForAmount]);
 
   const onSubmit = async (data: ExpenseForm) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
@@ -84,6 +129,7 @@ export const AddExpenseModal = ({
 
   const handleClose = () => {
     form.reset();
+    setHideSuggestionsForAmount(null);
     onClose();
   };
 
@@ -110,18 +156,46 @@ export const AddExpenseModal = ({
             name="amount"
             control={form.control}
             render={({ field, fieldState }) => (
-              <NumberInput
-                {...field}
-                label="Số tiền"
-                placeholder="Nhập số tiền"
-                error={fieldState.error?.message}
-                size="md"
-                min={0}
-                step={1000}
-                thousandSeparator=","
-                suffix=" đ"
-                radius="md"
-              />
+              <>
+                <NumberInput
+                  {...field}
+                  label="Số tiền"
+                  placeholder="Nhập số tiền"
+                  error={fieldState.error?.message}
+                  size="md"
+                  min={0}
+                  step={1000}
+                  thousandSeparator=","
+                  suffix=" đ"
+                  radius="md"
+                />
+
+                {hideSuggestionsForAmount !== watchedAmount &&
+                  amountSuggestions.length > 0 && (
+                    <Group gap="xs" mt={-6}>
+                      {amountSuggestions.map((suggestion) => (
+                        <Fragment key={suggestion}>
+                          <Badge
+                            variant="light"
+                            size="lg"
+                            style={{ cursor: "pointer" }}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                              form.setValue("amount", suggestion, {
+                                shouldDirty: true,
+                                shouldTouch: true,
+                                shouldValidate: true,
+                              });
+                              setHideSuggestionsForAmount(suggestion);
+                            }}
+                          >
+                            {formatSuggestedAmount(suggestion)}
+                          </Badge>
+                        </Fragment>
+                      ))}
+                    </Group>
+                  )}
+              </>
             )}
           />
 
