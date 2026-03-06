@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Group,
-  Image,
   Paper,
   SimpleGrid,
   Skeleton,
@@ -13,7 +12,6 @@ import {
 } from "@mantine/core";
 import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
-import hiGif from "../assets/hi.gif";
 import { CreateTripModal } from "../components/CreateTripModal";
 import { EditTripModal } from "../components/EditTripModal";
 import SimpleFooter from "../components/SimpleFooter";
@@ -23,7 +21,6 @@ import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useTrips } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
-
 export const Home = () => {
   const { user, signOut } = useAuth();
   const { data: trips, isLoading, error } = useTrips(user?.uid);
@@ -65,7 +62,13 @@ export const Home = () => {
                     <Text size="xl" fw={700} className="text-white">
                       Hi, {user?.displayName}!
                     </Text>
-                    <Image src={hiGif} alt="Waving Hand" w="1.8em" h="1.8em" />
+                    <span
+                      aria-hidden="true"
+                      className="text-2xl leading-none"
+                      title="Vẫy tay"
+                    >
+                      👋
+                    </span>
                   </div>
                   <Text size="sm" className="text-blue-100">
                     {user?.email}

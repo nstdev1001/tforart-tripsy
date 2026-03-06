@@ -11,6 +11,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useColorScheme } from "./hooks/useColorScheme";
 import { Home } from "./pages/Home";
 import JoinTrip from "./pages/JoinTrip";
+
 import { Login } from "./pages/Login";
 import TestVibrate from "./pages/TestVibrate";
 import TripPage from "./pages/Trip";

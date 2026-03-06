@@ -89,7 +89,7 @@ const TripPage = () => {
 
   const totalExpense = trip.totalExpense || 0;
   const maxSpent = Math.max(
-    ...(trip.participants?.map((p) => p.totalSpent) || [1])
+    ...(trip.participants?.map((p) => p.totalSpent) || [1]),
   );
   const isEnded = trip.isEnded || false;
 
@@ -155,8 +155,8 @@ const TripPage = () => {
                   isEnded
                     ? "bg-linear-to-r from-gray-500 to-gray-600"
                     : colorScheme === "dark"
-                    ? "bg-linear-to-r from-blue-400 to-cyan-400"
-                    : "bg-linear-to-r from-blue-600 to-indigo-600"
+                      ? "bg-linear-to-r from-blue-400 to-cyan-400"
+                      : "bg-linear-to-r from-blue-600 to-indigo-600"
                 }`}
               >
                 {formatCurrency(totalExpense)}
