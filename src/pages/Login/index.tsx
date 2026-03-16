@@ -23,7 +23,7 @@ import { useColorScheme } from "../../hooks/useColorScheme";
 import styles from "./style.module.css";
 
 export const Login = () => {
-  const { user, signInWithGoogle, loading } = useAuth();
+  const { user, signInWithGoogle, signInWithFacebook, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
@@ -39,11 +39,19 @@ export const Login = () => {
     }
   }, [user, navigate, redirectUrl]);
 
-  const handleLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
     } catch (error) {
       console.error("Login error:", error);
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      await signInWithFacebook();
+    } catch (error) {
+      console.error("Facebook login error:", error);
     }
   };
 
@@ -161,7 +169,7 @@ export const Login = () => {
                         radius="xl"
                         fullWidth
                         loading={loading}
-                        onClick={() => void handleLogin()}
+                        onClick={() => void handleGoogleLogin()}
                         leftSection={
                           <i className="fa-brands fa-google text-lg text-red-500" />
                         }
@@ -175,6 +183,8 @@ export const Login = () => {
                         size="lg"
                         radius="xl"
                         fullWidth
+                        loading={loading}
+                        onClick={() => void handleFacebookLogin()}
                         leftSection={
                           <i className="fa-brands fa-facebook text-xl text-[#1877F2]" />
                         }

@@ -171,6 +171,17 @@ export const tripService = {
       throw new Error("Không thể xóa chuyến đi mẫu");
     }
 
+    // Delete all expenses associated with this trip
+    const expensesQuery = query(
+      collection(db, EXPENSES_COLLECTION),
+      where("tripId", "==", tripId)
+    );
+    const expensesSnapshot = await getDocs(expensesQuery);
+    const deleteExpensePromises = expensesSnapshot.docs.map((expenseDoc) =>
+      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id))
+    );
+    await Promise.all(deleteExpensePromises);
+
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
     await deleteDoc(tripRef);
   },
