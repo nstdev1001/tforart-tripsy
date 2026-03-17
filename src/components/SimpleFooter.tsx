@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const SimpleFooter = () => {
   const getYear = () => {
     return new Date().getFullYear();
@@ -7,15 +9,19 @@ const SimpleFooter = () => {
       <p>© {getYear()} Tforart Tripsy</p>
       <p>Made by Nguyen Son Tung</p>
       <p className="font-light text-gray-300">
+        <Link to="/privacy-policy">Privacy Policy</Link> ·{" "}
+        <Link to="/data-deletion">Data Deletion</Link>
+      </p>
+      <p className="font-semibold text-gray-300">
         Explore more:{" "}
-        <a
+        <Link
           className="underline "
-          href="https://tforart.vn"
+          to="https://tforart.vn"
           target="_blank"
           rel="noopener noreferrer"
         >
           Tforart Production
-        </a>
+        </Link>
       </p>
     </footer>
   );

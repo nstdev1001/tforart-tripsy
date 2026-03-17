@@ -9,9 +9,11 @@ import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useColorScheme } from "./hooks/useColorScheme";
+import DataDeletion from "./pages/DataDeletion";
 import { Home } from "./pages/Home";
 import JoinTrip from "./pages/JoinTrip";
 import { Login } from "./pages/Login";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TestVibrate from "./pages/TestVibrate";
 import TripPage from "./pages/Trip";
 
@@ -27,6 +29,8 @@ function AppContent() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/data-deletion" element={<DataDeletion />} />
         <Route path="/invite/:inviteId" element={<JoinTrip />} />
         <Route path="/test-vibrate" element={<TestVibrate />} />
         <Route
