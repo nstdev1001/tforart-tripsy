@@ -8,10 +8,13 @@ import {
   Title,
 } from "@mantine/core";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { appData } from "../data/appData";
+
+const effectiveDate = "17/03/2026";
 
 const PrivacyPolicy = () => {
-  const effectiveDate = "17/03/2026";
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen py-10 px-4 md:px-8">
@@ -106,17 +109,11 @@ const PrivacyPolicy = () => {
             <Text>
               Với câu hỏi về quyền riêng tư hoặc yêu cầu dữ liệu, vui lòng liên
               hệ{" "}
-              <Anchor href="mailto:tung.nguyen@tforart.vn">
-                tung.nguyen@tforart.vn
-              </Anchor>
-              .
+              <Anchor href={`mailto:${appData.email}`}>{appData.email}</Anchor>.
             </Text>
             <Text>
               For privacy questions or data requests, contact us at{" "}
-              <Anchor href="mailto:tung.nguyen@tforart.vn">
-                tung.nguyen@tforart.vn
-              </Anchor>
-              .
+              <Anchor href={`mailto:${appData.email}`}>{appData.email}</Anchor>.
             </Text>
 
             <Text size="sm">
@@ -125,8 +122,7 @@ const PrivacyPolicy = () => {
             </Text>
 
             <Button
-              component={Link}
-              to="/login"
+              onClick={() => navigate(-1)}
               variant="light"
               radius="md"
               w="fit-content"
