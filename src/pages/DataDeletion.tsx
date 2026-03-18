@@ -9,9 +9,12 @@ import {
   Title,
 } from "@mantine/core";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { appData } from "../data/appData";
 
 const DataDeletion = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen py-10 px-4 md:px-8">
       <Container size="md">
@@ -38,8 +41,8 @@ const DataDeletion = () => {
             <List spacing="xs">
               <List.Item>
                 Gửi email đến{" "}
-                <Anchor href="mailto:tung.nguyen@tforart.vn">
-                  tung.nguyen@tforart.vn
+                <Anchor href={`mailto:${appData.email}`}>
+                  {appData.email}
                 </Anchor>
                 .
               </List.Item>
@@ -58,8 +61,8 @@ const DataDeletion = () => {
             <List spacing="xs">
               <List.Item>
                 Send an email to{" "}
-                <Anchor href="mailto:tung.nguyen@tforart.vn">
-                  tung.nguyen@tforart.vn
+                <Anchor href={`mailto:${appData.email}`}>
+                  {appData.email}
                 </Anchor>
                 .
               </List.Item>
@@ -116,8 +119,7 @@ const DataDeletion = () => {
             </Text>
 
             <Button
-              component={Link}
-              to="/login"
+              onClick={() => navigate(-1)}
               variant="light"
               radius="md"
               w="fit-content"
