@@ -3,12 +3,9 @@ import { Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import { useAuth } from "../hooks/auth";
 import { useCreateTrip } from "../hooks/useTrips";
-import { tripSchema } from "../schemas/tripSchema";
-
-type CreateTripForm = z.infer<typeof tripSchema>;
+import { tripSchema, type TripFormValues } from "../schemas";
 
 interface CreateTripModalProps {
   opened: boolean;
@@ -38,7 +35,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     }
   }, [opened, form]);
 
-  const onSubmit = async (data: CreateTripForm) => {
+  const onSubmit = async (data: TripFormValues) => {
     if (!user?.uid) return;
 
     try {

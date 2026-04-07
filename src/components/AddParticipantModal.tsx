@@ -1,14 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { useAddParticipant } from "../hooks/useTrips";
-
-const participantSchema = z.object({
-  name: z.string().min(1, "Tên không được để trống"),
-});
-
-type ParticipantForm = z.infer<typeof participantSchema>;
+import { participantSchema, type ParticipantFormValues } from "../schemas";
 
 interface AddParticipantModalProps {
   opened: boolean;
@@ -23,14 +17,14 @@ export const AddParticipantModal = ({
 }: AddParticipantModalProps) => {
   const addParticipant = useAddParticipant();
 
-  const form = useForm<ParticipantForm>({
+  const form = useForm<ParticipantFormValues>({
     resolver: zodResolver(participantSchema),
     defaultValues: {
       name: "",
     },
   });
 
-  const onSubmit = async (data: ParticipantForm) => {
+  const onSubmit = async (data: ParticipantFormValues) => {
     try {
       await addParticipant.mutateAsync({
         tripId,
