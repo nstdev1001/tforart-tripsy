@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export const tripSchema = z.object({
   name: z.string().min(1, "Tên chuyến đi không được để trống"),
@@ -12,6 +12,8 @@ export const tripSchema = z.object({
     },
     {
       message: "Ngày bắt đầu phải từ hôm nay trở đi",
-    }
+    },
   ),
 });
+
+export type TripFormValues = z.infer<typeof tripSchema>;

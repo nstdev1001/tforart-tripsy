@@ -12,20 +12,12 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
+import { expenseSchema, type ExpenseFormValues } from "../schemas";
 import type { Participant } from "../types/trip";
-
-const expenseSchema = z.object({
-  amount: z.number().min(1000, "Số tiền phải lớn hơn 1,000đ"),
-  description: z.string().min(1, "Nội dung không được để trống"),
-  paidBy: z.string().min(1, "Vui lòng chọn người chi tiêu"),
-});
-
-type ExpenseForm = z.infer<typeof expenseSchema>;
 
 interface AddExpenseModalProps {
   opened: boolean;
@@ -40,6 +32,7 @@ export const AddExpenseModal = ({
   tripId,
   participants,
 }: AddExpenseModalProps) => {
+  const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
   const addExpense = useAddExpense();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -49,10 +42,10 @@ export const AddExpenseModal = ({
   >(null);
 
   const currentUserParticipant = participants.find(
-    (p) => p.userId === user?.uid
+    (p) => p.userId === user?.uid,
   );
 
-  const form = useForm<ExpenseForm>({
+  const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: undefined,
@@ -109,7 +102,7 @@ export const AddExpenseModal = ({
     }
   }, [watchedAmount, hideSuggestionsForAmount]);
 
-  const onSubmit = async (data: ExpenseForm) => {
+  const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
 
     try {
@@ -159,6 +152,7 @@ export const AddExpenseModal = ({
               <>
                 <NumberInput
                   {...field}
+                  ref={inputNumberRef}
                   label="Số tiền"
                   placeholder="Nhập số tiền"
                   error={fieldState.error?.message}
@@ -166,7 +160,7 @@ export const AddExpenseModal = ({
                   min={0}
                   step={1000}
                   thousandSeparator=","
-                  suffix=" đ"
+                  suffix=" VND"
                   radius="md"
                 />
 
@@ -187,6 +181,7 @@ export const AddExpenseModal = ({
                                 shouldValidate: true,
                               });
                               setHideSuggestionsForAmount(suggestion);
+                              inputNumberRef.current?.blur();
                             }}
                           >
                             {formatSuggestedAmount(suggestion)}
