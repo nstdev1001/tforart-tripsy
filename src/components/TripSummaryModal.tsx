@@ -4,10 +4,10 @@ import {
   Divider,
   Group,
   Modal,
-  Paper,
   Stack,
   Text,
   Title,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
@@ -36,9 +36,18 @@ export const TripSummaryModal = ({
 }: TripSummaryModalProps) => {
   const { formatCurrency } = useCurrency();
   const { vibrateSuccess, vibrateLong } = useVibrate();
+  const { colorScheme } = useMantineColorScheme();
   const endTrip = useEndTrip();
   const { averagePerPerson, mainSpender, settlements, getParticipantBalance } =
     useTripSettlement(participants, totalExpense);
+  const participantRowClassName =
+    colorScheme === "dark"
+      ? "flex flex-col justify-between rounded-md border border-gray-800 p-2 md:flex-row md:items-center"
+      : "flex flex-col justify-between rounded-md border border-gray-200 p-2 md:flex-row md:items-center";
+  const settlementCardClassName =
+    colorScheme === "dark"
+      ? "rounded-lg bg-gray-800 p-2 shadow-black/30"
+      : "rounded-lg bg-gray-100 p-2 shadow-md";
 
   const handleEndTrip = () => {
     vibrateLong();
@@ -77,11 +86,7 @@ export const TripSummaryModal = ({
       centered
     >
       <Stack gap="lg">
-        <Paper
-          p="md"
-          radius="md"
-          className="bg-linear-to-br from-blue-50 to-indigo-50"
-        >
+        <div className="p-3 rounded-xl bg-linear-to-br from-blue-50 to-indigo-200 shadow-lg">
           <Stack gap="xs" align="center">
             <Text size="sm" c="dimmed">
               Tổng chi tiêu
@@ -102,7 +107,7 @@ export const TripSummaryModal = ({
               </Text>
             </Group>
           </Stack>
-        </Paper>
+        </div>
 
         <Stack gap="xs">
           <Text fw={500} size="sm" c="dimmed">
@@ -114,10 +119,7 @@ export const TripSummaryModal = ({
             const isUnder = diff < 0;
 
             return (
-              <div
-                key={p.id}
-                className="flex flex-col justify-between rounded-md border border-gray-200 p-2 md:flex-row md:items-center"
-              >
+              <div key={p.id} className={participantRowClassName}>
                 <Group gap="xs">
                   <Text size="sm">{p.name}</Text>
                   {p.id === mainSpender?.id && (
@@ -158,13 +160,7 @@ export const TripSummaryModal = ({
             </Text>
           ) : (
             settlements.map((settlement, index) => (
-              <Paper
-                key={index}
-                p="sm"
-                radius="md"
-                withBorder
-                className="border-gray-200"
-              >
+              <div key={index} className={settlementCardClassName}>
                 <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                   <Group gap="xs">
                     <Text size="sm" fw={500}>
@@ -179,7 +175,7 @@ export const TripSummaryModal = ({
                     {formatCurrency(settlement.amount)}
                   </Badge>
                 </div>
-              </Paper>
+              </div>
             ))
           )}
         </Stack>
