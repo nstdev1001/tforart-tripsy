@@ -140,7 +140,6 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
             </Text>
           </Group>
 
-          {/* Creator info */}
           <Group gap="xs" className="border-t pt-3">
             <Tooltip label={trip.creatorName || "Người tạo"} position="bottom">
               <Group gap="xs">

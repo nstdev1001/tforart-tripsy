@@ -12,7 +12,6 @@ export const HomePageSkeleton = () => (
   <div className="min-h-screen from-blue-50 via-white to-purple-50">
     <Container size="lg" className="py-8">
       <Stack gap="lg">
-        {/* Header Card Skeleton */}
         <Paper shadow="lg" radius="xl" p="xs">
           <Group justify="space-between">
             <Group>
@@ -26,16 +25,13 @@ export const HomePageSkeleton = () => (
           </Group>
         </Paper>
 
-        {/* Title and Action Skeleton */}
         <Group justify="space-between" align="center">
           <Skeleton height={32} width={120} radius="sm" />
           <Skeleton height={32} width={150} radius="md" />
         </Group>
 
-        {/* Trip count Skeleton */}
         <Skeleton height={20} width={150} radius="sm" />
 
-        {/* Trip Cards Grid Skeleton */}
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
           {[...Array(6)].map((_, index) => (
             <TripCardSkeleton key={index} />

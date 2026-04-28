@@ -23,9 +23,6 @@ interface TripNotesModalProps {
   isEnded?: boolean;
 }
 
-/**
- * Component to render text with clickable URLs and phone numbers
- */
 const LinkifyText = ({
   text,
   onLinkClick,
@@ -38,7 +35,7 @@ const LinkifyText = ({
   if (parts.length === 0) return null;
 
   const handleAnchorClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering parent onClick (handleViewClick)
+    e.stopPropagation();
     onLinkClick?.();
   };
 
@@ -87,7 +84,6 @@ const LinkifyText = ({
           );
         }
 
-        // Handle text with newlines
         return (
           <Fragment key={index}>
             {part.value.split("\n").map((line, lineIndex, arr) => (
@@ -115,13 +111,11 @@ const NotesContent = ({
   const { resolvedColorScheme } = useColorScheme();
   const isDark = resolvedColorScheme === "dark";
   const [notes, setNotes] = useState(initialNotes);
-  // Start in edit mode if no notes, but never edit mode if trip ended
   const [isEditing, setIsEditing] = useState(!initialNotes && !isEnded);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const updateNotes = useUpdateTripNotes();
 
-  // Debounced save function - waits 1 second after user stops typing
   const debouncedSave = useDebouncedCallback((value: string) => {
     setIsSaving(true);
     updateNotes.mutate(
@@ -130,13 +124,12 @@ const NotesContent = ({
         onSuccess: () => {
           setIsSaving(false);
           setIsSaved(true);
-          // Hide saved indicator after 2 seconds
           setTimeout(() => setIsSaved(false), 2000);
         },
         onError: () => {
           setIsSaving(false);
         },
-      }
+      },
     );
   }, 1000);
 
@@ -171,8 +164,8 @@ const NotesContent = ({
           isEditing
             ? "cursor-text"
             : isEnded
-            ? "cursor-default"
-            : "cursor-pointer"
+              ? "cursor-default"
+              : "cursor-pointer"
         } ${!isEditing ? "min-h-[200px]" : ""}`}
         onClick={!isEditing && !isEnded ? handleViewClick : undefined}
       >

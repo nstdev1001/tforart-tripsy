@@ -104,7 +104,6 @@ export const TripSummaryModal = ({
           </Stack>
         </Paper>
 
-        {/* Chi tiết chi tiêu mỗi người */}
         <Stack gap="xs">
           <Text fw={500} size="sm" c="dimmed">
             Chi tiêu của mỗi người
@@ -149,7 +148,6 @@ export const TripSummaryModal = ({
 
         <Divider />
 
-        {/* Thanh toán chi tiết */}
         <Stack gap="xs">
           <Text fw={500} size="sm" c="dimmed">
             Thanh toán
@@ -186,7 +184,6 @@ export const TripSummaryModal = ({
           )}
         </Stack>
 
-        {/* Nút kết thúc chuyến đi */}
         {!isEnded && (
           <>
             <Divider />

@@ -53,11 +53,7 @@ export const DEMO_TRIP: Trip = {
   updatedAt: new Date("2025-12-22"),
 };
 
-/**
- * Demo expenses for the demo trip
- */
 export const DEMO_EXPENSES: Expense[] = [
-  // An chi 1,200,000
   {
     id: "demo-expense-1",
     tripId: "demo-trip-001",
@@ -85,8 +81,6 @@ export const DEMO_EXPENSES: Expense[] = [
     paidByName: "An",
     createdAt: new Date("2025-12-21T09:00:00"),
   },
-
-  // Bình chi 1,000,000
   {
     id: "demo-expense-4",
     tripId: "demo-trip-001",
@@ -114,8 +108,6 @@ export const DEMO_EXPENSES: Expense[] = [
     paidByName: "Bình",
     createdAt: new Date("2025-12-21T15:00:00"),
   },
-
-  // Châu chi 500,000
   {
     id: "demo-expense-7",
     tripId: "demo-trip-001",
@@ -134,8 +126,6 @@ export const DEMO_EXPENSES: Expense[] = [
     paidByName: "Châu",
     createdAt: new Date("2025-12-21T16:00:00"),
   },
-
-  // Dũng chi 300,000
   {
     id: "demo-expense-9",
     tripId: "demo-trip-001",

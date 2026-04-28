@@ -104,7 +104,6 @@ const TripPage = () => {
       >
         <Container size="sm">
           <Stack gap="md">
-            {/* Navigation */}
             <Group justify="space-between">
               <ActionIcon
                 variant="transparent"
@@ -127,7 +126,6 @@ const TripPage = () => {
               />
             </Group>
 
-            {/* Trip Name */}
             <Group gap="xs">
               <Title order={2} className="text-white">
                 {trip.name}
@@ -211,10 +209,8 @@ const TripPage = () => {
         </Card>
       </Container>
 
-      {/* Content Section */}
       <Container size="sm" className="mt-6">
         <Stack gap="md">
-          {/* Participants List */}
           {trip.participants?.map((participant) => (
             <ParticipantCard
               key={participant.id}
@@ -231,7 +227,6 @@ const TripPage = () => {
             />
           ))}
 
-          {/* Add Participant Button */}
           {!isEnded && (
             <Button
               variant="transparent"
@@ -245,7 +240,6 @@ const TripPage = () => {
         </Stack>
       </Container>
 
-      {/* Modals */}
       <AddExpenseModal
         opened={expenseModalOpened}
         onClose={() => setExpenseModalOpened(false)}

@@ -116,7 +116,6 @@ export const ParticipantCard = ({
         radius="xl"
       />
 
-      {/* Collapse chi tiết chi tiêu */}
       <Collapse in={isExpanded} transitionDuration={200}>
         {expenses.length > 0 ? (
           <Stack gap="xs" mt="md">
