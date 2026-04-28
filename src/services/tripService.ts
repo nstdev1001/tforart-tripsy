@@ -64,7 +64,6 @@ export const tripService = {
   },
 
   async getTripById(tripId: string): Promise<Trip | null> {
-    // Check if it's a demo trip first
     const demoTrip = getDemoTripById(tripId);
     if (demoTrip) {
       return demoTrip;
@@ -137,7 +136,6 @@ export const tripService = {
 
       trips.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-      // Add demo trip at the end of the list
       return [...trips, DEMO_TRIP];
     } catch (error) {
       console.error("Error fetching trips:", error);
@@ -147,7 +145,7 @@ export const tripService = {
 
   async updateTrip(
     tripId: string,
-    updates: Partial<CreateTripData>
+    updates: Partial<CreateTripData>,
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
       throw new Error("Không thể chỉnh sửa chuyến đi mẫu");
@@ -171,14 +169,13 @@ export const tripService = {
       throw new Error("Không thể xóa chuyến đi mẫu");
     }
 
-    // Delete all expenses associated with this trip
     const expensesQuery = query(
       collection(db, EXPENSES_COLLECTION),
-      where("tripId", "==", tripId)
+      where("tripId", "==", tripId),
     );
     const expensesSnapshot = await getDocs(expensesQuery);
     const deleteExpensePromises = expensesSnapshot.docs.map((expenseDoc) =>
-      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id))
+      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id)),
     );
     await Promise.all(deleteExpensePromises);
 
@@ -188,7 +185,7 @@ export const tripService = {
 
   async addParticipant(
     tripId: string,
-    participant: { name: string; userId?: string; photoURL?: string }
+    participant: { name: string; userId?: string; photoURL?: string },
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
       throw new Error("Không thể thêm thành viên vào chuyến đi mẫu");
@@ -205,7 +202,7 @@ export const tripService = {
     const participants = tripData.participants || [];
 
     const isDuplicate = participants.some(
-      (p: any) => p.name.toLowerCase() === participant.name.toLowerCase()
+      (p: any) => p.name.toLowerCase() === participant.name.toLowerCase(),
     );
 
     if (isDuplicate) {
@@ -228,7 +225,7 @@ export const tripService = {
 
   async removeParticipant(
     tripId: string,
-    participantId: string
+    participantId: string,
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
       throw new Error("Không thể xóa thành viên khỏi chuyến đi mẫu");
@@ -254,7 +251,7 @@ export const tripService = {
     const participants = tripData.participants || [];
 
     const participantToRemove = participants.find(
-      (p: any) => p.id === participantId
+      (p: any) => p.id === participantId,
     );
 
     if (!participantToRemove) {
@@ -264,22 +261,22 @@ export const tripService = {
     const expensesQuery = query(
       collection(db, EXPENSES_COLLECTION),
       where("tripId", "==", tripId),
-      where("paidBy", "==", participantId)
+      where("paidBy", "==", participantId),
     );
     const expensesSnapshot = await getDocs(expensesQuery);
 
     const deletePromises = expensesSnapshot.docs.map((expenseDoc) =>
-      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id))
+      deleteDoc(doc(db, EXPENSES_COLLECTION, expenseDoc.id)),
     );
     await Promise.all(deletePromises);
 
     const updatedParticipants = participants.filter(
-      (p: any) => p.id !== participantId
+      (p: any) => p.id !== participantId,
     );
 
     const newTotalExpense = Math.max(
       0,
-      (tripData.totalExpense || 0) - (participantToRemove.totalSpent || 0)
+      (tripData.totalExpense || 0) - (participantToRemove.totalSpent || 0),
     );
 
     await updateDoc(tripRef, {

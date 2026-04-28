@@ -25,7 +25,6 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     mode: "onChange",
   });
 
-  // Reset form khi modal mở
   useEffect(() => {
     if (opened) {
       form.reset({

@@ -27,12 +27,10 @@ const JoinTrip = () => {
   const acceptInvite = useAcceptInvite();
   const [isJoining, setIsJoining] = useState(false);
 
-  // Check if user is already a participant
   const isAlreadyJoined = trip?.participants?.some(
-    (p) => p.userId === user?.uid
+    (p) => p.userId === user?.uid,
   );
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       const redirectUrl = `/invite/${inviteId}`;
@@ -59,7 +57,6 @@ const JoinTrip = () => {
     }
   };
 
-  // Loading states
   if (authLoading || inviteLoading || tripLoading) {
     return (
       <div className="min-h-screen">
@@ -75,7 +72,6 @@ const JoinTrip = () => {
     );
   }
 
-  // Error states
   if (error || !invite) {
     return (
       <div className="min-h-screen">
@@ -95,7 +91,6 @@ const JoinTrip = () => {
     );
   }
 
-  // Check if invite expired
   const isExpired = new Date() > invite.expiresAt;
 
   if (isExpired) {
@@ -117,7 +112,6 @@ const JoinTrip = () => {
     );
   }
 
-  // Already joined - show different UI
   if (isAlreadyJoined) {
     return (
       <div className="min-h-screen">

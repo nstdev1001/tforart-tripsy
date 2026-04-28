@@ -42,7 +42,6 @@ export const Home = () => {
     <div className="min-h-screen from-blue-50 via-white to-purple-50">
       <Container size="lg" className="py-8">
         <Stack gap="lg">
-          {/* Header Card */}
           <Paper
             shadow="lg"
             radius="xl"
@@ -89,7 +88,6 @@ export const Home = () => {
             </Group>
           </Paper>
 
-          {/* Title and Action */}
           <Group justify="space-between" align="center">
             <Group>
               <Title order={1} className="text-white">
@@ -106,7 +104,6 @@ export const Home = () => {
             </Button>
           </Group>
 
-          {/* Loading State - Skeleton */}
           {isLoading && (
             <>
               <Skeleton height={20} width={150} radius="sm" />
@@ -118,7 +115,6 @@ export const Home = () => {
             </>
           )}
 
-          {/* Error State */}
           {error && (
             <Paper
               shadow="md"
@@ -132,7 +128,6 @@ export const Home = () => {
             </Paper>
           )}
 
-          {/* Empty State */}
           {trips && trips.length === 0 && !isLoading && (
             <Paper shadow="xl" radius="lg" p="xl" className="text-center">
               <Stack align="center" gap="lg">
@@ -157,7 +152,6 @@ export const Home = () => {
             </Paper>
           )}
 
-          {/* Trips Grid */}
           {trips && trips.length > 0 && (
             <>
               <p className="text-white">Tổng số chuyến đi: {trips.length}</p>
@@ -169,7 +163,6 @@ export const Home = () => {
             </>
           )}
         </Stack>
-        {/* Footer */}
         <SimpleFooter />
       </Container>
 
