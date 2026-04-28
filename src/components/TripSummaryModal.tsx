@@ -115,7 +115,10 @@ export const TripSummaryModal = ({
             const isUnder = diff < 0;
 
             return (
-              <Group key={p.id} justify="space-between" px="xs">
+              <div
+                key={p.id}
+                className="flex flex-col justify-between rounded-md border border-gray-200 p-2 md:flex-row md:items-center"
+              >
                 <Group gap="xs">
                   <Text size="sm">{p.name}</Text>
                   {p.id === mainSpender?.id && (
@@ -130,16 +133,16 @@ export const TripSummaryModal = ({
                   </Text>
                   {isOver && (
                     <Text size="xs" c="green">
-                      (+{formatCurrency(Math.round(diff))})
+                      (Thừa {formatCurrency(Math.round(diff))})
                     </Text>
                   )}
                   {isUnder && (
                     <Text size="xs" c="red">
-                      ({formatCurrency(Math.round(diff))})
+                      (Thiếu {formatCurrency(Math.round(Math.abs(diff)))})
                     </Text>
                   )}
                 </Group>
-              </Group>
+              </div>
             );
           })}
         </Stack>
@@ -164,7 +167,7 @@ export const TripSummaryModal = ({
                 withBorder
                 className="border-gray-200"
               >
-                <Group justify="space-between" align="center">
+                <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                   <Group gap="xs">
                     <Text size="sm" fw={500}>
                       {settlement.from.name}
@@ -177,7 +180,7 @@ export const TripSummaryModal = ({
                   <Badge color="red" variant="light" size="lg">
                     {formatCurrency(settlement.amount)}
                   </Badge>
-                </Group>
+                </div>
               </Paper>
             ))
           )}
