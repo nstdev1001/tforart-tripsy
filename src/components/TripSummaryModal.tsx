@@ -86,11 +86,7 @@ export const TripSummaryModal = ({
       centered
     >
       <Stack gap="lg">
-        <div
-          // p="md"
-          // radius="md"
-          className="p-3 rounded-xl bg-linear-to-br from-blue-50 to-indigo-200 shadow-lg"
-        >
+        <div className="p-3 rounded-xl bg-linear-to-br from-blue-50 to-indigo-200 shadow-lg">
           <Stack gap="xs" align="center">
             <Text size="sm" c="dimmed">
               Tổng chi tiêu
