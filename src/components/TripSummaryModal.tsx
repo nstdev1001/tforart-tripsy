@@ -42,11 +42,11 @@ export const TripSummaryModal = ({
     useTripSettlement(participants, totalExpense);
   const participantRowClassName =
     colorScheme === "dark"
-      ? "flex flex-col justify-between rounded-md border border-gray-800 p-2 md:flex-row md:items-center"
+      ? "flex flex-col justify-between rounded-md border border-gray-700 p-2 md:flex-row md:items-center"
       : "flex flex-col justify-between rounded-md border border-gray-200 p-2 md:flex-row md:items-center";
   const settlementCardClassName =
     colorScheme === "dark"
-      ? "rounded-lg bg-gray-800 p-2 shadow-black/30"
+      ? "rounded-lg bg-gray-800 p-2 shadow-md"
       : "rounded-lg bg-gray-100 p-2 shadow-md";
 
   const handleEndTrip = () => {
@@ -97,7 +97,7 @@ export const TripSummaryModal = ({
             >
               {formatCurrency(totalExpense)}
             </Title>
-            <Divider my="xs" w="100%" />
+            <Divider my="xs" w="100%" color="gray" />
             <Group gap="xs">
               <Text size="sm" c="dark" fw={600}>
                 Cái giá phải trả:
