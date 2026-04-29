@@ -1,11 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Modal,
+  NativeSelect,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../hooks/auth";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useCreateTrip } from "../hooks/useTrips";
-import { tripSchema, type TripFormValues } from "../schemas";
+import {
+  tripCategoryOptions,
+  tripSchema,
+  type TripFormValues,
+} from "../schemas";
 
 interface CreateTripModalProps {
   opened: boolean;
@@ -13,6 +27,7 @@ interface CreateTripModalProps {
 }
 
 export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
+  const isMobile = useIsMobile();
   const { user } = useAuth();
   const createTrip = useCreateTrip();
 
@@ -20,6 +35,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     resolver: zodResolver(tripSchema),
     defaultValues: {
       name: "",
+      category: "Du lịch",
       startDate: new Date(),
     },
     mode: "onChange",
@@ -29,6 +45,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     if (opened) {
       form.reset({
         name: "",
+        category: "Du lịch",
         startDate: new Date(),
       });
     }
@@ -40,6 +57,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     try {
       await createTrip.mutateAsync({
         name: data.name,
+        category: data.category,
         startDate: data.startDate,
         creator: user.uid,
         creatorName: user.displayName || undefined,
@@ -63,7 +81,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
       onClose={handleClose}
       title={
         <Text fw={600} size="lg">
-          Tạo chuyến đi mới
+          Tạo hoạt động mới
         </Text>
       }
       centered
@@ -71,8 +89,37 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md">
+          <Controller
+            name="category"
+            control={form.control}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  label="Phân loại"
+                  data={tripCategoryOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                />
+              ) : (
+                <Select
+                  label="Phân loại"
+                  placeholder="Chọn phân loại"
+                  data={tripCategoryOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                  allowDeselect={false}
+                />
+              )
+            }
+          />
+
           <TextInput
-            label="Tên chuyến đi"
+            label="Tên hoạt động"
             placeholder="Ví dụ: Du lịch Đà Nẵng 2026"
             {...form.register("name")}
             error={form.formState.errors.name?.message}
@@ -116,7 +163,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
               Hủy
             </Button>
             <Button type="submit" loading={createTrip.isPending}>
-              Tạo chuyến đi
+              Tạo hoạt động
             </Button>
           </Group>
         </Stack>

@@ -11,14 +11,7 @@ import {
 } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import {
-  Calendar,
-  CheckCircle,
-  MapPin,
-  Share2,
-  User,
-  Users,
-} from "lucide-react";
+import { Calendar, CheckCircle, Share2, User, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCurrency } from "../hooks/useCurrency";
@@ -26,6 +19,7 @@ import { useIsParticipant } from "../hooks/useIsParticipant";
 import { useDeleteTrip } from "../hooks/useTrips";
 import { useVibrate } from "../hooks/useVibrate";
 import type { Trip } from "../types/trip";
+import { CategoryBadge } from "./CategoryBadge";
 import { ShareTripModal } from "./ShareTripModal";
 import { TripMenu } from "./TripMenu";
 
@@ -43,6 +37,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
   const isParticipant = useIsParticipant(trip.participants);
 
   const isEnded = trip.isEnded || false;
+  const category = trip.category || "Du lịch";
 
   const handleDelete = () => {
     if (trip.id) {
@@ -64,14 +59,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
         <Card.Section withBorder inheritPadding py="xs">
           <Group justify="space-between">
             <Group gap="xs">
-              <Badge
-                leftSection={<MapPin size={14} />}
-                variant="light"
-                color={isEnded ? "gray" : "blue"}
-                size="lg"
-              >
-                Chuyến đi
-              </Badge>
+              <CategoryBadge category={category} isEnded={isEnded} size="md" />
               {isEnded && (
                 <Badge
                   leftSection={<CheckCircle size={12} />}

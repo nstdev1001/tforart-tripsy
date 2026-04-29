@@ -7,6 +7,7 @@ import type { Expense, Trip } from "../types/trip";
 export const DEMO_TRIP: Trip = {
   id: "demo-trip-001",
   name: "🎉 Chuyến đi mẫu - Đà Lạt",
+  category: "Du lịch",
   creator: "demo-user",
   creatorName: "Tforart Tripsy Demo",
   creatorPhoto: "",

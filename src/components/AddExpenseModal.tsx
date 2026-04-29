@@ -11,11 +11,11 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { expenseSchema, type ExpenseFormValues } from "../schemas";
 import type { Participant } from "../types/trip";
 
@@ -35,7 +35,7 @@ export const AddExpenseModal = ({
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
   const addExpense = useAddExpense();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
 
   const [hideSuggestionsForAmount, setHideSuggestionsForAmount] = useState<
     number | null
@@ -145,6 +145,15 @@ export const AddExpenseModal = ({
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md">
+          <TextInput
+            label="Nội dung chi tiêu"
+            placeholder="Ví dụ: Ăn trưa, Vé tham quan..."
+            {...form.register("description")}
+            error={form.formState.errors.description?.message}
+            size="md"
+            radius="md"
+          />
+
           <Controller
             name="amount"
             control={form.control}
@@ -194,15 +203,6 @@ export const AddExpenseModal = ({
             )}
           />
 
-          <TextInput
-            label="Nội dung chi tiêu"
-            placeholder="Ví dụ: Ăn trưa, Vé tham quan..."
-            {...form.register("description")}
-            error={form.formState.errors.description?.message}
-            size="md"
-            radius="md"
-          />
-
           <Controller
             name="paidBy"
             control={form.control}
@@ -211,10 +211,7 @@ export const AddExpenseModal = ({
                 <NativeSelect
                   {...field}
                   label="Người chi tiêu"
-                  data={[
-                    { value: "", label: "Chọn người chi tiêu" },
-                    ...participantOptions,
-                  ]}
+                  data={[...participantOptions]}
                   error={fieldState.error?.message}
                   size="md"
                   radius="md"
@@ -223,7 +220,6 @@ export const AddExpenseModal = ({
                 <Select
                   {...field}
                   label="Người chi tiêu"
-                  placeholder="Chọn người chi tiêu"
                   data={participantOptions}
                   error={fieldState.error?.message}
                   size="md"

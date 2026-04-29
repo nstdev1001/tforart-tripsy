@@ -106,7 +106,7 @@ export const inviteService = {
     const participants = tripData.participants || [];
 
     const isAlreadyParticipant = participants.some(
-      (p: any) => p.userId === currentUser.uid
+      (p: any) => p.userId === currentUser.uid,
     );
 
     if (!isAlreadyParticipant) {
@@ -132,6 +132,7 @@ export const inviteService = {
       id: updatedTripSnap.id,
       name: updatedData.name || "",
       creator: updatedData.creator || "",
+      category: updatedData.category || "Khác",
       creatorName: updatedData.creatorName || "Unknown",
       creatorPhoto: updatedData.creatorPhoto || "",
       participants: updatedData.participants || [],

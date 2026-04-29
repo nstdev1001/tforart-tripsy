@@ -91,7 +91,7 @@ export const Home = () => {
           <Group justify="space-between" align="center">
             <Group>
               <Title order={1} className="text-white">
-                My trips
+                Hoạt động của tôi
               </Title>
             </Group>
             <Button
@@ -100,7 +100,7 @@ export const Home = () => {
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
-              Tạo chuyến đi mới
+              Tạo hoạt động mới
             </Button>
           </Group>
 
@@ -123,7 +123,7 @@ export const Home = () => {
               className="bg-red-50 border-2 border-red-200"
             >
               <Text c="red" fw={500}>
-                ❌ Có lỗi xảy ra khi tải danh sách chuyến đi. Vui lòng thử lại!
+                ❌ Có lỗi xảy ra khi tải danh sách hoạt động. Vui lòng thử lại!
               </Text>
             </Paper>
           )}
@@ -134,11 +134,10 @@ export const Home = () => {
                 <div className="text-6xl">✈️</div>
                 <div>
                   <Title order={2} mb="xs">
-                    Chưa có chuyến đi nào
+                    Chưa có hoạt động nào
                   </Title>
                   <Text size="lg" c="dimmed">
-                    Hãy bắt đầu lên kế hoạch cho chuyến du lịch đầu tiên của
-                    bạn!
+                    Hãy bắt đầu lên kế hoạch cho hoạt động đầu tiên của bạn!
                   </Text>
                 </div>
                 <Button
@@ -146,7 +145,7 @@ export const Home = () => {
                   size="lg"
                   onClick={() => setCreateModalOpened(true)}
                 >
-                  Tạo chuyến đi đầu tiên
+                  Tạo hoạt động đầu tiên
                 </Button>
               </Stack>
             </Paper>
@@ -154,7 +153,7 @@ export const Home = () => {
 
           {trips && trips.length > 0 && (
             <>
-              <p className="text-white">Tổng số chuyến đi: {trips.length}</p>
+              <p className="text-white">Tổng số hoạt động: {trips.length}</p>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
                 {trips.map((trip) => (
                   <TripCard key={trip.id} trip={trip} onEdit={handleEditTrip} />
