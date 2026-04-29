@@ -58,7 +58,7 @@ export const Home = () => {
                 />
                 <div>
                   <div className="inline-flex items-start gap-2">
-                    <Text size="xl" fw={700} className="text-white">
+                    <Text size="lg" fw={700} className="text-white">
                       Hi, {user?.displayName}!
                     </Text>
                     <span
@@ -90,17 +90,16 @@ export const Home = () => {
 
           <Group justify="space-between" align="center">
             <Group>
-              <Title order={1} className="text-white">
+              <Title order={2} className="text-white">
                 Hoạt động của tôi
               </Title>
             </Group>
             <Button
-              leftSection={<Plus size={20} />}
               size="xs"
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
-              Tạo hoạt động mới
+              <Plus size={20} />
             </Button>
           </Group>
 
