@@ -19,10 +19,12 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { TripCard } from "../components/TripCard";
 import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useTrips } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
 export const Home = () => {
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
   const { data: trips, isLoading, error } = useTrips(user?.uid);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -99,7 +101,13 @@ export const Home = () => {
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
-              <Plus size={20} />
+              {isMobile ? (
+                <Plus size={20} />
+              ) : (
+                <div className="inline-flex items-center gap-2">
+                  <Plus size={20} /> Tạo hoạt động mới
+                </div>
+              )}
             </Button>
           </Group>
 
