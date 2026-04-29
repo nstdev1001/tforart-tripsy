@@ -27,9 +27,12 @@ export interface TripInvite {
   expiresAt: Date;
 }
 
+export type TripCategory = "Du lịch" | "Ăn uống" | "Công việc" | "Khác";
+
 export interface Trip {
   id?: string;
   name: string;
+  category: TripCategory;
   startDate: Date;
   endDate?: Date;
   isEnded?: boolean;
@@ -45,6 +48,7 @@ export interface Trip {
 
 export interface CreateTripData {
   name: string;
+  category: TripCategory;
   startDate: Date;
   creator: string;
   creatorName?: string;

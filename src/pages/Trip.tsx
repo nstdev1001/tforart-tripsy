@@ -126,16 +126,14 @@ const TripPage = () => {
               />
             </Group>
 
-            <Group gap="xs">
-              <Title order={2} className="text-white">
-                {trip.name}
-              </Title>
-              {isEnded && (
-                <Badge color="dark" variant="filled" size="sm">
-                  Đã kết thúc
-                </Badge>
-              )}
-            </Group>
+            <Title order={2} className="text-white">
+              {trip.name}
+            </Title>
+            {isEnded && (
+              <Badge color="dark" variant="filled" size="sm">
+                Đã kết thúc
+              </Badge>
+            )}
           </Stack>
         </Container>
       </div>

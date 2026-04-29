@@ -19,10 +19,12 @@ import { ThemeToggle } from "../components/ThemeToggle";
 import { TripCard } from "../components/TripCard";
 import { TripCardSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useTrips } from "../hooks/useTrips";
 import type { Trip } from "../types/trip";
 export const Home = () => {
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
   const { data: trips, isLoading, error } = useTrips(user?.uid);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -58,7 +60,7 @@ export const Home = () => {
                 />
                 <div>
                   <div className="inline-flex items-start gap-2">
-                    <Text size="xl" fw={700} className="text-white">
+                    <Text size="lg" fw={700} className="text-white">
                       Hi, {user?.displayName}!
                     </Text>
                     <span
@@ -90,17 +92,22 @@ export const Home = () => {
 
           <Group justify="space-between" align="center">
             <Group>
-              <Title order={1} className="text-white">
-                My trips
+              <Title order={2} className="text-white">
+                Hoạt động của tôi
               </Title>
             </Group>
             <Button
-              leftSection={<Plus size={20} />}
               size="xs"
               onClick={() => setCreateModalOpened(true)}
               className="shadow-md hover:shadow-lg transition-shadow"
             >
-              Tạo chuyến đi mới
+              {isMobile ? (
+                <Plus size={20} />
+              ) : (
+                <div className="inline-flex items-center gap-2">
+                  <Plus size={20} /> Tạo hoạt động mới
+                </div>
+              )}
             </Button>
           </Group>
 
@@ -123,7 +130,7 @@ export const Home = () => {
               className="bg-red-50 border-2 border-red-200"
             >
               <Text c="red" fw={500}>
-                ❌ Có lỗi xảy ra khi tải danh sách chuyến đi. Vui lòng thử lại!
+                ❌ Có lỗi xảy ra khi tải danh sách hoạt động. Vui lòng thử lại!
               </Text>
             </Paper>
           )}
@@ -134,11 +141,10 @@ export const Home = () => {
                 <div className="text-6xl">✈️</div>
                 <div>
                   <Title order={2} mb="xs">
-                    Chưa có chuyến đi nào
+                    Chưa có hoạt động nào
                   </Title>
                   <Text size="lg" c="dimmed">
-                    Hãy bắt đầu lên kế hoạch cho chuyến du lịch đầu tiên của
-                    bạn!
+                    Hãy bắt đầu lên kế hoạch cho hoạt động đầu tiên của bạn!
                   </Text>
                 </div>
                 <Button
@@ -146,7 +152,7 @@ export const Home = () => {
                   size="lg"
                   onClick={() => setCreateModalOpened(true)}
                 >
-                  Tạo chuyến đi đầu tiên
+                  Tạo hoạt động đầu tiên
                 </Button>
               </Stack>
             </Paper>
@@ -154,7 +160,7 @@ export const Home = () => {
 
           {trips && trips.length > 0 && (
             <>
-              <p className="text-white">Tổng số chuyến đi: {trips.length}</p>
+              <p className="text-white">Tổng số hoạt động: {trips.length}</p>
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
                 {trips.map((trip) => (
                   <TripCard key={trip.id} trip={trip} onEdit={handleEditTrip} />

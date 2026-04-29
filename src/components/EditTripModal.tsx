@@ -1,10 +1,23 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Modal,
+  NativeSelect,
+  Select,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { tripSchema, type TripFormValues } from "../schemas";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useUpdateTrip } from "../hooks/useTrips";
+import {
+  tripCategoryOptions,
+  tripSchema,
+  type TripFormValues,
+} from "../schemas";
 import type { Trip } from "../types/trip";
 
 interface EditTripModalProps {
@@ -18,12 +31,14 @@ export const EditTripModal = ({
   onClose,
   trip,
 }: EditTripModalProps) => {
+  const isMobile = useIsMobile();
   const updateTrip = useUpdateTrip();
 
   const form = useForm({
     resolver: zodResolver(tripSchema),
     defaultValues: {
       name: "",
+      category: "Du lịch",
       startDate: new Date(),
     },
     mode: "onChange",
@@ -33,6 +48,7 @@ export const EditTripModal = ({
     if (trip && opened) {
       form.reset({
         name: trip.name,
+        category: trip.category || "Du lịch",
         startDate: new Date(trip.startDate),
       });
     }
@@ -46,6 +62,7 @@ export const EditTripModal = ({
         tripId: trip.id,
         updates: {
           name: data.name,
+          category: data.category,
           startDate: data.startDate,
         },
       });
@@ -64,15 +81,43 @@ export const EditTripModal = ({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Chỉnh sửa chuyến đi"
+      title="Chỉnh sửa hoạt động"
       centered
       size="md"
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md">
+          <Controller
+            name="category"
+            control={form.control}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  label="Phân loại"
+                  data={tripCategoryOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                />
+              ) : (
+                <Select
+                  label="Phân loại"
+                  placeholder="Chọn phân loại"
+                  data={tripCategoryOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                  allowDeselect={false}
+                />
+              )
+            }
+          />
+
           <TextInput
-            label="Tên chuyến đi"
-            placeholder="Nhập tên chuyến đi"
+            label="Tên hoạt động"
+            placeholder="Nhập tên hoạt động"
             {...form.register("name")}
             error={form.formState.errors.name?.message}
             size="md"

@@ -29,6 +29,7 @@ export const tripService = {
     const now = new Date();
     const tripDoc = {
       name: tripData.name,
+      category: tripData.category,
       creator: tripData.creator,
       creatorName: currentUser.displayName || "Unknown",
       creatorPhoto: currentUser.photoURL || "",
@@ -52,6 +53,7 @@ export const tripService = {
     return {
       id: docRef.id,
       name: tripData.name,
+      category: tripData.category,
       creator: tripData.creator,
       creatorName: currentUser.displayName || "Unknown",
       creatorPhoto: currentUser.photoURL || "",
@@ -82,6 +84,7 @@ export const tripService = {
       return {
         id: tripSnap.id,
         name: data.name || "",
+        category: data.category || "Du lịch",
         creator: data.creator || "",
         creatorName: data.creatorName || "Unknown",
         creatorPhoto: data.creatorPhoto || "",
@@ -116,6 +119,7 @@ export const tripService = {
           return {
             id: doc.id,
             name: data.name || "",
+            category: data.category || "Du lịch",
             creator: data.creator || "",
             creatorName: data.creatorName || "Unknown",
             creatorPhoto: data.creatorPhoto || "",
