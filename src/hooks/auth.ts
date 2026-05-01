@@ -17,7 +17,6 @@ const POPUP_CLOSED_ERRORS = [
   "auth/cancelled-popup-request",
 ];
 
-// Helper kiểm tra lỗi popup một cách an toàn
 type AuthError = { code?: string; message?: string };
 
 const isPopupClosedError = (error: unknown): boolean => {
@@ -31,7 +30,6 @@ const shouldUseRedirect = (): boolean => {
   return /FBAN|FBAV|Instagram|Line|Zalo|Twitter|TikTok|WebView|wv/i.test(ua);
 };
 
-// Hàm helper để nâng cấp ảnh Facebook tránh trùng lặp code
 const upgradeFacebookPhoto = async (result: UserCredential) => {
   const credential = FacebookAuthProvider.credentialFromResult(result);
   const accessToken = credential?.accessToken;
@@ -47,13 +45,11 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Đưa onAuthStateChanged ra ngoài để đảm bảo luôn có hàm unsubscribe đồng bộ
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
 
-    // Xử lý Redirect Result riêng biệt
     const handleRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
