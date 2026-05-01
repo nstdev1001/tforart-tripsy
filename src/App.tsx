@@ -13,6 +13,7 @@ import DataDeletion from "./pages/DataDeletion";
 import { Home } from "./pages/Home";
 import JoinTrip from "./pages/JoinTrip";
 import { Login } from "./pages/Login";
+import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TestVibrate from "./pages/TestVibrate";
 import TripPage from "./pages/Trip";
@@ -49,6 +50,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
