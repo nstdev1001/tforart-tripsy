@@ -30,7 +30,7 @@ export const expenseService = {
     try {
       const q = query(
         collection(db, EXPENSES_COLLECTION),
-        where("tripId", "==", tripId)
+        where("tripId", "==", tripId),
       );
 
       const querySnapshot = await getDocs(q);
@@ -59,7 +59,7 @@ export const expenseService = {
 
   async addExpense(expenseData: CreateExpenseData): Promise<Expense> {
     if (isDemoTrip(expenseData.tripId)) {
-      throw new Error("Không thể thêm chi tiêu vào chuyến đi mẫu");
+      throw new Error("Không thể thêm chi tiêu vào hoạt động mẫu");
     }
 
     const now = new Date();
@@ -74,7 +74,7 @@ export const expenseService = {
 
     const docRef = await addDoc(
       collection(db, EXPENSES_COLLECTION),
-      expenseDoc
+      expenseDoc,
     );
 
     const tripRef = doc(db, TRIPS_COLLECTION, expenseData.tripId);
@@ -108,10 +108,10 @@ export const expenseService = {
     expenseId: string,
     tripId: string,
     amount: number,
-    paidBy: string
+    paidBy: string,
   ): Promise<void> {
     if (isDemoExpense(expenseId) || isDemoTrip(tripId)) {
-      throw new Error("Không thể xóa chi tiêu của chuyến đi mẫu");
+      throw new Error("Không thể xóa chi tiêu của hoạt động mẫu");
     }
 
     const expenseRef = doc(db, EXPENSES_COLLECTION, expenseId);

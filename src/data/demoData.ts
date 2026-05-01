@@ -6,7 +6,7 @@ import type { Expense, Trip } from "../types/trip";
  */
 export const DEMO_TRIP: Trip = {
   id: "demo-trip-001",
-  name: "🎉 Chuyến đi mẫu - Đà Lạt",
+  name: "🎉 Hoạt động mẫu - Di lịch Đà Lạt",
   category: "Du lịch",
   creator: "demo-user",
   creatorName: "Tforart Tripsy Demo",
@@ -46,10 +46,10 @@ export const DEMO_TRIP: Trip = {
   endDate: new Date("2025-12-22"),
   isEnded: true,
   notes:
-    "🌟 Đây là chuyến đi mẫu để bạn xem cách ứng dụng hoạt động!\n\n" +
+    "🌟 Đây là hoạt động mẫu để bạn xem cách ứng dụng hoạt động!\n\n" +
     "• Bấm vào từng thành viên để xem chi tiết các khoản chi\n" +
     "• Xem phần 'Tổng kết' để biết ai cần trả tiền cho ai\n" +
-    "• Tạo chuyến đi mới để bắt đầu sử dụng!",
+    "• Tạo hoạt động mới để bắt đầu sử dụng!",
   createdAt: new Date("2025-12-15"),
   updatedAt: new Date("2025-12-22"),
 };

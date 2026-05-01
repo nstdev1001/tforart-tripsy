@@ -13,7 +13,7 @@ export const tripCategoryOptions = tripCategoryValues.map((value) => ({
 }));
 
 export const tripSchema = z.object({
-  name: z.string().min(1, "Tên chuyến đi không được để trống"),
+  name: z.string().min(1, "Tên hoạt động không được để trống"),
   category: z.enum(tripCategoryValues, {
     error: "Vui lòng chọn phân loại",
   }),

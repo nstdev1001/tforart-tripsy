@@ -34,7 +34,7 @@ export const useAcceptInvite = () => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
     },
     onError: (error: Error) => {
-      let message = "Không thể tham gia chuyến đi!";
+      let message = "Không thể tham gia hoạt động!";
       if (error.message === "Invite has expired") {
         message = "Link mời đã hết hạn!";
       } else if (error.message === "Invite not found") {

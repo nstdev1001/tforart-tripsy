@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
 
             <Text>
               Tripsy ("chúng tôi") hỗ trợ người dùng quản lý chi tiêu trong các
-              chuyến đi chung. Chính sách này giải thích dữ liệu chúng tôi thu
+              hoạt động chung. Chính sách này giải thích dữ liệu chúng tôi thu
               thập, cách sử dụng và quyền lựa chọn của bạn.
             </Text>
             <Text>
@@ -48,8 +48,8 @@ const PrivacyPolicy = () => {
             <Text>
               Khi bạn đăng nhập bằng Facebook, chúng tôi có thể nhận thông tin
               hồ sơ cơ bản gồm tên, ảnh đại diện và email (nếu bạn cấp quyền).
-              Chúng tôi cũng lưu dữ liệu do bạn tạo trong ứng dụng như tên
-              chuyến đi, thành viên, ghi chú và chi tiêu.
+              Chúng tôi cũng lưu dữ liệu do bạn tạo trong ứng dụng như tên hoạt
+              động, thành viên, ghi chú và chi tiêu.
             </Text>
             <Text>
               When you sign in with Facebook, we may receive your basic profile
@@ -63,7 +63,7 @@ const PrivacyPolicy = () => {
             </Title>
             <Text>
               Chúng tôi dùng dữ liệu để xác thực tài khoản, hiển thị hồ sơ và
-              cung cấp các tính năng cốt lõi: tạo chuyến đi, thêm thành viên,
+              cung cấp các tính năng cốt lõi: tạo hoạt động, thêm thành viên,
               ghi nhận chi tiêu và tổng hợp thanh toán.
             </Text>
             <Text>
@@ -75,7 +75,7 @@ const PrivacyPolicy = () => {
             <Title order={4}>3. Chia sẻ dữ liệu / Data Sharing</Title>
             <Text>
               Chúng tôi không bán dữ liệu cá nhân. Dữ liệu chỉ được hiển thị cho
-              những người cùng tham gia một chuyến đi trong phạm vi trải nghiệm
+              những người cùng tham gia một hoạt động trong phạm vi trải nghiệm
               ứng dụng.
             </Text>
             <Text>
@@ -85,7 +85,7 @@ const PrivacyPolicy = () => {
 
             <Title order={4}>4. Thời gian lưu trữ / Data Retention</Title>
             <Text>
-              Chúng tôi lưu dữ liệu tài khoản và chuyến đi trong thời gian tài
+              Chúng tôi lưu dữ liệu tài khoản và hoạt động trong thời gian tài
               khoản còn hoạt động hoặc cho đến khi bạn yêu cầu xóa dữ liệu.
               Hướng dẫn xóa dữ liệu có tại trang Data Deletion.
             </Text>

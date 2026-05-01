@@ -102,7 +102,7 @@ const JoinTrip = () => {
               <Text size="4xl">⏰</Text>
               <Title order={3}>Liên kết mời đã hết hạn</Title>
               <Text c="dimmed">
-                Vui lòng yêu cầu chủ chuyến đi tạo liên kết mời mới.
+                Vui lòng yêu cầu chủ hoạt động tạo liên kết mời mới.
               </Text>
               <Button onClick={() => navigate("/")}>Về trang chủ</Button>
             </Stack>
@@ -124,17 +124,17 @@ const JoinTrip = () => {
                   className="text-green-500 mb-4 mx-auto"
                 />
                 <Title order={2} mb="xs">
-                  Bạn đã tham gia chuyến đi này!
+                  Bạn đã tham gia hoạt động này!
                 </Title>
                 <Text c="dimmed">
-                  Bạn đã tham gia chuyến đi <br /> "
+                  Bạn đã tham gia hoạt động <br /> "
                   <span className="font-semibold">{invite.tripName}</span>".
                 </Text>
               </div>
 
               <Stack gap="sm" className="w-full">
                 <Button size="lg" fullWidth onClick={handleGoToTrip}>
-                  Đi đến chuyến đi
+                  Đi đến hoạt động
                 </Button>
 
                 <Button
@@ -162,7 +162,7 @@ const JoinTrip = () => {
                 ✈️
               </Text>
               <Title order={2} mb="xs">
-                Bạn được mời tham gia chuyến đi
+                Bạn được mời tham gia hoạt động
               </Title>
             </div>
 
@@ -206,7 +206,7 @@ const JoinTrip = () => {
                 onClick={handleJoinTrip}
                 loading={isJoining}
               >
-                Tham gia chuyến đi
+                Tham gia hoạt động
               </Button>
 
               <Button variant="subtle" fullWidth onClick={() => navigate("/")}>

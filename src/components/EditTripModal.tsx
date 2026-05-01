@@ -11,6 +11,7 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { CategoryBadge } from "./CategoryBadge";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useUpdateTrip } from "../hooks/useTrips";
 import {
@@ -18,7 +19,7 @@ import {
   tripSchema,
   type TripFormValues,
 } from "../schemas";
-import type { Trip } from "../types/trip";
+import type { Trip, TripCategory } from "../types/trip";
 
 interface EditTripModalProps {
   opened: boolean;
@@ -110,6 +111,23 @@ export const EditTripModal = ({
                   error={fieldState.error?.message}
                   size="md"
                   allowDeselect={false}
+                  leftSection={
+                    <CategoryBadge
+                      category={(field.value as TripCategory) || "Du lịch"}
+                      size="sm"
+                    />
+                  }
+                  leftSectionWidth={110}
+                  leftSectionPointerEvents="none"
+                  styles={{
+                    input: { color: "transparent", caretColor: "transparent" },
+                  }}
+                  renderOption={({ option }) => (
+                    <CategoryBadge
+                      category={option.value as TripCategory}
+                      size="sm"
+                    />
+                  )}
                 />
               )
             }

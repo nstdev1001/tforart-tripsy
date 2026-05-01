@@ -171,7 +171,7 @@ const NotesContent = ({
       >
         {isEditing ? (
           <Textarea
-            placeholder="Nhập ghi chú cho chuyến đi..."
+            placeholder="Nhập ghi chú cho hoạt động..."
             value={notes}
             onChange={(e) => handleChange(e.currentTarget.value)}
             minRows={10}
@@ -235,7 +235,7 @@ export const TripNotesModal = ({
         <Group gap="xs">
           <NotebookPen size={20} className="text-amber-500" />
           <Text fw={600} size="lg">
-            Ghi chú chuyến đi
+            Ghi chú hoạt động
           </Text>
         </Group>
       }

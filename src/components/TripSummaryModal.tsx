@@ -52,10 +52,10 @@ export const TripSummaryModal = ({
   const handleEndTrip = () => {
     vibrateLong();
     modals.openConfirmModal({
-      title: "Kết thúc chuyến đi",
+      title: "Kết thúc hoạt động",
       children: (
         <Text size="sm">
-          Bạn có chắc chắn muốn kết thúc chuyến đi? Sau khi kết thúc, bạn vẫn có
+          Bạn có chắc chắn muốn kết thúc hoạt động? Sau khi kết thúc, bạn vẫn có
           thể xem thông tin nhưng không thể thêm chi tiêu mới.
         </Text>
       ),
@@ -79,7 +79,7 @@ export const TripSummaryModal = ({
       onClose={onClose}
       title={
         <Text fw={600} size="lg">
-          Tổng kết chuyến đi
+          Tổng kết hoạt động
         </Text>
       }
       size="md"
@@ -190,14 +190,14 @@ export const TripSummaryModal = ({
               onClick={handleEndTrip}
               loading={endTrip.isPending}
             >
-              Kết thúc chuyến đi
+              Kết thúc hoạt động
             </Button>
           </>
         )}
 
         {isEnded && (
           <Badge color="gray" size="lg" variant="light" className="self-center">
-            Chuyến đi đã kết thúc
+            Hoạt động đã kết thúc
           </Badge>
         )}
       </Stack>
