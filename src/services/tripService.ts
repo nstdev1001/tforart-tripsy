@@ -152,7 +152,7 @@ export const tripService = {
     updates: Partial<CreateTripData>,
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể chỉnh sửa chuyến đi mẫu");
+      throw new Error("Không thể chỉnh sửa hoạt động mẫu");
     }
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
@@ -170,7 +170,7 @@ export const tripService = {
 
   async deleteTrip(tripId: string): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể xóa chuyến đi mẫu");
+      throw new Error("Không thể xóa hoạt động mẫu");
     }
 
     const expensesQuery = query(
@@ -192,7 +192,7 @@ export const tripService = {
     participant: { name: string; userId?: string; photoURL?: string },
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể thêm thành viên vào chuyến đi mẫu");
+      throw new Error("Không thể thêm thành viên vào hoạt động mẫu");
     }
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
@@ -232,7 +232,7 @@ export const tripService = {
     participantId: string,
   ): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể xóa thành viên khỏi chuyến đi mẫu");
+      throw new Error("Không thể xóa thành viên khỏi hoạt động mẫu");
     }
 
     const currentUser = auth.currentUser;
@@ -241,7 +241,7 @@ export const tripService = {
     }
 
     if (participantId === currentUser.uid) {
-      throw new Error("Không thể xóa chính bạn khỏi chuyến đi");
+      throw new Error("Không thể xóa chính bạn khỏi hoạt động");
     }
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
@@ -292,7 +292,7 @@ export const tripService = {
 
   async endTrip(tripId: string): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể kết thúc chuyến đi mẫu");
+      throw new Error("Không thể kết thúc hoạt động mẫu");
     }
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
@@ -305,7 +305,7 @@ export const tripService = {
 
   async updateTripNotes(tripId: string, notes: string): Promise<void> {
     if (isDemoTrip(tripId)) {
-      throw new Error("Không thể chỉnh sửa ghi chú chuyến đi mẫu");
+      throw new Error("Không thể chỉnh sửa ghi chú hoạt động mẫu");
     }
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);

@@ -242,7 +242,7 @@ export const Login = () => {
                           className="inline-block font-thin text-3xl"
                           {...createSmoothTextItemMotionProps(0.7)}
                         >
-                          CHO CHUYẾN ĐI CỦA BẠN
+                          CHO HOẠT ĐỘNG CỦA BẠN
                         </motion.span>
                       </h2>
                     </motion.div>

@@ -30,7 +30,7 @@ export const useCreateTrip = () => {
     onError: (error) => {
       notifications.show({
         title: "Lỗi",
-        message: "Không thể tạo chuyến đi. Vui lòng thử lại!",
+        message: "Không thể tạo hoạt động. Vui lòng thử lại!",
         color: "red",
       });
       console.error("Error creating trip:", error);
@@ -56,7 +56,7 @@ export const useUpdateTrip = () => {
     onError: (error) => {
       notifications.show({
         title: "Lỗi",
-        message: "Không thể cập nhật chuyến đi!",
+        message: "Không thể cập nhật hoạt động!",
         color: "red",
       });
       console.error("Error updating trip:", error);
@@ -75,7 +75,7 @@ export const useDeleteTrip = () => {
     onError: (error) => {
       notifications.show({
         title: "Lỗi",
-        message: "Không thể xóa chuyến đi!",
+        message: "Không thể xóa hoạt động!",
         color: "red",
       });
       console.error("Error deleting trip:", error);
@@ -153,7 +153,7 @@ export const useEndTrip = () => {
     onError: (error) => {
       notifications.show({
         title: "Lỗi",
-        message: "Không thể kết thúc chuyến đi!",
+        message: "Không thể kết thúc hoạt động!",
         color: "red",
       });
       console.error("Error ending trip:", error);

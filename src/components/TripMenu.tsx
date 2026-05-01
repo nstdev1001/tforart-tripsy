@@ -32,10 +32,10 @@ export const TripMenu = ({
 }: TripMenuProps) => {
   const handleDelete = () => {
     modals.openConfirmModal({
-      title: "Xóa chuyến đi",
+      title: "Xóa hoạt động",
       children: (
         <Text size="sm">
-          Bạn có chắc chắn muốn xóa chuyến đi "
+          Bạn có chắc chắn muốn xóa hoạt động "
           <Text span fw={600}>
             {tripName}
           </Text>

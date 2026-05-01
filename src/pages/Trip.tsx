@@ -78,7 +78,7 @@ const TripPage = () => {
           <Paper shadow="md" radius="lg" p="xl" className="text-center">
             <Stack align="center" gap="md">
               <Text size="xl">😢</Text>
-              <Title order={3}>Không tìm thấy chuyến đi</Title>
+              <Title order={3}>Không tìm thấy hoạt động</Title>
               <Button onClick={() => navigate("/")}>Quay về trang chủ</Button>
             </Stack>
           </Paper>
@@ -187,7 +187,7 @@ const TripPage = () => {
                   setSummaryModalOpened(true);
                 }}
               >
-                Tổng kết chuyến đi
+                TỔNG KẾT HOẠT ĐỘNG
               </Button>
               <Button
                 variant="light"

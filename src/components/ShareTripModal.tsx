@@ -48,8 +48,8 @@ export const ShareTripModal = ({
     if (inviteLink && navigator.share) {
       try {
         await navigator.share({
-          title: `Tham gia chuyến đi: ${tripName}`,
-          text: `Bạn được mời tham gia chuyến đi "${tripName}"`,
+          title: `Tham gia hoạt động: ${tripName}`,
+          text: `Bạn được mời tham gia hoạt động "${tripName}"`,
           url: inviteLink,
         });
       } catch (error) {
@@ -62,13 +62,13 @@ export const ShareTripModal = ({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Chia sẻ chuyến đi"
+      title="Chia sẻ hoạt động"
       centered
       size="md"
     >
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          Tạo link mời để chia sẻ chuyến đi "
+          Tạo link mời để chia sẻ hoạt động "
           <span className="font-semibold">{tripName}</span>" với bạn bè. Link có
           hiệu lực trong 3 ngày.
         </Text>
