@@ -60,18 +60,24 @@ export const Home = () => {
                 />
                 <div>
                   <div className="inline-flex items-start gap-2">
-                    <Text size="lg" fw={700} className="text-white">
-                      Hi, {user?.displayName}!
-                    </Text>
+                    {isMobile ? (
+                      <Text size="sm" fw={700} className="text-white">
+                        Hi, {user?.displayName}
+                      </Text>
+                    ) : (
+                      <Text size="lg" fw={700} className="text-white">
+                        Hi, {user?.displayName}!
+                      </Text>
+                    )}
                     <span
                       aria-hidden="true"
-                      className="text-2xl leading-none"
+                      className="text-xl leading-none"
                       title="Vẫy tay"
                     >
                       👋
                     </span>
                   </div>
-                  <Text size="sm" className="text-blue-100">
+                  <Text size="sm" fw={300} className="text-blue-100">
                     {user?.email}
                   </Text>
                 </div>
@@ -80,7 +86,7 @@ export const Home = () => {
                 <ThemeToggle />
                 <Button
                   leftSection={<LogOut size={18} />}
-                  variant="white"
+                  variant="transparent"
                   color="red"
                   onClick={signOut}
                 >
