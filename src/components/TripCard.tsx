@@ -103,6 +103,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
               size="xl"
               lineClamp={2}
               c={isEnded ? "dimmed" : undefined}
+              className="min-h-[66px]"
             >
               {trip.name}
             </Text>
