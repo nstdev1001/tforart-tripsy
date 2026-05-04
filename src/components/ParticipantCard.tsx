@@ -139,6 +139,13 @@ export const ParticipantCard = ({
                       {format(expense.createdAt, "dd/MM/yyyy HH:mm", {
                         locale: vi,
                       })}
+                      <br />
+                      {expense.addExpenseBy &&
+                        expense.addExpenseBy !== expense.paidBy && (
+                          <Text span c="dimmed">
+                            Người thêm: {expense.addExpenseByName}
+                          </Text>
+                        )}
                     </Text>
                   </div>
                   <Group gap="xs">

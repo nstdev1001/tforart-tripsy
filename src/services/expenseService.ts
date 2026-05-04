@@ -42,8 +42,10 @@ export const expenseService = {
           tripId: data.tripId || "",
           amount: data.amount || 0,
           description: data.description || "",
-          paidBy: data.paidBy || "",
-          paidByName: data.paidByName || "Unknown",
+          paidBy: data.paidBy,
+          paidByName: data.paidByName,
+          addExpenseBy: data.addExpenseBy ?? null,
+          addExpenseByName: data.addExpenseByName ?? null,
           createdAt: parseDate(data.createdAt),
         };
       });
@@ -69,6 +71,8 @@ export const expenseService = {
       description: expenseData.description,
       paidBy: expenseData.paidBy,
       paidByName: expenseData.paidByName,
+      addExpenseBy: expenseData.addExpenseBy,
+      addExpenseByName: expenseData.addExpenseByName,
       createdAt: Timestamp.fromDate(now),
     };
 
