@@ -14,6 +14,8 @@ export interface Expense {
   description: string;
   paidBy: string;
   paidByName: string;
+  addExpenseBy?: string | null;
+  addExpenseByName?: string | null;
   createdAt: Date;
 }
 
@@ -61,6 +63,8 @@ export interface CreateExpenseData {
   description: string;
   paidBy: string;
   paidByName: string;
+  addExpenseBy: string;
+  addExpenseByName: string;
 }
 
 export interface Settlement {

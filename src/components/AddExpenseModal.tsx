@@ -112,6 +112,8 @@ export const AddExpenseModal = ({
         description: data.description,
         paidBy: data.paidBy,
         paidByName: participant?.name || "Unknown",
+        addExpenseBy: user?.uid || "Unknown",
+        addExpenseByName: user?.displayName || "Unknown",
       });
       form.reset();
       onClose();
