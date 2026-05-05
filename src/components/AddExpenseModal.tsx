@@ -11,15 +11,20 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { useVndExchangeRate } from "../hooks/useVndExchangeRate";
 import { expenseSchema, type ExpenseFormValues } from "../schemas";
 import { currencyOptions } from "../schemas/tripSchema";
 import { exchangeRateService } from "../services";
 import type { Participant } from "../types/trip";
+import {
+  formatSuggestedAmount,
+  getAmountSuggestions,
+} from "../utils/expenseAmountSuggestions";
 
 interface AddExpenseModalProps {
   opened: boolean;
@@ -62,6 +67,15 @@ export const AddExpenseModal = ({
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchedAmount = form.watch("amount");
   const watchedCurrency = form.watch("currency") || "VND";
+  const { vndRate: exchangeRate } = useVndExchangeRate(watchedCurrency);
+  const showExchangeRate = Boolean(
+    secondaryCurrency && watchedCurrency === secondaryCurrency,
+  );
+  const formatVndRate = (value: number) =>
+    `${new Intl.NumberFormat("vi-VN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)}`;
 
   const expenseCurrencyOptions = useMemo(() => {
     const normalizeOption = (value: string) =>
@@ -79,28 +93,10 @@ export const AddExpenseModal = ({
     return options;
   }, [secondaryCurrency]);
 
-  const amountSuggestions = useMemo(() => {
-    if (typeof watchedAmount !== "number" || Number.isNaN(watchedAmount)) {
-      return [] as number[];
-    }
-
-    if (!Number.isInteger(watchedAmount)) {
-      return [] as number[];
-    }
-
-    if (watchedAmount <= 0 || watchedAmount >= 10000) {
-      return [] as number[];
-    }
-
-    const absolute = Math.abs(watchedAmount);
-    const digits = absolute === 0 ? 1 : Math.floor(Math.log10(absolute)) + 1;
-    const startPower = Math.max(0, 5 - digits);
-
-    return [0, 1, 2].map((i) => watchedAmount * 10 ** (startPower + i));
-  }, [watchedAmount]);
-
-  const formatSuggestedAmount = (value: number) =>
-    new Intl.NumberFormat("en-US").format(value);
+  const amountSuggestions = useMemo(
+    () => getAmountSuggestions(watchedAmount),
+    [watchedAmount],
+  );
 
   useEffect(() => {
     if (opened && currentUserParticipant) {
@@ -169,10 +165,14 @@ export const AddExpenseModal = ({
     onClose();
   };
 
-  const participantOptions = participants.map((p) => ({
-    value: p.userId,
-    label: p.name,
-  }));
+  const participantOptions = useMemo(
+    () =>
+      participants.map((p) => ({
+        value: p.userId,
+        label: p.name,
+      })),
+    [participants],
+  );
 
   return (
     <Modal
@@ -249,25 +249,24 @@ export const AddExpenseModal = ({
                   amountSuggestions.length > 0 && (
                     <Group gap="xs" mt={-6}>
                       {amountSuggestions.map((suggestion) => (
-                        <Fragment key={suggestion}>
-                          <Badge
-                            variant="light"
-                            size="lg"
-                            style={{ cursor: "pointer" }}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                              form.setValue("amount", suggestion, {
-                                shouldDirty: true,
-                                shouldTouch: true,
-                                shouldValidate: true,
-                              });
-                              setHideSuggestionsForAmount(suggestion);
-                              inputNumberRef.current?.blur();
-                            }}
-                          >
-                            {formatSuggestedAmount(suggestion)}
-                          </Badge>
-                        </Fragment>
+                        <Badge
+                          key={suggestion}
+                          variant="light"
+                          size="lg"
+                          style={{ cursor: "pointer" }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            form.setValue("amount", suggestion, {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true,
+                            });
+                            setHideSuggestionsForAmount(suggestion);
+                            inputNumberRef.current?.blur();
+                          }}
+                        >
+                          {formatSuggestedAmount(suggestion)}
+                        </Badge>
                       ))}
                     </Group>
                   )}
@@ -301,13 +300,26 @@ export const AddExpenseModal = ({
             }
           />
 
-          <Group justify="flex-end" mt="md">
-            <Button variant="light" onClick={handleClose}>
-              Hủy
-            </Button>
-            <Button type="submit" loading={addExpense.isPending}>
-              Thêm chi tiêu
-            </Button>
+          <Group justify="space-between" mt="md">
+            {showExchangeRate ? (
+              <Text size="sm" c="dimmed">
+                Tỉ giá:{" "}
+                {exchangeRate ? formatVndRate(exchangeRate) : "Loading..."}
+              </Text>
+            ) : (
+              <Text aria-hidden style={{ visibility: "hidden" }}>
+                Tỉ giá: {formatVndRate(0)}
+              </Text>
+            )}
+
+            <div className="flex gap-2">
+              <Button variant="light" onClick={handleClose}>
+                Hủy
+              </Button>
+              <Button type="submit" loading={addExpense.isPending}>
+                Thêm chi tiêu
+              </Button>
+            </div>
           </Group>
         </Stack>
       </form>
