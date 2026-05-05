@@ -133,6 +133,7 @@ export const inviteService = {
       name: updatedData.name || "",
       creator: updatedData.creator || "",
       category: updatedData.category || "Khác",
+      currency: updatedData.currency || "VND",
       creatorName: updatedData.creatorName || "Unknown",
       creatorPhoto: updatedData.creatorPhoto || "",
       participants: updatedData.participants || [],

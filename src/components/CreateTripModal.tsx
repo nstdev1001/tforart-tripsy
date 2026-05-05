@@ -12,7 +12,6 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { CategoryBadge } from "./CategoryBadge";
 import { useAuth } from "../hooks/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useCreateTrip } from "../hooks/useTrips";
@@ -21,7 +20,9 @@ import {
   tripSchema,
   type TripFormValues,
 } from "../schemas";
+import { currencyOptions } from "../schemas/tripSchema";
 import type { TripCategory } from "../types/trip";
+import { CategoryBadge } from "./CategoryBadge";
 
 interface CreateTripModalProps {
   opened: boolean;
@@ -38,6 +39,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     defaultValues: {
       name: "",
       category: "Du lịch",
+      currency: "VND",
       startDate: new Date(),
     },
     mode: "onChange",
@@ -48,6 +50,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
       form.reset({
         name: "",
         category: "Du lịch",
+        currency: "VND",
         startDate: new Date(),
       });
     }
@@ -60,6 +63,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
       await createTrip.mutateAsync({
         name: data.name,
         category: data.category,
+        currency: data.currency,
         startDate: data.startDate,
         creator: user.uid,
         creatorName: user.displayName || undefined,
@@ -132,6 +136,36 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
                       size="sm"
                     />
                   )}
+                />
+              )
+            }
+          />
+
+          <Controller
+            name="currency"
+            control={form.control}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  label="Tiền tệ"
+                  data={currencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                />
+              ) : (
+                <Select
+                  label="Tiền tệ"
+                  placeholder="Chọn tiền tệ"
+                  data={currencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "")}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                  searchable
+                  allowDeselect={false}
                 />
               )
             }

@@ -11,19 +11,27 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { useVndExchangeRate } from "../hooks/useVndExchangeRate";
 import { expenseSchema, type ExpenseFormValues } from "../schemas";
+import { currencyOptions } from "../schemas/tripSchema";
+import { exchangeRateService } from "../services";
 import type { Participant } from "../types/trip";
+import {
+  formatSuggestedAmount,
+  getAmountSuggestions,
+} from "../utils/expenseAmountSuggestions";
 
 interface AddExpenseModalProps {
   opened: boolean;
   onClose: () => void;
   tripId: string;
   participants: Participant[];
+  secondaryCurrency?: string;
 }
 
 export const AddExpenseModal = ({
@@ -31,6 +39,7 @@ export const AddExpenseModal = ({
   onClose,
   tripId,
   participants,
+  secondaryCurrency,
 }: AddExpenseModalProps) => {
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
@@ -49,6 +58,7 @@ export const AddExpenseModal = ({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: undefined,
+      currency: "VND",
       description: "",
       paidBy: "",
     },
@@ -56,29 +66,37 @@ export const AddExpenseModal = ({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchedAmount = form.watch("amount");
+  const watchedCurrency = form.watch("currency") || "VND";
+  const { vndRate: exchangeRate } = useVndExchangeRate(watchedCurrency);
+  const showExchangeRate = Boolean(
+    secondaryCurrency && watchedCurrency === secondaryCurrency,
+  );
+  const formatVndRate = (value: number) =>
+    `${new Intl.NumberFormat("vi-VN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)}`;
 
-  const amountSuggestions = useMemo(() => {
-    if (typeof watchedAmount !== "number" || Number.isNaN(watchedAmount)) {
-      return [] as number[];
+  const expenseCurrencyOptions = useMemo(() => {
+    const normalizeOption = (value: string) =>
+      currencyOptions.find((option) => option.value === value) || {
+        value,
+        label: value,
+      };
+
+    const options = [normalizeOption("VND")];
+
+    if (secondaryCurrency && secondaryCurrency !== "VND") {
+      options.push(normalizeOption(secondaryCurrency));
     }
 
-    if (!Number.isInteger(watchedAmount)) {
-      return [] as number[];
-    }
+    return options;
+  }, [secondaryCurrency]);
 
-    if (watchedAmount <= 0 || watchedAmount >= 10000) {
-      return [] as number[];
-    }
-
-    const absolute = Math.abs(watchedAmount);
-    const digits = absolute === 0 ? 1 : Math.floor(Math.log10(absolute)) + 1;
-    const startPower = Math.max(0, 5 - digits);
-
-    return [0, 1, 2].map((i) => watchedAmount * 10 ** (startPower + i));
-  }, [watchedAmount]);
-
-  const formatSuggestedAmount = (value: number) =>
-    new Intl.NumberFormat("en-US").format(value);
+  const amountSuggestions = useMemo(
+    () => getAmountSuggestions(watchedAmount),
+    [watchedAmount],
+  );
 
   useEffect(() => {
     if (opened && currentUserParticipant) {
@@ -104,11 +122,30 @@ export const AddExpenseModal = ({
 
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
+    const selectedCurrency = data.currency || "VND";
 
     try {
+      let convertedAmount = data.amount;
+      let originalAmount: number | undefined;
+      let exchangeRate: number | undefined;
+
+      if (selectedCurrency !== "VND") {
+        const conversion = await exchangeRateService.convertCurrency(
+          data.amount,
+          selectedCurrency,
+          "VND",
+        );
+        convertedAmount = Math.round(conversion.convertedAmount);
+        originalAmount = data.amount;
+        exchangeRate = conversion.exchangeRate;
+      }
+
       await addExpense.mutateAsync({
         tripId,
-        amount: data.amount,
+        amount: convertedAmount,
+        currency: selectedCurrency,
+        originalAmount,
+        exchangeRate,
         description: data.description,
         paidBy: data.paidBy,
         paidByName: participant?.name || "Unknown",
@@ -128,10 +165,14 @@ export const AddExpenseModal = ({
     onClose();
   };
 
-  const participantOptions = participants.map((p) => ({
-    value: p.userId,
-    label: p.name,
-  }));
+  const participantOptions = useMemo(
+    () =>
+      participants.map((p) => ({
+        value: p.userId,
+        label: p.name,
+      })),
+    [participants],
+  );
 
   return (
     <Modal
@@ -157,6 +198,35 @@ export const AddExpenseModal = ({
           />
 
           <Controller
+            name="currency"
+            control={form.control}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  label="Tiền tệ"
+                  data={expenseCurrencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "VND")}
+                  error={fieldState.error?.message}
+                  size="md"
+                />
+              ) : (
+                <Select
+                  label="Tiền tệ"
+                  placeholder="Chọn tiền tệ"
+                  data={expenseCurrencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "VND")}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                  allowDeselect={false}
+                />
+              )
+            }
+          />
+
+          <Controller
             name="amount"
             control={form.control}
             render={({ field, fieldState }) => (
@@ -171,7 +241,7 @@ export const AddExpenseModal = ({
                   min={0}
                   step={1000}
                   thousandSeparator=","
-                  suffix=" VND"
+                  suffix={` ${watchedCurrency}`}
                   radius="md"
                 />
 
@@ -179,25 +249,24 @@ export const AddExpenseModal = ({
                   amountSuggestions.length > 0 && (
                     <Group gap="xs" mt={-6}>
                       {amountSuggestions.map((suggestion) => (
-                        <Fragment key={suggestion}>
-                          <Badge
-                            variant="light"
-                            size="lg"
-                            style={{ cursor: "pointer" }}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                              form.setValue("amount", suggestion, {
-                                shouldDirty: true,
-                                shouldTouch: true,
-                                shouldValidate: true,
-                              });
-                              setHideSuggestionsForAmount(suggestion);
-                              inputNumberRef.current?.blur();
-                            }}
-                          >
-                            {formatSuggestedAmount(suggestion)}
-                          </Badge>
-                        </Fragment>
+                        <Badge
+                          key={suggestion}
+                          variant="light"
+                          size="lg"
+                          style={{ cursor: "pointer" }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            form.setValue("amount", suggestion, {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true,
+                            });
+                            setHideSuggestionsForAmount(suggestion);
+                            inputNumberRef.current?.blur();
+                          }}
+                        >
+                          {formatSuggestedAmount(suggestion)}
+                        </Badge>
                       ))}
                     </Group>
                   )}
@@ -231,13 +300,26 @@ export const AddExpenseModal = ({
             }
           />
 
-          <Group justify="flex-end" mt="md">
-            <Button variant="light" onClick={handleClose}>
-              Hủy
-            </Button>
-            <Button type="submit" loading={addExpense.isPending}>
-              Thêm chi tiêu
-            </Button>
+          <Group justify="space-between" mt="md">
+            {showExchangeRate ? (
+              <Text size="sm" c="dimmed">
+                Tỉ giá:{" "}
+                {exchangeRate ? formatVndRate(exchangeRate) : "Loading..."}
+              </Text>
+            ) : (
+              <Text aria-hidden style={{ visibility: "hidden" }}>
+                Tỉ giá: {formatVndRate(0)}
+              </Text>
+            )}
+
+            <div className="flex gap-2">
+              <Button variant="light" onClick={handleClose}>
+                Hủy
+              </Button>
+              <Button type="submit" loading={addExpense.isPending}>
+                Thêm chi tiêu
+              </Button>
+            </div>
           </Group>
         </Stack>
       </form>
