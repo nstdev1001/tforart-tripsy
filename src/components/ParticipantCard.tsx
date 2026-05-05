@@ -13,15 +13,9 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import type { User } from "firebase/auth";
 import { ChevronDown, ChevronUp, Trash2, UserMinus } from "lucide-react";
+import { useCurrency } from "../hooks/useCurrency";
 import { useVibrate } from "../hooks/useVibrate";
 import type { Expense, Participant } from "../types/trip";
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
 
 interface ParticipantCardProps {
   creatorId: string;
@@ -49,6 +43,7 @@ export const ParticipantCard = ({
   onDeleteParticipant,
 }: ParticipantCardProps) => {
   const { vibrateShort } = useVibrate();
+  const { formatCurrency } = useCurrency();
   const isCurrentUser = participant.userId === currentUser?.uid;
   const isCreator = creatorId === currentUser?.uid;
 
@@ -149,9 +144,20 @@ export const ParticipantCard = ({
                     </Text>
                   </div>
                   <Group gap="xs">
-                    <Text size="sm" fw={600} c="green">
-                      {formatCurrency(expense.amount)}
-                    </Text>
+                    <Stack gap={2} align="flex-end">
+                      {expense.currency !== "VND" &&
+                        typeof expense.originalAmount === "number" && (
+                          <Text size="xs" c="dimmed">
+                            {formatCurrency(
+                              expense.originalAmount,
+                              expense.currency,
+                            )}
+                          </Text>
+                        )}
+                      <Text size="sm" fw={600} c="green">
+                        {formatCurrency(expense.amount)}
+                      </Text>
+                    </Stack>
                     {!isEndTrip && (
                       <Tooltip label="Xóa">
                         <ActionIcon

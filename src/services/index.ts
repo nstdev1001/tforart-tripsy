@@ -1,3 +1,4 @@
+export { exchangeRateService } from "./exchangeRateService";
 export { expenseService } from "./expenseService";
 export { parseDate } from "./helpers";
 export { inviteService } from "./inviteService";

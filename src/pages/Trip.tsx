@@ -243,6 +243,7 @@ const TripPage = () => {
         onClose={() => setExpenseModalOpened(false)}
         tripId={tripId || ""}
         participants={trip.participants || []}
+        secondaryCurrency={trip.currency}
       />
 
       <AddParticipantModal
