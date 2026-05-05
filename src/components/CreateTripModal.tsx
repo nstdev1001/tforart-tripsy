@@ -147,8 +147,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
             render={({ field, fieldState }) =>
               isMobile ? (
                 <NativeSelect
-                  label="Tiền tệ phụ"
-                  description="VNĐ luôn là tiền chính"
+                  label="Tiền tệ"
                   data={currencyOptions}
                   value={field.value}
                   onChange={(value) => field.onChange(value || "")}
@@ -157,9 +156,8 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
                 />
               ) : (
                 <Select
-                  label="Tiền tệ phụ"
-                  placeholder="Chọn tiền tệ phụ"
-                  description="VNĐ luôn là tiền chính"
+                  label="Tiền tệ"
+                  placeholder="Chọn tiền tệ"
                   data={currencyOptions}
                   value={field.value}
                   onChange={(value) => field.onChange(value || "")}
