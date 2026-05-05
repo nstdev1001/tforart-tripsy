@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Paper, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
@@ -14,6 +14,12 @@ interface ExpenseCardProps {
 export const ExpenseCard = ({ expense, onDelete }: ExpenseCardProps) => {
   const { formatCurrency } = useCurrency();
   const { vibrateShort } = useVibrate();
+  const isForeignCurrency =
+    expense.currency !== "VND" && typeof expense.originalAmount === "number";
+  const foreignAmountLabel = isForeignCurrency
+    ? formatCurrency(expense.originalAmount, expense.currency)
+    : null;
+
   return (
     <Paper
       radius="md"
@@ -37,9 +43,16 @@ export const ExpenseCard = ({ expense, onDelete }: ExpenseCardProps) => {
           </Group>
         </div>
         <Group gap="sm">
-          <Text fw={600} c="green">
-            {formatCurrency(expense.amount)}
-          </Text>
+          <Stack gap={2} align="flex-end">
+            {foreignAmountLabel && (
+              <Text size="sm" c="dimmed">
+                {foreignAmountLabel}
+              </Text>
+            )}
+            <Text fw={600} c="green">
+              {formatCurrency(expense.amount)}
+            </Text>
+          </Stack>
           <Tooltip label="Xóa chi tiêu">
             <ActionIcon
               variant="subtle"

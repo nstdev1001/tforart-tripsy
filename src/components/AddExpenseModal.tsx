@@ -17,6 +17,8 @@ import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { expenseSchema, type ExpenseFormValues } from "../schemas";
+import { currencyOptions } from "../schemas/tripSchema";
+import { exchangeRateService } from "../services";
 import type { Participant } from "../types/trip";
 
 interface AddExpenseModalProps {
@@ -24,6 +26,7 @@ interface AddExpenseModalProps {
   onClose: () => void;
   tripId: string;
   participants: Participant[];
+  secondaryCurrency?: string;
 }
 
 export const AddExpenseModal = ({
@@ -31,6 +34,7 @@ export const AddExpenseModal = ({
   onClose,
   tripId,
   participants,
+  secondaryCurrency,
 }: AddExpenseModalProps) => {
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
@@ -49,6 +53,7 @@ export const AddExpenseModal = ({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: undefined,
+      currency: "VND",
       description: "",
       paidBy: "",
     },
@@ -56,6 +61,23 @@ export const AddExpenseModal = ({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchedAmount = form.watch("amount");
+  const watchedCurrency = form.watch("currency") || "VND";
+
+  const expenseCurrencyOptions = useMemo(() => {
+    const normalizeOption = (value: string) =>
+      currencyOptions.find((option) => option.value === value) || {
+        value,
+        label: value,
+      };
+
+    const options = [normalizeOption("VND")];
+
+    if (secondaryCurrency && secondaryCurrency !== "VND") {
+      options.push(normalizeOption(secondaryCurrency));
+    }
+
+    return options;
+  }, [secondaryCurrency]);
 
   const amountSuggestions = useMemo(() => {
     if (typeof watchedAmount !== "number" || Number.isNaN(watchedAmount)) {
@@ -104,11 +126,30 @@ export const AddExpenseModal = ({
 
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
+    const selectedCurrency = data.currency || "VND";
 
     try {
+      let convertedAmount = data.amount;
+      let originalAmount: number | undefined;
+      let exchangeRate: number | undefined;
+
+      if (selectedCurrency !== "VND") {
+        const conversion = await exchangeRateService.convertCurrency(
+          data.amount,
+          selectedCurrency,
+          "VND",
+        );
+        convertedAmount = Math.round(conversion.convertedAmount);
+        originalAmount = data.amount;
+        exchangeRate = conversion.exchangeRate;
+      }
+
       await addExpense.mutateAsync({
         tripId,
-        amount: data.amount,
+        amount: convertedAmount,
+        currency: selectedCurrency,
+        originalAmount,
+        exchangeRate,
         description: data.description,
         paidBy: data.paidBy,
         paidByName: participant?.name || "Unknown",
@@ -157,6 +198,35 @@ export const AddExpenseModal = ({
           />
 
           <Controller
+            name="currency"
+            control={form.control}
+            render={({ field, fieldState }) =>
+              isMobile ? (
+                <NativeSelect
+                  label="Tiền tệ"
+                  data={expenseCurrencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "VND")}
+                  error={fieldState.error?.message}
+                  size="md"
+                />
+              ) : (
+                <Select
+                  label="Tiền tệ"
+                  placeholder="Chọn tiền tệ"
+                  data={expenseCurrencyOptions}
+                  value={field.value}
+                  onChange={(value) => field.onChange(value || "VND")}
+                  error={fieldState.error?.message}
+                  size="md"
+                  radius="md"
+                  allowDeselect={false}
+                />
+              )
+            }
+          />
+
+          <Controller
             name="amount"
             control={form.control}
             render={({ field, fieldState }) => (
@@ -171,7 +241,7 @@ export const AddExpenseModal = ({
                   min={0}
                   step={1000}
                   thousandSeparator=","
-                  suffix=" VND"
+                  suffix={` ${watchedCurrency}`}
                   radius="md"
                 />
 
