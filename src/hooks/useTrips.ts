@@ -141,19 +141,32 @@ export const useRemoveParticipant = () => {
   });
 };
 
-export const useEndTrip = () => {
+export const useEndTrip = (isParticipant: boolean) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (tripId: string) => tripService.endTrip(tripId),
+    mutationFn: async (tripId: string) => {
+      if (isParticipant) {
+        throw new Error(
+          "Chỉ người tạo hoạt động mới có thể kết thúc hoạt động",
+        );
+      }
+
+      return tripService.endTrip(tripId);
+    },
     onSuccess: (_, tripId) => {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       queryClient.invalidateQueries({ queryKey: ["trip", tripId] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      const message =
+        error.message ===
+        "Chỉ người tạo hoạt động mới có thể kết thúc hoạt động"
+          ? error.message
+          : "Không thể kết thúc hoạt động!";
       notifications.show({
         title: "Lỗi",
-        message: "Không thể kết thúc hoạt động!",
+        message,
         color: "red",
       });
       console.error("Error ending trip:", error);

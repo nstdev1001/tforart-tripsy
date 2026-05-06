@@ -138,7 +138,7 @@ export const ParticipantCard = ({
                       {expense.addExpenseBy &&
                         expense.addExpenseBy !== expense.paidBy && (
                           <Text span c="dimmed">
-                            Người thêm: {expense.addExpenseByName}
+                            Thêm bởi: {expense.addExpenseByName}
                           </Text>
                         )}
                     </Text>
