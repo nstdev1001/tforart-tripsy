@@ -32,7 +32,7 @@ import { TripSummaryModal } from "../components/TripSummaryModal";
 import { TripPageSkeleton } from "../components/skeleton";
 import { useAuth } from "../hooks/auth";
 import { useCurrency } from "../hooks/useCurrency";
-import { useExpenses } from "../hooks/useExpense";
+import { useGetExpenses } from "../hooks/useExpense";
 import { useTripActions } from "../hooks/useTripActions";
 import { useTrip } from "../hooks/useTrips";
 import { useVibrate } from "../hooks/useVibrate";
@@ -45,7 +45,7 @@ const TripPage = () => {
   const { user } = useAuth();
   const { colorScheme } = useMantineColorScheme();
   const { data: trip, isLoading: tripLoading } = useTrip(tripId);
-  const { isLoading: expensesLoading } = useExpenses(tripId);
+  const { isLoading: expensesLoading } = useGetExpenses(tripId);
 
   const {
     expandedParticipant,
@@ -54,6 +54,7 @@ const TripPage = () => {
     handleDeleteExpense,
     handleDeleteParticipant,
     handleDeleteTrip,
+    deleteExpenseLoading,
   } = useTripActions(tripId);
 
   const [expenseModalOpened, setExpenseModalOpened] = useState(false);
@@ -223,6 +224,7 @@ const TripPage = () => {
               onToggle={() => handleToggleExpenseDetail(participant.id)}
               onDeleteExpense={handleDeleteExpense}
               onDeleteParticipant={handleDeleteParticipant}
+              deleteExpenseLoading={deleteExpenseLoading}
             />
           ))}
 

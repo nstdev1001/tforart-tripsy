@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseService } from "../services";
 import type { CreateExpenseData } from "../types/trip";
 
-export const useExpenses = (tripId?: string) => {
+export const useGetExpenses = (tripId?: string) => {
   return useQuery({
     queryKey: ["expenses", tripId],
     queryFn: () => expenseService.getExpenses(tripId!),
@@ -51,7 +51,14 @@ export const useDeleteExpense = () => {
       amount: number;
       paidBy: string;
       originalAmount?: number;
-    }) => expenseService.deleteExpense(expenseId, tripId, amount, paidBy, originalAmount),
+    }) =>
+      expenseService.deleteExpense(
+        expenseId,
+        tripId,
+        amount,
+        paidBy,
+        originalAmount,
+      ),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({

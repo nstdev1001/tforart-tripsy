@@ -102,7 +102,7 @@ export const TripSummaryModal = ({
           Tổng kết hoạt động
         </Text>
       }
-      size="md"
+      size="lg"
       centered
     >
       <Stack gap="lg">

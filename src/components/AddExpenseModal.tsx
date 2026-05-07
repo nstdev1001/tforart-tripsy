@@ -311,9 +311,8 @@ export const AddExpenseModal = ({
 
           <Group justify="space-between" mt="md">
             {showExchangeRate ? (
-              <Text size="sm" c="dimmed">
-                Tỉ giá:{" "}
-                {exchangeRate ? formatVndRate(exchangeRate) : "Loading..."}
+              <Text size="sm" c="orange">
+                Tỉ giá: {exchangeRate ? formatVndRate(exchangeRate) : "..."}
               </Text>
             ) : (
               <Text aria-hidden style={{ visibility: "hidden" }}>
