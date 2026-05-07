@@ -30,7 +30,7 @@ export const tripService = {
     const tripDoc = {
       name: tripData.name,
       category: tripData.category,
-      currency: tripData.currency || "VND",
+      mainCurrency: tripData.mainCurrency || "VND",
       creator: tripData.creator,
       creatorName: currentUser.displayName || "Unknown",
       creatorPhoto: currentUser.photoURL || "",
@@ -55,7 +55,7 @@ export const tripService = {
       id: docRef.id,
       name: tripData.name,
       category: tripData.category,
-      currency: tripData.currency || "VND",
+      mainCurrency: tripData.mainCurrency || "VND",
       creator: tripData.creator,
       creatorName: currentUser.displayName || "Unknown",
       creatorPhoto: currentUser.photoURL || "",
@@ -87,7 +87,7 @@ export const tripService = {
         id: tripSnap.id,
         name: data.name || "",
         category: data.category || "Du lịch",
-        currency: data.currency || "VND",
+        mainCurrency: data.mainCurrency || "VND",
         creator: data.creator || "",
         creatorName: data.creatorName || "Unknown",
         creatorPhoto: data.creatorPhoto || "",
@@ -123,7 +123,7 @@ export const tripService = {
             id: doc.id,
             name: data.name || "",
             category: data.category || "Du lịch",
-            currency: data.currency || "VND",
+            mainCurrency: data.mainCurrency || "VND",
             creator: data.creator || "",
             creatorName: data.creatorName || "Unknown",
             creatorPhoto: data.creatorPhoto || "",
@@ -217,7 +217,7 @@ export const tripService = {
       throw new Error("Thành viên với tên này đã tồn tại");
     }
 
-    const newParticipant = {
+    const newParticipant: Record<string, any> = {
       id: participant.userId || `guest_${Date.now()}`,
       userId: participant.userId || `guest_${Date.now()}`,
       name: participant.name,

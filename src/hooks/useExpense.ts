@@ -44,12 +44,14 @@ export const useDeleteExpense = () => {
       tripId,
       amount,
       paidBy,
+      originalAmount,
     }: {
       expenseId: string;
       tripId: string;
       amount: number;
       paidBy: string;
-    }) => expenseService.deleteExpense(expenseId, tripId, amount, paidBy),
+      originalAmount?: number;
+    }) => expenseService.deleteExpense(expenseId, tripId, amount, paidBy, originalAmount),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["trip", variables.tripId] });
       queryClient.invalidateQueries({

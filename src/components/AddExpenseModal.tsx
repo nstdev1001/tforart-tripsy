@@ -31,15 +31,17 @@ interface AddExpenseModalProps {
   onClose: () => void;
   tripId: string;
   participants: Participant[];
-  secondaryCurrency?: string;
+  mainCurrency?: string;
 }
+
+const VND_CURRENCY = "VND";
 
 export const AddExpenseModal = ({
   opened,
   onClose,
   tripId,
   participants,
-  secondaryCurrency,
+  mainCurrency,
 }: AddExpenseModalProps) => {
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
@@ -58,7 +60,7 @@ export const AddExpenseModal = ({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: undefined,
-      currency: "VND",
+      mainCurrency: mainCurrency || VND_CURRENCY,
       description: "",
       paidBy: "",
     },
@@ -66,11 +68,14 @@ export const AddExpenseModal = ({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchedAmount = form.watch("amount");
-  const watchedCurrency = form.watch("currency") || "VND";
+  const watchedCurrency = form.watch("mainCurrency") || VND_CURRENCY;
   const { vndRate: exchangeRate } = useVndExchangeRate(watchedCurrency);
   const showExchangeRate = Boolean(
-    secondaryCurrency && watchedCurrency === secondaryCurrency,
+    mainCurrency &&
+    watchedCurrency === mainCurrency &&
+    watchedCurrency !== VND_CURRENCY,
   );
+
   const formatVndRate = (value: number) =>
     `${new Intl.NumberFormat("vi-VN", {
       minimumFractionDigits: 2,
@@ -84,14 +89,14 @@ export const AddExpenseModal = ({
         label: value,
       };
 
-    const options = [normalizeOption("VND")];
+    const options = [normalizeOption(VND_CURRENCY)];
 
-    if (secondaryCurrency && secondaryCurrency !== "VND") {
-      options.push(normalizeOption(secondaryCurrency));
+    if (mainCurrency && mainCurrency !== VND_CURRENCY) {
+      options.push(normalizeOption(mainCurrency));
     }
 
     return options;
-  }, [secondaryCurrency]);
+  }, [mainCurrency]);
 
   const amountSuggestions = useMemo(
     () => getAmountSuggestions(watchedAmount),
@@ -122,18 +127,20 @@ export const AddExpenseModal = ({
 
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
-    const selectedCurrency = data.currency || "VND";
+    const selectedCurrency = data.mainCurrency || VND_CURRENCY;
+
+    console.log("selectedCurrency", selectedCurrency);
 
     try {
       let convertedAmount = data.amount;
       let originalAmount: number | undefined;
       let exchangeRate: number | undefined;
 
-      if (selectedCurrency !== "VND") {
+      if (selectedCurrency !== VND_CURRENCY) {
         const conversion = await exchangeRateService.convertCurrency(
           data.amount,
           selectedCurrency,
-          "VND",
+          VND_CURRENCY,
         );
         convertedAmount = Math.round(conversion.convertedAmount);
         originalAmount = data.amount;
@@ -143,7 +150,7 @@ export const AddExpenseModal = ({
       await addExpense.mutateAsync({
         tripId,
         amount: convertedAmount,
-        currency: selectedCurrency,
+        mainCurrency: selectedCurrency,
         originalAmount,
         exchangeRate,
         description: data.description,
@@ -188,6 +195,37 @@ export const AddExpenseModal = ({
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md">
+          {mainCurrency !== VND_CURRENCY && (
+            <Controller
+              name="mainCurrency"
+              control={form.control}
+              render={({ field, fieldState }) =>
+                isMobile ? (
+                  <NativeSelect
+                    label="Tiền tệ"
+                    data={expenseCurrencyOptions}
+                    value={field.value}
+                    onChange={(value) => field.onChange(value || VND_CURRENCY)}
+                    error={fieldState.error?.message}
+                    size="md"
+                  />
+                ) : (
+                  <Select
+                    label="Tiền tệ"
+                    placeholder="Chọn tiền tệ"
+                    data={expenseCurrencyOptions}
+                    value={field.value}
+                    onChange={(value) => field.onChange(value || VND_CURRENCY)}
+                    error={fieldState.error?.message}
+                    size="md"
+                    radius="md"
+                    allowDeselect={false}
+                  />
+                )
+              }
+            />
+          )}
+
           <TextInput
             label="Nội dung chi tiêu"
             placeholder="Ví dụ: Ăn trưa, Vé tham quan..."
@@ -195,35 +233,6 @@ export const AddExpenseModal = ({
             error={form.formState.errors.description?.message}
             size="md"
             radius="md"
-          />
-
-          <Controller
-            name="currency"
-            control={form.control}
-            render={({ field, fieldState }) =>
-              isMobile ? (
-                <NativeSelect
-                  label="Tiền tệ"
-                  data={expenseCurrencyOptions}
-                  value={field.value}
-                  onChange={(value) => field.onChange(value || "VND")}
-                  error={fieldState.error?.message}
-                  size="md"
-                />
-              ) : (
-                <Select
-                  label="Tiền tệ"
-                  placeholder="Chọn tiền tệ"
-                  data={expenseCurrencyOptions}
-                  value={field.value}
-                  onChange={(value) => field.onChange(value || "VND")}
-                  error={fieldState.error?.message}
-                  size="md"
-                  radius="md"
-                  allowDeselect={false}
-                />
-              )
-            }
           />
 
           <Controller

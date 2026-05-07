@@ -48,7 +48,7 @@ export const tripSchema = z.object({
   category: z.enum(tripCategoryValues, {
     error: "Vui lòng chọn phân loại",
   }),
-  currency: z
+  mainCurrency: z
     .enum(currencyValues, {
       error: "Vui lòng chọn loại tiền tệ",
     })

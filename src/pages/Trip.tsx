@@ -216,6 +216,7 @@ const TripPage = () => {
               participant={participant}
               expenses={getParticipantExpenses(participant.id)}
               maxSpent={maxSpent}
+              mainCurrency={trip.mainCurrency}
               isExpanded={expandedParticipant === participant.id}
               currentUser={user ?? undefined}
               isEndTrip={isEnded}
@@ -243,7 +244,7 @@ const TripPage = () => {
         onClose={() => setExpenseModalOpened(false)}
         tripId={tripId || ""}
         participants={trip.participants || []}
-        secondaryCurrency={trip.currency}
+        mainCurrency={trip.mainCurrency}
       />
 
       <AddParticipantModal

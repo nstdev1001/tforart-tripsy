@@ -1,8 +1,15 @@
 export const useCurrency = () => {
-  const formatCurrency = (amount: number, currency: string = "VND"): string => {
+  const formatCurrency = (
+    amount: number,
+    mainCurrency: string = "VND",
+    minimumFractionDigits: number = 0,
+    maximumFractionDigits: number = 2,
+  ): string => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency,
+      currency: mainCurrency,
+      minimumFractionDigits,
+      maximumFractionDigits,
     }).format(amount);
   };
 

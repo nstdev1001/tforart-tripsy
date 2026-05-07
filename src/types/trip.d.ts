@@ -4,6 +4,7 @@ export interface Participant {
   name: string;
   photoURL?: string;
   totalSpent: number;
+  totalOriginalSpent?: number;
   isParticipant?: boolean;
 }
 
@@ -11,7 +12,7 @@ export interface Expense {
   id?: string;
   tripId: string;
   amount: number;
-  currency: string;
+  mainCurrency: string;
   originalAmount?: number;
   exchangeRate?: number;
   description: string;
@@ -38,7 +39,7 @@ export interface Trip {
   id?: string;
   name: string;
   category: TripCategory;
-  currency: string;
+  mainCurrency: string;
   startDate: Date;
   endDate?: Date;
   isEnded?: boolean;
@@ -55,7 +56,7 @@ export interface Trip {
 export interface CreateTripData {
   name: string;
   category: TripCategory;
-  currency: string;
+  mainCurrency: string;
   startDate: Date;
   creator: string;
   creatorName?: string;
@@ -65,7 +66,7 @@ export interface CreateTripData {
 export interface CreateExpenseData {
   tripId: string;
   amount: number;
-  currency: string;
+  mainCurrency: string;
   originalAmount?: number;
   exchangeRate?: number;
   description: string;

@@ -12,6 +12,7 @@ import {
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useCurrency } from "../hooks/useCurrency";
+import { useIsParticipant } from "../hooks/useIsParticipant";
 import { useEndTrip } from "../hooks/useTrips";
 import { useTripSettlement } from "../hooks/useTripSettlement";
 import { useVibrate } from "../hooks/useVibrate";
@@ -37,7 +38,8 @@ export const TripSummaryModal = ({
   const { formatCurrency } = useCurrency();
   const { vibrateSuccess, vibrateLong } = useVibrate();
   const { colorScheme } = useMantineColorScheme();
-  const endTrip = useEndTrip();
+  const isParticipant = useIsParticipant(participants);
+  const endTrip = useEndTrip(isParticipant);
   const { averagePerPerson, mainSpender, settlements, getParticipantBalance } =
     useTripSettlement(participants, totalExpense);
   const participantRowClassName =
@@ -51,6 +53,24 @@ export const TripSummaryModal = ({
 
   const handleEndTrip = () => {
     vibrateLong();
+
+    if (isParticipant) {
+      const modalId = modals.open({
+        title: "Kết thúc hoạt động",
+        children: (
+          <Stack gap="sm">
+            <Text size="sm">Bạn không có quyền kết thúc hoạt động.</Text>
+            <Group justify="flex-end">
+              <Button onClick={() => modals.close(modalId)}>OK</Button>
+            </Group>
+          </Stack>
+        ),
+        centered: true,
+      });
+
+      return;
+    }
+
     modals.openConfirmModal({
       title: "Kết thúc hoạt động",
       children: (

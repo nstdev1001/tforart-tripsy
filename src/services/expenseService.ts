@@ -37,13 +37,11 @@ export const expenseService = {
 
       const expenses = querySnapshot.docs.map((doc) => {
         const data = doc.data();
-        return {
+        const expense: Record<string, any> = {
           id: doc.id,
           tripId: data.tripId || "",
           amount: data.amount || 0,
-          currency: data.currency || "VND",
-          originalAmount: data.originalAmount ?? undefined,
-          exchangeRate: data.exchangeRate ?? undefined,
+          mainCurrency: data.mainCurrency || "VND",
           description: data.description || "",
           paidBy: data.paidBy,
           paidByName: data.paidByName,
@@ -51,6 +49,15 @@ export const expenseService = {
           addExpenseByName: data.addExpenseByName ?? null,
           createdAt: parseDate(data.createdAt),
         };
+
+        if (data.mainCurrency !== "VND") {
+          if (data.originalAmount !== undefined)
+            expense.originalAmount = data.originalAmount;
+          if (data.exchangeRate !== undefined)
+            expense.exchangeRate = data.exchangeRate;
+        }
+
+        return expense as Expense;
       });
 
       expenses.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -68,12 +75,10 @@ export const expenseService = {
     }
 
     const now = new Date();
-    const expenseDoc = {
+    const expenseDoc: Record<string, any> = {
       tripId: expenseData.tripId,
       amount: expenseData.amount,
-      currency: expenseData.currency || "VND",
-      originalAmount: expenseData.originalAmount ?? null,
-      exchangeRate: expenseData.exchangeRate ?? null,
+      mainCurrency: expenseData.mainCurrency || "VND",
       description: expenseData.description,
       paidBy: expenseData.paidBy,
       paidByName: expenseData.paidByName,
@@ -81,6 +86,21 @@ export const expenseService = {
       addExpenseByName: expenseData.addExpenseByName,
       createdAt: Timestamp.fromDate(now),
     };
+
+    if (expenseData.mainCurrency !== "VND") {
+      if (
+        expenseData.originalAmount !== undefined &&
+        expenseData.originalAmount !== null
+      ) {
+        expenseDoc.originalAmount = expenseData.originalAmount;
+      }
+      if (
+        expenseData.exchangeRate !== undefined &&
+        expenseData.exchangeRate !== null
+      ) {
+        expenseDoc.exchangeRate = expenseData.exchangeRate;
+      }
+    }
 
     const docRef = await addDoc(
       collection(db, EXPENSES_COLLECTION),
@@ -99,7 +119,15 @@ export const expenseService = {
       const participants = tripData.participants || [];
       const updatedParticipants = participants.map((p: any) => {
         if (p.userId === expenseData.paidBy) {
-          return { ...p, totalSpent: (p.totalSpent || 0) + expenseData.amount };
+          const updated: Record<string, any> = {
+            ...p,
+            totalSpent: (p.totalSpent || 0) + expenseData.amount,
+          };
+          if (expenseData.mainCurrency !== "VND") {
+            updated.totalOriginalSpent =
+              (p.totalOriginalSpent || 0) + (expenseData.originalAmount || 0);
+          }
+          return updated;
         }
         return p;
       });
@@ -119,6 +147,7 @@ export const expenseService = {
     tripId: string,
     amount: number,
     paidBy: string,
+    originalAmount?: number,
   ): Promise<void> {
     if (isDemoExpense(expenseId) || isDemoTrip(tripId)) {
       throw new Error("Không thể xóa chi tiêu của hoạt động mẫu");
@@ -139,10 +168,19 @@ export const expenseService = {
       const participants = tripData.participants || [];
       const updatedParticipants = participants.map((p: any) => {
         if (p.userId === paidBy) {
-          return {
+          const updated: Record<string, any> = {
             ...p,
             totalSpent: Math.max(0, (p.totalSpent || 0) - amount),
           };
+          if (originalAmount !== undefined) {
+            updated.totalOriginalSpent = Math.max(
+              0,
+              (p.totalOriginalSpent || 0) - (originalAmount || 0),
+            );
+          } else if (p.totalOriginalSpent !== undefined) {
+            updated.totalOriginalSpent = p.totalOriginalSpent;
+          }
+          return updated;
         }
         return p;
       });

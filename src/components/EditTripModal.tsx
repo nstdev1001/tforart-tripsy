@@ -8,10 +8,8 @@ import {
   Stack,
   TextInput,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { CategoryBadge } from "./CategoryBadge";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useUpdateTrip } from "../hooks/useTrips";
 import {
@@ -20,6 +18,7 @@ import {
   type TripFormValues,
 } from "../schemas";
 import type { Trip, TripCategory } from "../types/trip";
+import { CategoryBadge } from "./CategoryBadge";
 
 interface EditTripModalProps {
   opened: boolean;
@@ -141,7 +140,7 @@ export const EditTripModal = ({
             size="md"
           />
 
-          <Controller
+          {/* <Controller
             name="startDate"
             control={form.control}
             render={({ field, fieldState }) => {
@@ -168,7 +167,7 @@ export const EditTripModal = ({
                 />
               );
             }}
-          />
+          /> */}
 
           <Group justify="flex-end" mt="md">
             <Button variant="light" onClick={handleClose}>
