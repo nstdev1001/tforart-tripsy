@@ -217,7 +217,7 @@ export const tripService = {
       throw new Error("Thành viên với tên này đã tồn tại");
     }
 
-    const newParticipant = {
+    const newParticipant: Record<string, any> = {
       id: participant.userId || `guest_${Date.now()}`,
       userId: participant.userId || `guest_${Date.now()}`,
       name: participant.name,

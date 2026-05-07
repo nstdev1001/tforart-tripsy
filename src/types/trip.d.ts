@@ -4,6 +4,7 @@ export interface Participant {
   name: string;
   photoURL?: string;
   totalSpent: number;
+  totalOriginalSpent?: number;
   isParticipant?: boolean;
 }
 

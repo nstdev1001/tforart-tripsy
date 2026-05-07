@@ -216,6 +216,7 @@ const TripPage = () => {
               participant={participant}
               expenses={getParticipantExpenses(participant.id)}
               maxSpent={maxSpent}
+              mainCurrency={trip.mainCurrency}
               isExpanded={expandedParticipant === participant.id}
               currentUser={user ?? undefined}
               isEndTrip={isEnded}

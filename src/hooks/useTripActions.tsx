@@ -49,6 +49,7 @@ export const useTripActions = (tripId?: string) => {
             tripId,
             amount: expense.amount,
             paidBy: expense.paidBy,
+            originalAmount: expense.originalAmount,
           });
         }
       },

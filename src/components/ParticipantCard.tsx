@@ -21,6 +21,7 @@ interface ParticipantCardProps {
   creatorId: string;
   participant: Participant;
   expenses: Expense[];
+  mainCurrency: string;
   maxSpent: number;
   isExpanded: boolean;
   currentUser?: User | undefined;
@@ -34,6 +35,7 @@ export const ParticipantCard = ({
   creatorId,
   participant,
   expenses,
+  mainCurrency,
   maxSpent,
   isExpanded,
   currentUser,
@@ -46,6 +48,10 @@ export const ParticipantCard = ({
   const { formatCurrency } = useCurrency();
   const isCurrentUser = participant.userId === currentUser?.uid;
   const isCreator = creatorId === currentUser?.uid;
+  const foreignCurrency = mainCurrency !== "VND" ? mainCurrency : undefined;
+
+  console.log("participant", participant);
+  console.log("expenses", expenses);
 
   return (
     <Paper
@@ -79,6 +85,17 @@ export const ParticipantCard = ({
             </Text>
             <Text size="sm" c="dimmed">
               {formatCurrency(participant.totalSpent)}
+              {participant.totalOriginalSpent &&
+              participant.totalOriginalSpent > 0 &&
+              foreignCurrency ? (
+                <Text span size="sm" c="dimmed" ml={8}>
+                  |{" "}
+                  {formatCurrency(
+                    participant.totalOriginalSpent,
+                    foreignCurrency,
+                  )}
+                </Text>
+              ) : null}
             </Text>
           </div>
         </Group>
