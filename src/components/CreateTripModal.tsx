@@ -39,7 +39,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
     defaultValues: {
       name: "",
       category: "Du lịch",
-      currency: "VND",
+      mainCurrency: "VND",
       startDate: new Date(),
     },
     mode: "onChange",
@@ -50,7 +50,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
       form.reset({
         name: "",
         category: "Du lịch",
-        currency: "VND",
+        mainCurrency: "VND",
         startDate: new Date(),
       });
     }
@@ -63,7 +63,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
       await createTrip.mutateAsync({
         name: data.name,
         category: data.category,
-        currency: data.currency,
+        mainCurrency: data.mainCurrency,
         startDate: data.startDate,
         creator: user.uid,
         creatorName: user.displayName || undefined,
@@ -142,7 +142,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
           />
 
           <Controller
-            name="currency"
+            name="mainCurrency"
             control={form.control}
             render={({ field, fieldState }) =>
               isMobile ? (

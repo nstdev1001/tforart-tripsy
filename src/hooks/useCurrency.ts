@@ -1,8 +1,11 @@
 export const useCurrency = () => {
-  const formatCurrency = (amount: number, currency: string = "VND"): string => {
+  const formatCurrency = (
+    amount: number,
+    mainCurrency: string = "VND",
+  ): string => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency,
+      currency: mainCurrency,
     }).format(amount);
   };
 

@@ -31,7 +31,7 @@ interface AddExpenseModalProps {
   onClose: () => void;
   tripId: string;
   participants: Participant[];
-  secondaryCurrency?: string;
+  mainCurrency?: string;
 }
 
 const VND_CURRENCY = "VND";
@@ -41,7 +41,7 @@ export const AddExpenseModal = ({
   onClose,
   tripId,
   participants,
-  secondaryCurrency,
+  mainCurrency,
 }: AddExpenseModalProps) => {
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
   const { user } = useAuth();
@@ -60,7 +60,7 @@ export const AddExpenseModal = ({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: undefined,
-      currency: secondaryCurrency || VND_CURRENCY,
+      mainCurrency: mainCurrency || VND_CURRENCY,
       description: "",
       paidBy: "",
     },
@@ -68,11 +68,11 @@ export const AddExpenseModal = ({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const watchedAmount = form.watch("amount");
-  const watchedCurrency = form.watch("currency") || VND_CURRENCY;
+  const watchedCurrency = form.watch("mainCurrency") || VND_CURRENCY;
   const { vndRate: exchangeRate } = useVndExchangeRate(watchedCurrency);
   const showExchangeRate = Boolean(
-    secondaryCurrency &&
-    watchedCurrency === secondaryCurrency &&
+    mainCurrency &&
+    watchedCurrency === mainCurrency &&
     watchedCurrency !== VND_CURRENCY,
   );
 
@@ -91,12 +91,12 @@ export const AddExpenseModal = ({
 
     const options = [normalizeOption(VND_CURRENCY)];
 
-    if (secondaryCurrency && secondaryCurrency !== VND_CURRENCY) {
-      options.push(normalizeOption(secondaryCurrency));
+    if (mainCurrency && mainCurrency !== VND_CURRENCY) {
+      options.push(normalizeOption(mainCurrency));
     }
 
     return options;
-  }, [secondaryCurrency]);
+  }, [mainCurrency]);
 
   const amountSuggestions = useMemo(
     () => getAmountSuggestions(watchedAmount),
@@ -127,7 +127,9 @@ export const AddExpenseModal = ({
 
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
-    const selectedCurrency = data.currency || VND_CURRENCY;
+    const selectedCurrency = data.mainCurrency || VND_CURRENCY;
+
+    console.log("selectedCurrency", selectedCurrency);
 
     try {
       let convertedAmount = data.amount;
@@ -148,7 +150,7 @@ export const AddExpenseModal = ({
       await addExpense.mutateAsync({
         tripId,
         amount: convertedAmount,
-        currency: selectedCurrency,
+        mainCurrency: selectedCurrency,
         originalAmount,
         exchangeRate,
         description: data.description,
@@ -193,9 +195,9 @@ export const AddExpenseModal = ({
     >
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Stack gap="md">
-          {secondaryCurrency !== VND_CURRENCY && (
+          {mainCurrency !== VND_CURRENCY && (
             <Controller
-              name="currency"
+              name="mainCurrency"
               control={form.control}
               render={({ field, fieldState }) =>
                 isMobile ? (

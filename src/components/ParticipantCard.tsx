@@ -145,12 +145,12 @@ export const ParticipantCard = ({
                   </div>
                   <Group gap="xs">
                     <Stack gap={2} align="flex-end">
-                      {expense.currency !== "VND" &&
+                      {expense.mainCurrency !== "VND" &&
                         typeof expense.originalAmount === "number" && (
                           <Text size="xs" c="dimmed">
                             {formatCurrency(
                               expense.originalAmount,
-                              expense.currency,
+                              expense.mainCurrency,
                             )}
                           </Text>
                         )}

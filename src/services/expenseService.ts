@@ -41,7 +41,7 @@ export const expenseService = {
           id: doc.id,
           tripId: data.tripId || "",
           amount: data.amount || 0,
-          currency: data.currency || "VND",
+          mainCurrency: data.mainCurrency || "VND",
           originalAmount: data.originalAmount ?? undefined,
           exchangeRate: data.exchangeRate ?? undefined,
           description: data.description || "",
@@ -71,7 +71,7 @@ export const expenseService = {
     const expenseDoc = {
       tripId: expenseData.tripId,
       amount: expenseData.amount,
-      currency: expenseData.currency || "VND",
+      mainCurrency: expenseData.mainCurrency || "VND",
       originalAmount: expenseData.originalAmount ?? null,
       exchangeRate: expenseData.exchangeRate ?? null,
       description: expenseData.description,

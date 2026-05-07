@@ -30,6 +30,8 @@ export const Home = () => {
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
 
+  console.log("trips", trips);
+
   const handleEditTrip = (trip: Trip) => {
     setEditingTrip(trip);
     setEditModalOpened(true);
