@@ -3,7 +3,10 @@ import { z } from "zod";
 export const expenseSchema = z.object({
   amount: z.number().min(0, "Số tiền không hợp lệ").max(1e9, "Số tiền quá lớn"),
   mainCurrency: z.string().min(1, "Vui lòng chọn loại tiền tệ"),
-  description: z.string().min(1, "Nội dung không được để trống"),
+  description: z
+    .string()
+    .min(1, "Nội dung không được để trống")
+    .max(100, "Nội dung không được quá 100 ký tự"),
   paidBy: z.string().min(1, "Vui lòng chọn người chi tiêu"),
 });
 

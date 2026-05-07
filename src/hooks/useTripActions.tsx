@@ -4,24 +4,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Expense } from "../types/trip";
 import { useCurrency } from "./useCurrency";
-import { useDeleteExpense, useExpenses } from "./useExpense";
+import { useDeleteExpense, useGetExpenses } from "./useExpense";
 import { useDeleteTrip, useRemoveParticipant } from "./useTrips";
 
 export const useTripActions = (tripId?: string) => {
   const navigate = useNavigate();
-  const { data: expenses } = useExpenses(tripId);
+  const { data: expenses } = useGetExpenses(tripId);
   const deleteExpense = useDeleteExpense();
   const deleteTrip = useDeleteTrip();
   const deleteParticipant = useRemoveParticipant();
   const { formatCurrency } = useCurrency();
 
   const [expandedParticipant, setExpandedParticipant] = useState<string | null>(
-    null
+    null,
   );
 
   const handleToggleExpenseDetail = (participantId: string) => {
     setExpandedParticipant((prev) =>
-      prev === participantId ? null : participantId
+      prev === participantId ? null : participantId,
     );
   };
 
@@ -92,5 +92,6 @@ export const useTripActions = (tripId?: string) => {
     handleDeleteExpense,
     handleDeleteParticipant,
     handleDeleteTrip,
+    deleteExpenseLoading: deleteExpense.isPending,
   };
 };

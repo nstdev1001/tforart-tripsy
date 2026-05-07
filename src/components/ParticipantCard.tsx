@@ -3,6 +3,7 @@ import {
   Avatar,
   Collapse,
   Group,
+  Loader,
   Paper,
   Progress,
   Stack,
@@ -29,6 +30,7 @@ interface ParticipantCardProps {
   onToggle: () => void;
   onDeleteExpense: (expense: Expense) => void;
   onDeleteParticipant: (participantId: string) => void;
+  deleteExpenseLoading: boolean;
 }
 
 export const ParticipantCard = ({
@@ -43,6 +45,7 @@ export const ParticipantCard = ({
   onToggle,
   onDeleteExpense,
   onDeleteParticipant,
+  deleteExpenseLoading,
 }: ParticipantCardProps) => {
   const { vibrateShort } = useVibrate();
   const { formatCurrency } = useCurrency();
@@ -143,7 +146,7 @@ export const ParticipantCard = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <Group justify="space-between">
-                  <div>
+                  <div className="max-w-[150px] md:max-w-[400px]">
                     <Text size="sm" fw={500}>
                       {expense.description}
                     </Text>
@@ -186,7 +189,11 @@ export const ParticipantCard = ({
                             onDeleteExpense(expense);
                           }}
                         >
-                          <Trash2 size={14} />
+                          {deleteExpenseLoading ? (
+                            <Loader size="xs" />
+                          ) : (
+                            <Trash2 size={14} />
+                          )}
                         </ActionIcon>
                       </Tooltip>
                     )}
