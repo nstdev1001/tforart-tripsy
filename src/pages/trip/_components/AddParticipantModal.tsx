@@ -1,8 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useForm } from "react-hook-form";
-import { useAddParticipant } from "../hooks/useTrips";
-import { participantSchema, type ParticipantFormValues } from "../schemas";
+import { useAddParticipant } from "../../../hooks";
+import {
+  participantSchema,
+  type ParticipantFormValues,
+} from "../../../schemas";
 
 interface AddParticipantModalProps {
   opened: boolean;

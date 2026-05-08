@@ -53,18 +53,7 @@ export const tripSchema = z.object({
       error: "Vui lòng chọn loại tiền tệ",
     })
     .default("VND"),
-  startDate: z.coerce.date().refine(
-    (date) => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const selectedDate = new Date(date);
-      selectedDate.setHours(0, 0, 0, 0);
-      return selectedDate >= today;
-    },
-    {
-      message: "Ngày bắt đầu phải từ hôm nay trở đi",
-    },
-  ),
+  startDate: z.coerce.date(),
 });
 
 export type TripFormValues = z.infer<typeof tripSchema>;

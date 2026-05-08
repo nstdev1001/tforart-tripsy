@@ -11,9 +11,12 @@ import {
 import { useDebouncedCallback } from "@mantine/hooks";
 import { Check, NotebookPen } from "lucide-react";
 import { Fragment, useState } from "react";
-import { useColorScheme } from "../hooks/useColorScheme";
-import { useUpdateTripNotes } from "../hooks/useTrips";
-import { formatPhoneForLink, parseTextWithLinks } from "../services/helpers";
+import { useColorScheme } from "../../../hooks/useColorScheme";
+import { useUpdateTripNotes } from "../../../hooks/useTrips";
+import {
+  formatPhoneForLink,
+  parseTextWithLinks,
+} from "../../../services/helpers";
 
 interface TripNotesModalProps {
   opened: boolean;

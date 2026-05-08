@@ -14,9 +14,7 @@ import { vi } from "date-fns/locale";
 import { Calendar, CheckCircle, MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAcceptInvite, useInvite } from "../hooks/useInvite";
-import { useTrip } from "../hooks/useTrips";
-import { useUserStore } from "../hooks/useUserStore";
+import { useAcceptInvite, useInvite, useTrip, useUserStore } from "../hooks";
 
 const JoinTrip = () => {
   const { inviteId } = useParams<{ inviteId: string }>();

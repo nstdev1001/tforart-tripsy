@@ -65,7 +65,7 @@ export const TripMenu = ({
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
-        {!isEnded && onEdit && (
+        {!isEnded && (
           <Menu.Item leftSection={<Edit size={14} />} onClick={onEdit}>
             Chỉnh sửa
           </Menu.Item>

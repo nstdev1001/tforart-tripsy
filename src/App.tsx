@@ -11,13 +11,12 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { UserProvider } from "./context/UserContext";
 import { useColorScheme } from "./hooks/useColorScheme";
 import DataDeletion from "./pages/DataDeletion";
-import { Home } from "./pages/Home";
 import JoinTrip from "./pages/JoinTrip";
 import { Login } from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TestVibrate from "./pages/TestVibrate";
-import TripPage from "./pages/Trip";
+import { HomePage } from "./pages/home";
+import TripPage from "./pages/trip";
 
 const queryClient = new QueryClient();
 
@@ -34,12 +33,11 @@ function AppContent() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/data-deletion" element={<DataDeletion />} />
         <Route path="/invite/:inviteId" element={<JoinTrip />} />
-        <Route path="/test-vibrate" element={<TestVibrate />} />
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <HomePage />
             </ProtectedRoute>
           }
         />

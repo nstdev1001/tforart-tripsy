@@ -12,17 +12,17 @@ import {
 } from "@mantine/core";
 import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
-import { CreateTripModal } from "../components/CreateTripModal";
-import { EditTripModal } from "../components/EditTripModal";
-import SimpleFooter from "../components/SimpleFooter";
-import { ThemeToggle } from "../components/ThemeToggle";
-import { TripCard } from "../components/TripCard";
-import { TripCardSkeleton } from "../components/skeleton";
-import { useIsMobile } from "../hooks/useIsMobile";
-import { useTrips } from "../hooks/useTrips";
-import { useUserStore } from "../hooks/useUserStore";
-import type { Trip } from "../types/trip";
-export const Home = () => {
+import { EditTripModal } from "../../components/EditTripModal";
+import SimpleFooter from "../../components/SimpleFooter";
+import { TripCardSkeleton } from "../../components/skeleton";
+import { ThemeToggle } from "../../components/ThemeToggle";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { useTrips } from "../../hooks/useTrips";
+import { useUserStore } from "../../hooks/useUserStore";
+import type { Trip } from "../../types/trip";
+import { CreateTripModal } from "./_components/CreateTripModal";
+import { TripCard } from "./_components/TripCard";
+export const HomePage = () => {
   const { user, signOut } = useUserStore();
   const isMobile = useIsMobile();
   const { data: trips, isPending: tripsLoading, error } = useTrips(user?.uid);
