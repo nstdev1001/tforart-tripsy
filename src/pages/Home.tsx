@@ -18,19 +18,17 @@ import SimpleFooter from "../components/SimpleFooter";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { TripCard } from "../components/TripCard";
 import { TripCardSkeleton } from "../components/skeleton";
-import { useAuth } from "../hooks/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useTrips } from "../hooks/useTrips";
+import { useUserStore } from "../hooks/useUserStore";
 import type { Trip } from "../types/trip";
 export const Home = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useUserStore();
   const isMobile = useIsMobile();
-  const { data: trips, isLoading, error } = useTrips(user?.uid);
+  const { data: trips, isPending: tripsLoading, error } = useTrips(user?.uid);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
-
-  console.log("trips", trips);
 
   const handleEditTrip = (trip: Trip) => {
     setEditingTrip(trip);
@@ -119,7 +117,7 @@ export const Home = () => {
             </Button>
           </Group>
 
-          {isLoading && (
+          {tripsLoading && (
             <>
               <Skeleton height={20} width={150} radius="sm" />
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
@@ -143,7 +141,7 @@ export const Home = () => {
             </Paper>
           )}
 
-          {trips && trips.length === 0 && !isLoading && (
+          {trips && trips.length === 0 && !tripsLoading && (
             <Paper shadow="xl" radius="lg" p="xl" className="text-center">
               <Stack align="center" gap="lg">
                 <div className="text-6xl">✈️</div>

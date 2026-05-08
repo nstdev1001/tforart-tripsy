@@ -13,9 +13,9 @@ import {
 } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth } from "../hooks/auth";
 import { useAddExpense } from "../hooks/useExpense";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { useUserStore } from "../hooks/useUserStore";
 import { useVndExchangeRate } from "../hooks/useVndExchangeRate";
 import { expenseSchema, type ExpenseFormValues } from "../schemas";
 import { currencyOptions } from "../schemas/tripSchema";
@@ -44,7 +44,7 @@ export const AddExpenseModal = ({
   mainCurrency,
 }: AddExpenseModalProps) => {
   const inputNumberRef = useRef<HTMLInputElement | null>(null);
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const addExpense = useAddExpense();
   const isMobile = useIsMobile();
 
@@ -128,8 +128,6 @@ export const AddExpenseModal = ({
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
     const selectedCurrency = data.mainCurrency || VND_CURRENCY;
-
-    console.log("selectedCurrency", selectedCurrency);
 
     try {
       let convertedAmount = data.amount;

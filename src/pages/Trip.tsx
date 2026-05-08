@@ -30,11 +30,11 @@ import { TripMenu } from "../components/TripMenu";
 import { TripNotesModal } from "../components/TripNotesModal";
 import { TripSummaryModal } from "../components/TripSummaryModal";
 import { TripPageSkeleton } from "../components/skeleton";
-import { useAuth } from "../hooks/auth";
 import { useCurrency } from "../hooks/useCurrency";
 import { useGetExpenses } from "../hooks/useExpense";
 import { useTripActions } from "../hooks/useTripActions";
 import { useTrip } from "../hooks/useTrips";
+import { useUserStore } from "../hooks/useUserStore";
 import { useVibrate } from "../hooks/useVibrate";
 
 const TripPage = () => {
@@ -42,10 +42,10 @@ const TripPage = () => {
   const navigate = useNavigate();
   const { formatCurrency } = useCurrency();
   const { vibrateShort, vibrateMedium, vibrateDouble } = useVibrate();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const { colorScheme } = useMantineColorScheme();
-  const { data: trip, isLoading: tripLoading } = useTrip(tripId);
-  const { isLoading: expensesLoading } = useGetExpenses(tripId);
+  const { data: trip, isPending: tripLoading } = useTrip(tripId);
+  const { isPending: expensesLoading } = useGetExpenses(tripId);
 
   const {
     expandedParticipant,
@@ -68,7 +68,7 @@ const TripPage = () => {
     setExpenseModalOpened(true);
   };
 
-  if (tripLoading || expensesLoading) {
+  if (tripLoading) {
     return <TripPageSkeleton />;
   }
 
@@ -221,6 +221,7 @@ const TripPage = () => {
               isExpanded={expandedParticipant === participant.id}
               currentUser={user ?? undefined}
               isEndTrip={isEnded}
+              isLoadingExpenses={expensesLoading}
               onToggle={() => handleToggleExpenseDetail(participant.id)}
               onDeleteExpense={handleDeleteExpense}
               onDeleteParticipant={handleDeleteParticipant}

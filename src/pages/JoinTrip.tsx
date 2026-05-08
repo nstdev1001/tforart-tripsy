@@ -14,16 +14,20 @@ import { vi } from "date-fns/locale";
 import { Calendar, CheckCircle, MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../hooks/auth";
 import { useAcceptInvite, useInvite } from "../hooks/useInvite";
 import { useTrip } from "../hooks/useTrips";
+import { useUserStore } from "../hooks/useUserStore";
 
 const JoinTrip = () => {
   const { inviteId } = useParams<{ inviteId: string }>();
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-  const { data: invite, isLoading: inviteLoading, error } = useInvite(inviteId);
-  const { data: trip, isLoading: tripLoading } = useTrip(invite?.tripId);
+  const { user, loading: authLoading } = useUserStore();
+  const {
+    data: invite,
+    isFetching: inviteLoading,
+    error,
+  } = useInvite(inviteId);
+  const { data: trip, isFetching: tripLoading } = useTrip(invite?.tripId);
   const acceptInvite = useAcceptInvite();
   const [isJoining, setIsJoining] = useState(false);
 

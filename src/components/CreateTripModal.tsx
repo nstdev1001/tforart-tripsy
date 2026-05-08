@@ -12,9 +12,9 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth } from "../hooks/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useCreateTrip } from "../hooks/useTrips";
+import { useUserStore } from "../hooks/useUserStore";
 import {
   tripCategoryOptions,
   tripSchema,
@@ -31,7 +31,7 @@ interface CreateTripModalProps {
 
 export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const createTrip = useCreateTrip();
 
   const form = useForm({

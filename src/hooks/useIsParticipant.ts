@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import type { Participant } from "../types/trip";
-import { useAuth } from "./auth";
+import { useUserStore } from "./useUserStore";
 
 export const useIsParticipant = (participants?: Participant[]): boolean => {
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   return useMemo(() => {
     if (!participants || !user) return false;

@@ -6,6 +6,7 @@ import {
   Loader,
   Paper,
   Progress,
+  Skeleton,
   Stack,
   Text,
   Tooltip,
@@ -25,6 +26,7 @@ interface ParticipantCardProps {
   mainCurrency: string;
   maxSpent: number;
   isExpanded: boolean;
+  isLoadingExpenses?: boolean;
   currentUser?: User | undefined;
   isEndTrip?: boolean;
   onToggle: () => void;
@@ -40,8 +42,9 @@ export const ParticipantCard = ({
   mainCurrency,
   maxSpent,
   isExpanded,
+  isLoadingExpenses,
   currentUser,
-  isEndTrip = false,
+  isEndTrip,
   onToggle,
   onDeleteExpense,
   onDeleteParticipant,
@@ -52,9 +55,6 @@ export const ParticipantCard = ({
   const isCurrentUser = participant.userId === currentUser?.uid;
   const isCreator = creatorId === currentUser?.uid;
   const foreignCurrency = mainCurrency !== "VND" ? mainCurrency : undefined;
-
-  console.log("participant", participant);
-  console.log("expenses", expenses);
 
   return (
     <Paper
@@ -132,7 +132,13 @@ export const ParticipantCard = ({
       />
 
       <Collapse in={isExpanded} transitionDuration={200}>
-        {expenses.length > 0 ? (
+        {isLoadingExpenses ? (
+          <Stack gap="xs" mt="md">
+            <Skeleton height={16} width={120} radius="sm" />
+            <Skeleton height={64} radius="md" />
+            <Skeleton height={64} radius="md" />
+          </Stack>
+        ) : expenses.length > 0 ? (
           <Stack gap="xs" mt="md">
             <Text size="sm" fw={500} c="dimmed">
               Chi tiết ({expenses.length} khoản)

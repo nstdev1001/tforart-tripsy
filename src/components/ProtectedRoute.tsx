@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/auth";
+import { useUserStore } from "../hooks/useUserStore";
 import { HomePageSkeleton } from "./skeleton";
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useUserStore();
 
   if (loading) {
     return <HomePageSkeleton />;
