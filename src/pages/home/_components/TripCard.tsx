@@ -14,14 +14,16 @@ import { vi } from "date-fns/locale";
 import { Calendar, CheckCircle, Share2, User, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCurrency } from "../hooks/useCurrency";
-import { useIsParticipant } from "../hooks/useIsParticipant";
-import { useDeleteTrip } from "../hooks/useTrips";
-import { useVibrate } from "../hooks/useVibrate";
-import type { Trip } from "../types/trip";
-import { CategoryBadge } from "./CategoryBadge";
-import { ShareTripModal } from "./ShareTripModal";
-import { TripMenu } from "./TripMenu";
+import { CategoryBadge } from "../../../components/CategoryBadge";
+import { ShareTripModal } from "../../../components/ShareTripModal";
+import { TripMenu } from "../../../components/TripMenu";
+import {
+  useCheckIsParticipant,
+  useCurrency,
+  useDeleteTrip,
+  useVibrate,
+} from "../../../hooks";
+import type { Trip } from "../../../types/trip";
 
 interface TripCardProps {
   trip: Trip;
@@ -34,7 +36,7 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
   const deleteTrip = useDeleteTrip();
   const navigate = useNavigate();
   const [shareModalOpened, setShareModalOpened] = useState(false);
-  const isParticipant = useIsParticipant(trip.participants);
+  const isParticipant = useCheckIsParticipant(trip.participants);
 
   const isEnded = trip.isEnded || false;
   const category = trip.category || "Du lịch";

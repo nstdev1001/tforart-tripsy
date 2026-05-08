@@ -18,7 +18,7 @@ import {
   createSmoothTextContainerMotionProps,
   createSmoothTextItemMotionProps,
 } from "../../config/motion";
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { useColorScheme } from "../../hooks/useColorScheme";
 import styles from "./style.module.css";
 

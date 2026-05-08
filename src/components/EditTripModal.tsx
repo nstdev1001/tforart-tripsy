@@ -8,6 +8,7 @@ import {
   Stack,
   TextInput,
 } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIsMobile } from "../hooks/useIsMobile";
@@ -140,7 +141,7 @@ export const EditTripModal = ({
             size="md"
           />
 
-          {/* <Controller
+          <Controller
             name="startDate"
             control={form.control}
             render={({ field, fieldState }) => {
@@ -167,7 +168,7 @@ export const EditTripModal = ({
                 />
               );
             }}
-          /> */}
+          />
 
           <Group justify="flex-end" mt="md">
             <Button variant="light" onClick={handleClose}>

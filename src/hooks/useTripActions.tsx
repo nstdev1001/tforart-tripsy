@@ -2,10 +2,11 @@ import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRemoveParticipant } from ".";
 import type { Expense } from "../types/trip";
 import { useCurrency } from "./useCurrency";
 import { useDeleteExpense, useGetExpenses } from "./useExpense";
-import { useDeleteTrip, useRemoveParticipant } from "./useTrips";
+import { useDeleteTrip } from "./useTrips";
 
 export const useTripActions = (tripId?: string) => {
   const navigate = useNavigate();

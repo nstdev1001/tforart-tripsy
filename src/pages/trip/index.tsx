@@ -22,30 +22,37 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AddExpenseModal } from "../components/AddExpenseModal";
-import { AddParticipantModal } from "../components/AddParticipantModal";
-import { ParticipantCard } from "../components/ParticipantCard";
-import { ShareTripModal } from "../components/ShareTripModal";
-import { TripMenu } from "../components/TripMenu";
-import { TripNotesModal } from "../components/TripNotesModal";
-import { TripSummaryModal } from "../components/TripSummaryModal";
-import { TripPageSkeleton } from "../components/skeleton";
-import { useAuth } from "../hooks/auth";
-import { useCurrency } from "../hooks/useCurrency";
-import { useGetExpenses } from "../hooks/useExpense";
-import { useTripActions } from "../hooks/useTripActions";
-import { useTrip } from "../hooks/useTrips";
-import { useVibrate } from "../hooks/useVibrate";
+
+import { EditTripModal } from "../../components/EditTripModal";
+import { ShareTripModal } from "../../components/ShareTripModal";
+import { TripPageSkeleton } from "../../components/skeleton";
+import { TripMenu } from "../../components/TripMenu";
+import {
+  useCurrency,
+  useGetExpenses,
+  useTrip,
+  useTripActions,
+  useUserStore,
+  useVibrate,
+} from "../../hooks";
+import type { Trip } from "../../types/trip";
+import {
+  AddExpenseModal,
+  AddParticipantModal,
+  ParticipantCard,
+  TripNotesModal,
+  TripSummaryModal,
+} from "./_components";
 
 const TripPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { formatCurrency } = useCurrency();
   const { vibrateShort, vibrateMedium, vibrateDouble } = useVibrate();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const { colorScheme } = useMantineColorScheme();
-  const { data: trip, isLoading: tripLoading } = useTrip(tripId);
-  const { isLoading: expensesLoading } = useGetExpenses(tripId);
+  const { data: trip, isPending: tripLoading } = useTrip(tripId);
+  const { isPending: expensesLoading } = useGetExpenses(tripId);
 
   const {
     expandedParticipant,
@@ -62,13 +69,25 @@ const TripPage = () => {
   const [shareModalOpened, setShareModalOpened] = useState(false);
   const [summaryModalOpened, setSummaryModalOpened] = useState(false);
   const [notesModalOpened, setNotesModalOpened] = useState(false);
+  const [editModalOpened, setEditModalOpened] = useState(false);
+  const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
+
+  const handleEditTrip = (trip: Trip) => {
+    setEditingTrip(trip);
+    setEditModalOpened(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpened(false);
+    setEditingTrip(null);
+  };
 
   const handleOpenExpenseModal = () => {
     vibrateDouble();
     setExpenseModalOpened(true);
   };
 
-  if (tripLoading || expensesLoading) {
+  if (tripLoading) {
     return <TripPageSkeleton />;
   }
 
@@ -117,10 +136,12 @@ const TripPage = () => {
               >
                 <ChevronLeft size={24} />
               </ActionIcon>
+
               <TripMenu
                 tripName={trip.name}
                 isEnded={isEnded}
                 variant="page"
+                onEdit={() => handleEditTrip(trip)}
                 onShare={() => setShareModalOpened(true)}
                 onAddParticipant={() => setParticipantModalOpened(true)}
                 onDelete={handleDeleteTrip}
@@ -221,6 +242,7 @@ const TripPage = () => {
               isExpanded={expandedParticipant === participant.id}
               currentUser={user ?? undefined}
               isEndTrip={isEnded}
+              isLoadingExpenses={expensesLoading}
               onToggle={() => handleToggleExpenseDetail(participant.id)}
               onDeleteExpense={handleDeleteExpense}
               onDeleteParticipant={handleDeleteParticipant}
@@ -253,6 +275,12 @@ const TripPage = () => {
         opened={participantModalOpened}
         onClose={() => setParticipantModalOpened(false)}
         tripId={tripId || ""}
+      />
+
+      <EditTripModal
+        opened={editModalOpened}
+        onClose={handleCloseEditModal}
+        trip={editingTrip}
       />
 
       <ShareTripModal

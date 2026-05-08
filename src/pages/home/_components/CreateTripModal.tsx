@@ -12,17 +12,17 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAuth } from "../hooks/auth";
-import { useIsMobile } from "../hooks/useIsMobile";
-import { useCreateTrip } from "../hooks/useTrips";
+import { CategoryBadge } from "../../../components/CategoryBadge";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import { useCreateTrip } from "../../../hooks/useTrips";
+import { useUserStore } from "../../../hooks/useUserStore";
 import {
   tripCategoryOptions,
   tripSchema,
   type TripFormValues,
-} from "../schemas";
-import { currencyOptions } from "../schemas/tripSchema";
-import type { TripCategory } from "../types/trip";
-import { CategoryBadge } from "./CategoryBadge";
+} from "../../../schemas";
+import { currencyOptions } from "../../../schemas/tripSchema";
+import type { TripCategory } from "../../../types/trip";
 
 interface CreateTripModalProps {
   opened: boolean;
@@ -30,8 +30,12 @@ interface CreateTripModalProps {
 }
 
 export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
+  const getCurrentYear = () => {
+    const now = new Date();
+    return now.getFullYear();
+  };
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const createTrip = useCreateTrip();
 
   const form = useForm({
@@ -173,7 +177,7 @@ export const CreateTripModal = ({ opened, onClose }: CreateTripModalProps) => {
 
           <TextInput
             label="Tên hoạt động"
-            placeholder="Ví dụ: Du lịch Đà Nẵng 2026"
+            placeholder={`Ví dụ: Du lịch Quy Nhơn ${getCurrentYear()}`}
             {...form.register("name")}
             error={form.formState.errors.name?.message}
             size="md"

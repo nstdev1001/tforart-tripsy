@@ -11,12 +11,14 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
-import { useCurrency } from "../hooks/useCurrency";
-import { useIsParticipant } from "../hooks/useIsParticipant";
-import { useEndTrip } from "../hooks/useTrips";
-import { useTripSettlement } from "../hooks/useTripSettlement";
-import { useVibrate } from "../hooks/useVibrate";
-import type { Participant } from "../types/trip";
+import {
+  useCheckIsParticipant,
+  useCurrency,
+  useEndTrip,
+  useTripSettlement,
+  useVibrate,
+} from "../../../hooks";
+import type { Participant } from "../../../types/trip";
 
 interface TripSummaryModalProps {
   opened: boolean;
@@ -38,7 +40,7 @@ export const TripSummaryModal = ({
   const { formatCurrency } = useCurrency();
   const { vibrateSuccess, vibrateLong } = useVibrate();
   const { colorScheme } = useMantineColorScheme();
-  const isParticipant = useIsParticipant(participants);
+  const isParticipant = useCheckIsParticipant(participants);
   const endTrip = useEndTrip(isParticipant);
   const { averagePerPerson, mainSpender, settlements, getParticipantBalance } =
     useTripSettlement(participants, totalExpense);
