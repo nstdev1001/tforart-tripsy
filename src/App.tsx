@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { UserProvider } from "./context/UserContext";
 import { useColorScheme } from "./hooks/useColorScheme";
 import DataDeletion from "./pages/DataDeletion";
 import { Home } from "./pages/Home";
@@ -77,7 +78,9 @@ function App() {
       <ModalsProvider>
         <Notifications position="top-right" />
         <QueryClientProvider client={queryClient}>
-          <AppContent />
+          <UserProvider>
+            <AppContent />
+          </UserProvider>
         </QueryClientProvider>
       </ModalsProvider>
     </MantineProvider>
