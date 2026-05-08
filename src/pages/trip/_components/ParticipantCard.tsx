@@ -80,7 +80,7 @@ export const ParticipantCard = ({
                 </Text>
               )}
             </Text>
-            <Text size="sm" c="dimmed">
+            <Text size="sm" c="teal">
               {formatCurrency(participant.totalSpent)}
               {participant.totalOriginalSpent &&
               participant.totalOriginalSpent > 0 &&
