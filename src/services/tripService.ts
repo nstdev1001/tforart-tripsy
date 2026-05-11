@@ -27,7 +27,7 @@ export const tripService = {
     }
 
     const now = new Date();
-    const tripDoc = {
+    const tripDoc: Record<string, any> = {
       name: tripData.name,
       category: tripData.category,
       mainCurrency: tripData.mainCurrency || "VND",
@@ -49,9 +49,13 @@ export const tripService = {
       updatedAt: Timestamp.fromDate(now),
     };
 
+    if (tripData.mainCurrency !== "VND") {
+      tripDoc.totalOriginalExpense = 0;
+    }
+
     const docRef = await addDoc(collection(db, TRIPS_COLLECTION), tripDoc);
 
-    return {
+    const trip: Trip = {
       id: docRef.id,
       name: tripData.name,
       category: tripData.category,
@@ -65,6 +69,12 @@ export const tripService = {
       createdAt: now,
       updatedAt: now,
     };
+
+    if (tripData.mainCurrency !== "VND") {
+      trip.totalOriginalExpense = 0;
+    }
+
+    return trip;
   },
 
   async getTripById(tripId: string): Promise<Trip | null> {
@@ -83,7 +93,7 @@ export const tripService = {
 
       const data = tripSnap.data();
 
-      return {
+      const trip: Trip = {
         id: tripSnap.id,
         name: data.name || "",
         category: data.category || "Du lịch",
@@ -100,6 +110,12 @@ export const tripService = {
         createdAt: parseDate(data.createdAt),
         updatedAt: parseDate(data.updatedAt),
       };
+
+      if (typeof data.totalOriginalExpense === "number") {
+        trip.totalOriginalExpense = data.totalOriginalExpense;
+      }
+
+      return trip;
     } catch (error) {
       console.error("Error fetching trip:", error);
       throw error;
@@ -119,7 +135,7 @@ export const tripService = {
       const trips = querySnapshot.docs
         .map((doc) => {
           const data = doc.data();
-          return {
+          const trip: Trip = {
             id: doc.id,
             name: data.name || "",
             category: data.category || "Du lịch",
@@ -136,6 +152,12 @@ export const tripService = {
             createdAt: parseDate(data.createdAt),
             updatedAt: parseDate(data.updatedAt),
           };
+
+          if (typeof data.totalOriginalExpense === "number") {
+            trip.totalOriginalExpense = data.totalOriginalExpense;
+          }
+
+          return trip;
         })
         .filter((trip) => {
           if (trip.creator === userId) return true;
@@ -287,11 +309,21 @@ export const tripService = {
       (tripData.totalExpense || 0) - (participantToRemove.totalSpent || 0),
     );
 
-    await updateDoc(tripRef, {
+    const updateData: Record<string, any> = {
       participants: updatedParticipants,
       totalExpense: newTotalExpense,
       updatedAt: Timestamp.fromDate(new Date()),
-    });
+    };
+
+    if (typeof tripData.totalOriginalExpense === "number") {
+      updateData.totalOriginalExpense = Math.max(
+        0,
+        (tripData.totalOriginalExpense || 0) -
+          (participantToRemove.totalOriginalSpent || 0),
+      );
+    }
+
+    await updateDoc(tripRef, updateData);
   },
 
   async endTrip(tripId: string): Promise<void> {

@@ -11,8 +11,8 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useMemo, useRef } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import {
   useAddExpense,
   useIsMobile,
@@ -53,9 +53,7 @@ export const AddExpenseModal = ({
   const addExpense = useAddExpense();
   const isMobile = useIsMobile();
 
-  const [hideSuggestionsForAmount, setHideSuggestionsForAmount] = useState<
-    number | null
-  >(null);
+  const lastSuggestedAmountRef = useRef<number | null>(null);
 
   const currentUserParticipant = participants.find(
     (p) => p.userId === user?.uid,
@@ -71,9 +69,15 @@ export const AddExpenseModal = ({
     },
   });
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const watchedAmount = form.watch("amount");
-  const watchedCurrency = form.watch("mainCurrency") || VND_CURRENCY;
+  const watchedAmount = useWatch({
+    control: form.control,
+    name: "amount",
+  });
+  const watchedCurrency =
+    useWatch({
+      control: form.control,
+      name: "mainCurrency",
+    }) || VND_CURRENCY;
   const { vndRate: exchangeRate } = useVndExchangeRate(watchedCurrency);
   const showExchangeRate = Boolean(
     mainCurrency &&
@@ -116,19 +120,8 @@ export const AddExpenseModal = ({
 
   useEffect(() => {
     if (!opened) return;
-    setHideSuggestionsForAmount(null);
+    lastSuggestedAmountRef.current = null;
   }, [opened]);
-
-  useEffect(() => {
-    if (hideSuggestionsForAmount === null) return;
-    if (typeof watchedAmount !== "number") {
-      setHideSuggestionsForAmount(null);
-      return;
-    }
-    if (watchedAmount !== hideSuggestionsForAmount) {
-      setHideSuggestionsForAmount(null);
-    }
-  }, [watchedAmount, hideSuggestionsForAmount]);
 
   const onSubmit = async (data: ExpenseFormValues) => {
     const participant = participants.find((p) => p.userId === data.paidBy);
@@ -171,7 +164,7 @@ export const AddExpenseModal = ({
 
   const handleClose = () => {
     form.reset();
-    setHideSuggestionsForAmount(null);
+    lastSuggestedAmountRef.current = null;
     onClose();
   };
 
@@ -204,26 +197,46 @@ export const AddExpenseModal = ({
               control={form.control}
               render={({ field, fieldState }) =>
                 isMobile ? (
-                  <NativeSelect
-                    label="Tiền tệ"
-                    data={expenseCurrencyOptions}
-                    value={field.value}
-                    onChange={(value) => field.onChange(value || VND_CURRENCY)}
-                    error={fieldState.error?.message}
-                    size="md"
-                  />
+                  <>
+                    <NativeSelect
+                      label="Tiền tệ"
+                      data={expenseCurrencyOptions}
+                      value={field.value}
+                      onChange={(value) =>
+                        field.onChange(value || VND_CURRENCY)
+                      }
+                      error={fieldState.error?.message}
+                      size="md"
+                    />
+                    {showExchangeRate ? (
+                      <Text size="sm" c="orange">
+                        Tỉ giá:{" "}
+                        {exchangeRate ? formatVndRate(exchangeRate) : "..."}
+                      </Text>
+                    ) : null}
+                  </>
                 ) : (
-                  <Select
-                    label="Tiền tệ"
-                    placeholder="Chọn tiền tệ"
-                    data={expenseCurrencyOptions}
-                    value={field.value}
-                    onChange={(value) => field.onChange(value || VND_CURRENCY)}
-                    error={fieldState.error?.message}
-                    size="md"
-                    radius="md"
-                    allowDeselect={false}
-                  />
+                  <>
+                    <Select
+                      label="Tiền tệ"
+                      placeholder="Chọn tiền tệ"
+                      data={expenseCurrencyOptions}
+                      value={field.value}
+                      onChange={(value) =>
+                        field.onChange(value || VND_CURRENCY)
+                      }
+                      error={fieldState.error?.message}
+                      size="md"
+                      radius="md"
+                      allowDeselect={false}
+                    />
+                    {showExchangeRate ? (
+                      <Text size="sm" c="orange">
+                        Tỉ giá:{" "}
+                        {exchangeRate ? formatVndRate(exchangeRate) : "..."}
+                      </Text>
+                    ) : null}
+                  </>
                 )
               }
             />
@@ -257,7 +270,7 @@ export const AddExpenseModal = ({
                   radius="md"
                 />
 
-                {hideSuggestionsForAmount !== watchedAmount &&
+                {lastSuggestedAmountRef.current !== watchedAmount &&
                   amountSuggestions.length > 0 && (
                     <Group gap="xs" mt={-6}>
                       {amountSuggestions.map((suggestion) => (
@@ -268,12 +281,12 @@ export const AddExpenseModal = ({
                           style={{ cursor: "pointer" }}
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => {
+                            lastSuggestedAmountRef.current = suggestion;
                             form.setValue("amount", suggestion, {
                               shouldDirty: true,
                               shouldTouch: true,
                               shouldValidate: true,
                             });
-                            setHideSuggestionsForAmount(suggestion);
                             inputNumberRef.current?.blur();
                           }}
                         >
@@ -312,25 +325,13 @@ export const AddExpenseModal = ({
             }
           />
 
-          <Group justify="space-between" mt="md">
-            {showExchangeRate ? (
-              <Text size="sm" c="orange">
-                Tỉ giá: {exchangeRate ? formatVndRate(exchangeRate) : "..."}
-              </Text>
-            ) : (
-              <Text aria-hidden style={{ visibility: "hidden" }}>
-                Tỉ giá: {formatVndRate(0)}
-              </Text>
-            )}
-
-            <div className="flex gap-2">
-              <Button variant="light" onClick={handleClose}>
-                Hủy
-              </Button>
-              <Button type="submit" loading={addExpense.isPending}>
-                Thêm chi tiêu
-              </Button>
-            </div>
+          <Group justify="flex-end" mt="md">
+            <Button variant="light" onClick={handleClose}>
+              Hủy
+            </Button>
+            <Button type="submit" loading={addExpense.isPending}>
+              Thêm chi tiêu
+            </Button>
           </Group>
         </Stack>
       </form>

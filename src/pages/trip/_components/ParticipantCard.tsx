@@ -80,20 +80,26 @@ export const ParticipantCard = ({
                 </Text>
               )}
             </Text>
-            <Text size="sm" c="teal">
-              {formatCurrency(participant.totalSpent)}
+            <Group gap={5} align="center">
               {participant.totalOriginalSpent &&
               participant.totalOriginalSpent > 0 &&
               foreignCurrency ? (
-                <Text span size="sm" c="dimmed" ml={8}>
-                  |{" "}
-                  {formatCurrency(
-                    participant.totalOriginalSpent,
-                    foreignCurrency,
-                  )}
-                </Text>
+                <>
+                  <Text span size="sm" c="orange" fw={600}>
+                    {formatCurrency(
+                      participant.totalOriginalSpent,
+                      foreignCurrency,
+                    )}
+                  </Text>
+                  <Text span fw={100} className="-translate-y-px" c="dimmed">
+                    |
+                  </Text>
+                </>
               ) : null}
-            </Text>
+              <Text span size="sm" c="teal" fw={600}>
+                {formatCurrency(participant.totalSpent)}
+              </Text>
+            </Group>
           </div>
         </Group>
         <Group gap="xs">

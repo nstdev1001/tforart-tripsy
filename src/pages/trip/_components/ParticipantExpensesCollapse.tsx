@@ -75,17 +75,23 @@ export const ParticipantExpensesCollapse = ({
                 <Group gap="xs">
                   <Stack gap={2} align="flex-end">
                     {expense.mainCurrency !== "VND" &&
-                      typeof expense.originalAmount === "number" && (
-                        <Text size="xs" c="dimmed">
+                    typeof expense.originalAmount === "number" ? (
+                      <>
+                        <Text size="sm" c="orange" fw={400}>
                           {formatCurrency(
                             expense.originalAmount,
                             expense.mainCurrency,
                           )}
                         </Text>
-                      )}
-                    <Text size="sm" fw={600} c="green">
-                      {formatCurrency(expense.amount)}
-                    </Text>
+                        <Text size="sm" c="dimmed" fw={400}>
+                          ({formatCurrency(expense.amount)})
+                        </Text>
+                      </>
+                    ) : (
+                      <Text size="sm" c="green" fw={400}>
+                        {formatCurrency(expense.amount)}
+                      </Text>
+                    )}
                   </Stack>
                   {!isEndTrip && (
                     <Tooltip label="Xóa">

@@ -47,6 +47,7 @@ export interface Trip {
   creatorName?: string;
   creatorPhoto?: string;
   participants: Participant[];
+  totalOriginalExpense?: number;
   totalExpense: number;
   notes?: string;
   createdAt: Date;
