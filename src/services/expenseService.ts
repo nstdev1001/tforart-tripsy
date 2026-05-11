@@ -108,32 +108,50 @@ export const expenseService = {
     );
 
     const tripRef = doc(db, TRIPS_COLLECTION, expenseData.tripId);
-    await updateDoc(tripRef, {
-      totalExpense: increment(expenseData.amount),
-      updatedAt: Timestamp.fromDate(now),
+
+    // 1. Đọc dữ liệu Trip trước
+    const tripSnap = await getDoc(tripRef);
+    if (!tripSnap.exists()) {
+      throw new Error("Trip not found");
+    }
+
+    // 2. Chuẩn bị biến đổi participants
+    const tripData = tripSnap.data();
+    const participants = tripData.participants || [];
+    const updatedParticipants = participants.map((p: any) => {
+      if (p.userId === expenseData.paidBy) {
+        const updated: Record<string, any> = {
+          ...p,
+          totalSpent: (p.totalSpent || 0) + expenseData.amount,
+        };
+        if (
+          expenseData.mainCurrency !== "VND" &&
+          typeof expenseData.originalAmount === "number"
+        ) {
+          updated.totalOriginalSpent =
+            (p.totalOriginalSpent || 0) + expenseData.originalAmount;
+        }
+        return updated;
+      }
+      return p;
     });
 
-    const tripSnap = await getDoc(tripRef);
-    if (tripSnap.exists()) {
-      const tripData = tripSnap.data();
-      const participants = tripData.participants || [];
-      const updatedParticipants = participants.map((p: any) => {
-        if (p.userId === expenseData.paidBy) {
-          const updated: Record<string, any> = {
-            ...p,
-            totalSpent: (p.totalSpent || 0) + expenseData.amount,
-          };
-          if (expenseData.mainCurrency !== "VND") {
-            updated.totalOriginalSpent =
-              (p.totalOriginalSpent || 0) + (expenseData.originalAmount || 0);
-          }
-          return updated;
-        }
-        return p;
-      });
+    // 3. Chuẩn bị object update toàn bộ (Gộp cả tính tổng và danh sách)
+    const tripUpdates: Record<string, any> = {
+      totalExpense: increment(expenseData.amount),
+      participants: updatedParticipants,
+      updatedAt: Timestamp.fromDate(now),
+    };
 
-      await updateDoc(tripRef, { participants: updatedParticipants });
+    if (
+      expenseData.mainCurrency !== "VND" &&
+      typeof expenseData.originalAmount === "number"
+    ) {
+      tripUpdates.totalOriginalExpense = increment(expenseData.originalAmount);
     }
+
+    // 4. Gọi 1 lần Write duy nhất
+    await updateDoc(tripRef, tripUpdates);
 
     return {
       id: docRef.id,
@@ -157,10 +175,16 @@ export const expenseService = {
     await deleteDoc(expenseRef);
 
     const tripRef = doc(db, TRIPS_COLLECTION, tripId);
-    await updateDoc(tripRef, {
+    const tripUpdates: Record<string, any> = {
       totalExpense: increment(-amount),
       updatedAt: Timestamp.fromDate(new Date()),
-    });
+    };
+
+    if (typeof originalAmount === "number") {
+      tripUpdates.totalOriginalExpense = increment(-originalAmount);
+    }
+
+    await updateDoc(tripRef, tripUpdates);
 
     const tripSnap = await getDoc(tripRef);
     if (tripSnap.exists()) {
@@ -172,10 +196,10 @@ export const expenseService = {
             ...p,
             totalSpent: Math.max(0, (p.totalSpent || 0) - amount),
           };
-          if (originalAmount !== undefined) {
+          if (typeof originalAmount === "number") {
             updated.totalOriginalSpent = Math.max(
               0,
-              (p.totalOriginalSpent || 0) - (originalAmount || 0),
+              (p.totalOriginalSpent || 0) - originalAmount,
             );
           } else if (p.totalOriginalSpent !== undefined) {
             updated.totalOriginalSpent = p.totalOriginalSpent;

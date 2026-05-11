@@ -8,6 +8,7 @@ export const useCurrency = () => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: mainCurrency,
+      currencyDisplay: "narrowSymbol",
       minimumFractionDigits,
       maximumFractionDigits,
     }).format(amount);

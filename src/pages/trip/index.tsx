@@ -107,7 +107,6 @@ const TripPage = () => {
     );
   }
 
-  const totalExpense = trip.totalExpense || 0;
   const maxSpent = Math.max(
     ...(trip.participants?.map((p) => p.totalSpent) || [1]),
   );
@@ -167,18 +166,41 @@ const TripPage = () => {
               <Text size="sm" c="dimmed">
                 Tổng chi tiêu
               </Text>
-              <Title
-                order={1}
-                className={`text-transparent bg-clip-text ${
-                  isEnded
-                    ? "bg-linear-to-r from-gray-500 to-gray-600"
-                    : colorScheme === "dark"
-                      ? "bg-linear-to-r from-blue-400 to-cyan-400"
-                      : "bg-linear-to-r from-blue-600 to-indigo-600"
-                }`}
-              >
-                {formatCurrency(totalExpense)}
-              </Title>
+              <Stack gap={2} align="start">
+                {/* foreign currency (optional) */}
+                {trip.mainCurrency !== "VND" && (
+                  <Title
+                    order={2}
+                    className={`text-transparent bg-clip-text ${
+                      isEnded
+                        ? "bg-linear-to-r from-gray-500 to-gray-600"
+                        : colorScheme === "dark"
+                          ? "bg-linear-to-r from-blue-400 to-cyan-400"
+                          : "bg-linear-to-r from-orange-500 to-orange-600"
+                    }`}
+                  >
+                    {formatCurrency(
+                      trip.totalOriginalExpense ?? 0,
+                      trip.mainCurrency,
+                    )}
+                  </Title>
+                )}
+
+                {/* local currency (default) */}
+                <Title
+                  order={1}
+                  className={`text-transparent bg-clip-text ${
+                    isEnded
+                      ? "bg-linear-to-r from-gray-500 to-gray-600"
+                      : colorScheme === "dark"
+                        ? "bg-linear-to-r from-blue-400 to-cyan-400"
+                        : "bg-linear-to-r from-blue-600 to-indigo-600"
+                  }`}
+                >
+                  {formatCurrency(trip.totalExpense || 0)}
+                </Title>
+              </Stack>
+
               <Text size="xs" c="dimmed">
                 {format(trip.startDate, "dd/MM/yyyy", { locale: vi })}
                 {trip.endDate && (
@@ -295,7 +317,7 @@ const TripPage = () => {
         onClose={() => setSummaryModalOpened(false)}
         tripId={tripId || ""}
         participants={trip.participants || []}
-        totalExpense={totalExpense}
+        totalExpense={trip.totalExpense || 0}
         isEnded={isEnded}
       />
 
