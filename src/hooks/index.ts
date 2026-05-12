@@ -8,6 +8,7 @@ export * from "./useParticipant";
 export { useTripActions } from "./useTripActions";
 export * from "./useTrips";
 export { useTripSettlement } from "./useTripSettlement";
+export { useTripSettlementOriginal } from "./useTripSettlementOriginal";
 export { useUserStore } from "./useUserStore";
 export { useVibrate } from "./useVibrate";
 export { useVndExchangeRate } from "./useVndExchangeRate";

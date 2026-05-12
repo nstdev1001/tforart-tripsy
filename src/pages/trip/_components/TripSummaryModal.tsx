@@ -5,6 +5,7 @@ import {
   Group,
   Modal,
   Stack,
+  Tabs,
   Text,
   Title,
   useMantineColorScheme,
@@ -16,6 +17,7 @@ import {
   useCurrency,
   useEndTrip,
   useTripSettlement,
+  useTripSettlementOriginal,
   useVibrate,
 } from "../../../hooks";
 import type { Participant } from "../../../types/trip";
@@ -26,8 +28,12 @@ interface TripSummaryModalProps {
   tripId: string;
   participants: Participant[];
   totalExpense: number;
+  totalOriginalExpense: number | undefined;
+  mainCurrency: string;
   isEnded?: boolean;
 }
+
+const VND_CURRENCY = "VND";
 
 export const TripSummaryModal = ({
   opened,
@@ -35,6 +41,8 @@ export const TripSummaryModal = ({
   tripId,
   participants,
   totalExpense,
+  totalOriginalExpense,
+  mainCurrency,
   isEnded = false,
 }: TripSummaryModalProps) => {
   const { formatCurrency } = useCurrency();
@@ -42,8 +50,12 @@ export const TripSummaryModal = ({
   const { colorScheme } = useMantineColorScheme();
   const isParticipant = useCheckIsParticipant(participants);
   const endTrip = useEndTrip(isParticipant);
-  const { averagePerPerson, mainSpender, settlements, getParticipantBalance } =
-    useTripSettlement(participants, totalExpense);
+  const localSettlement = useTripSettlement(participants, totalExpense);
+  const originalSettlement = useTripSettlementOriginal(
+    participants,
+    totalOriginalExpense ?? 0,
+  );
+  const showForeignCurrency = mainCurrency !== VND_CURRENCY;
   const participantRowClassName =
     colorScheme === "dark"
       ? "flex flex-col justify-between rounded-md border border-gray-700 p-2 md:flex-row md:items-center"
@@ -52,6 +64,128 @@ export const TripSummaryModal = ({
     colorScheme === "dark"
       ? "rounded-lg bg-gray-800 p-2 shadow-md"
       : "rounded-lg bg-gray-100 p-2 shadow-md";
+  const formatAmount = (amount: number, currency: string) =>
+    currency === VND_CURRENCY
+      ? formatCurrency(amount)
+      : formatCurrency(amount, currency);
+  const getParticipantSpent = (participant: Participant, currency: string) =>
+    currency === VND_CURRENCY
+      ? participant.totalSpent
+      : (participant.totalOriginalSpent ?? 0);
+  const renderSummaryPanel = (config: {
+    currency: string;
+    total: number;
+    accentClassName: string;
+    averageColor: string;
+    settlement: typeof localSettlement;
+  }) => {
+    const { currency, total, accentClassName, averageColor, settlement } =
+      config;
+
+    return (
+      <Stack gap="lg">
+        <div className="p-3 rounded-xl bg-linear-to-br from-blue-50 to-indigo-200 shadow-lg">
+          <Stack gap="xs" align="center">
+            <Text size="sm" c="dimmed">
+              Tổng chi tiêu
+            </Text>
+            <Title
+              order={3}
+              className={`text-transparent bg-clip-text ${accentClassName}`}
+            >
+              {formatAmount(total, currency)}
+            </Title>
+            <Divider my="xs" w="100%" color="gray" />
+            <Group gap="xs">
+              <Text size="sm" c="dark" fw={600}>
+                Cái giá phải trả:
+              </Text>
+              <Text size="md" fw={600} c={averageColor}>
+                {formatAmount(
+                  Math.round(settlement.averagePerPerson),
+                  currency,
+                )}
+                /người
+              </Text>
+            </Group>
+          </Stack>
+        </div>
+
+        <Stack gap="xs">
+          <Text fw={500} size="sm" c="dimmed">
+            Chi tiêu của mỗi người
+          </Text>
+          {participants.map((p) => {
+            const diff = settlement.getParticipantBalance(p.id);
+            const isOver = diff > 0;
+            const isUnder = diff < 0;
+            const participantTotal = getParticipantSpent(p, currency);
+
+            return (
+              <div key={p.id} className={participantRowClassName}>
+                <Group gap="xs">
+                  <Text size="sm">{p.name}</Text>
+                  {p.id === settlement.mainSpender?.id && (
+                    <Badge size="xs" variant="light" color="blue">
+                      Chi tiêu chính
+                    </Badge>
+                  )}
+                </Group>
+                <Group gap="xs">
+                  <Text size="sm" fw={500}>
+                    {formatAmount(participantTotal, currency)}
+                  </Text>
+                  {isOver && (
+                    <Text size="xs" c="green">
+                      (Thừa {formatAmount(Math.round(diff), currency)})
+                    </Text>
+                  )}
+                  {isUnder && (
+                    <Text size="xs" c="red">
+                      (Thiếu{" "}
+                      {formatAmount(Math.round(Math.abs(diff)), currency)})
+                    </Text>
+                  )}
+                </Group>
+              </div>
+            );
+          })}
+        </Stack>
+
+        <Divider />
+
+        <Stack gap="xs">
+          <Text fw={500} size="sm" c="dimmed">
+            Thanh toán
+          </Text>
+          {settlement.settlements.length === 0 ? (
+            <Text size="sm" c="dimmed" ta="center" py="md">
+              Không có khoản thanh toán nào
+            </Text>
+          ) : (
+            settlement.settlements.map((item, index) => (
+              <div key={index} className={settlementCardClassName}>
+                <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
+                  <Group gap="xs">
+                    <Text size="sm" fw={500}>
+                      {item.from.name}
+                    </Text>
+                    <ArrowRight size={16} className="text-gray-400" />
+                    <Text size="sm" fw={500}>
+                      {item.to.name}
+                    </Text>
+                  </Group>
+                  <Badge color="red" variant="light" size="lg">
+                    {formatAmount(item.amount, currency)}
+                  </Badge>
+                </div>
+              </div>
+            ))
+          )}
+        </Stack>
+      </Stack>
+    );
+  };
 
   const handleEndTrip = () => {
     vibrateLong();
@@ -108,99 +242,40 @@ export const TripSummaryModal = ({
       centered
     >
       <Stack gap="lg">
-        <div className="p-3 rounded-xl bg-linear-to-br from-blue-50 to-indigo-200 shadow-lg">
-          <Stack gap="xs" align="center">
-            <Text size="sm" c="dimmed">
-              Tổng chi tiêu
-            </Text>
-            <Title
-              order={2}
-              className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600"
-            >
-              {formatCurrency(totalExpense)}
-            </Title>
-            <Divider my="xs" w="100%" color="gray" />
-            <Group gap="xs">
-              <Text size="sm" c="dark" fw={600}>
-                Cái giá phải trả:
-              </Text>
-              <Text size="md" fw={600} c="blue">
-                {formatCurrency(Math.round(averagePerPerson))}/người
-              </Text>
-            </Group>
-          </Stack>
-        </div>
-
-        <Stack gap="xs">
-          <Text fw={500} size="sm" c="dimmed">
-            Chi tiêu của mỗi người
-          </Text>
-          {participants.map((p) => {
-            const diff = getParticipantBalance(p.id);
-            const isOver = diff > 0;
-            const isUnder = diff < 0;
-
-            return (
-              <div key={p.id} className={participantRowClassName}>
-                <Group gap="xs">
-                  <Text size="sm">{p.name}</Text>
-                  {p.id === mainSpender?.id && (
-                    <Badge size="xs" variant="light" color="blue">
-                      Chi tiêu chính
-                    </Badge>
-                  )}
-                </Group>
-                <Group gap="xs">
-                  <Text size="sm" fw={500}>
-                    {formatCurrency(p.totalSpent)}
-                  </Text>
-                  {isOver && (
-                    <Text size="xs" c="green">
-                      (Thừa {formatCurrency(Math.round(diff))})
-                    </Text>
-                  )}
-                  {isUnder && (
-                    <Text size="xs" c="red">
-                      (Thiếu {formatCurrency(Math.round(Math.abs(diff)))})
-                    </Text>
-                  )}
-                </Group>
-              </div>
-            );
-          })}
-        </Stack>
-
-        <Divider />
-
-        <Stack gap="xs">
-          <Text fw={500} size="sm" c="dimmed">
-            Thanh toán
-          </Text>
-          {settlements.length === 0 ? (
-            <Text size="sm" c="dimmed" ta="center" py="md">
-              Không có khoản thanh toán nào
-            </Text>
-          ) : (
-            settlements.map((settlement, index) => (
-              <div key={index} className={settlementCardClassName}>
-                <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
-                  <Group gap="xs">
-                    <Text size="sm" fw={500}>
-                      {settlement.from.name}
-                    </Text>
-                    <ArrowRight size={16} className="text-gray-400" />
-                    <Text size="sm" fw={500}>
-                      {settlement.to.name}
-                    </Text>
-                  </Group>
-                  <Badge color="red" variant="light" size="lg">
-                    {formatCurrency(settlement.amount)}
-                  </Badge>
-                </div>
-              </div>
-            ))
-          )}
-        </Stack>
+        {showForeignCurrency ? (
+          <Tabs defaultValue="foreign" variant="pills">
+            <Tabs.List grow>
+              <Tabs.Tab value="foreign">{mainCurrency}</Tabs.Tab>
+              <Tabs.Tab value="vnd">VND</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="foreign" pt="md">
+              {renderSummaryPanel({
+                currency: mainCurrency,
+                total: totalOriginalExpense ?? 0,
+                accentClassName: "bg-linear-to-r from-orange-500 to-orange-600",
+                averageColor: "orange",
+                settlement: originalSettlement,
+              })}
+            </Tabs.Panel>
+            <Tabs.Panel value="vnd" pt="md">
+              {renderSummaryPanel({
+                currency: VND_CURRENCY,
+                total: totalExpense,
+                accentClassName: "bg-linear-to-r from-blue-600 to-indigo-600",
+                averageColor: "blue",
+                settlement: localSettlement,
+              })}
+            </Tabs.Panel>
+          </Tabs>
+        ) : (
+          renderSummaryPanel({
+            currency: VND_CURRENCY,
+            total: totalExpense,
+            accentClassName: "bg-linear-to-r from-blue-600 to-indigo-600",
+            averageColor: "blue",
+            settlement: localSettlement,
+          })
+        )}
 
         {!isEnded && (
           <>
