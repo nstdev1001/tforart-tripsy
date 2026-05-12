@@ -5,13 +5,13 @@ import {
   Group,
   Modal,
   Stack,
-  Tabs,
   Text,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { TransparentTabs } from "../../../components/TransparentTabs";
 import {
   useCheckIsParticipant,
   useCurrency,
@@ -243,30 +243,34 @@ export const TripSummaryModal = ({
     >
       <Stack gap="lg">
         {showForeignCurrency ? (
-          <Tabs defaultValue="foreign" variant="pills">
-            <Tabs.List grow>
-              <Tabs.Tab value="foreign">{mainCurrency}</Tabs.Tab>
-              <Tabs.Tab value="vnd">VND</Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panel value="foreign" pt="md">
-              {renderSummaryPanel({
-                currency: mainCurrency,
-                total: totalOriginalExpense ?? 0,
-                accentClassName: "bg-linear-to-r from-orange-500 to-orange-600",
-                averageColor: "orange",
-                settlement: originalSettlement,
-              })}
-            </Tabs.Panel>
-            <Tabs.Panel value="vnd" pt="md">
-              {renderSummaryPanel({
-                currency: VND_CURRENCY,
-                total: totalExpense,
-                accentClassName: "bg-linear-to-r from-blue-600 to-indigo-600",
-                averageColor: "blue",
-                settlement: localSettlement,
-              })}
-            </Tabs.Panel>
-          </Tabs>
+          <TransparentTabs
+            defaultValue="foreign"
+            tabs={[
+              {
+                value: "foreign",
+                label: mainCurrency,
+                content: renderSummaryPanel({
+                  currency: mainCurrency,
+                  total: totalOriginalExpense ?? 0,
+                  accentClassName:
+                    "bg-linear-to-r from-orange-500 to-orange-600",
+                  averageColor: "orange",
+                  settlement: originalSettlement,
+                }),
+              },
+              {
+                value: "vnd",
+                label: "VND",
+                content: renderSummaryPanel({
+                  currency: VND_CURRENCY,
+                  total: totalExpense,
+                  accentClassName: "bg-linear-to-r from-blue-600 to-indigo-600",
+                  averageColor: "blue",
+                  settlement: localSettlement,
+                }),
+              },
+            ]}
+          />
         ) : (
           renderSummaryPanel({
             currency: VND_CURRENCY,
