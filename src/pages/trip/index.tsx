@@ -25,7 +25,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { EditTripModal } from "../../components/EditTripModal";
 import { ShareTripModal } from "../../components/ShareTripModal";
-import { TripPageSkeleton } from "../../components/skeleton";
+import { TripPageSkeleton } from "../../components/Skeleton";
 import { TripMenu } from "../../components/TripMenu";
 import {
   useCurrency,
