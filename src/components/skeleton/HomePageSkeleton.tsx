@@ -6,7 +6,7 @@ import {
   Skeleton,
   Stack,
 } from "@mantine/core";
-import { TripCardSkeleton } from "./TripCardSkeleton";
+import { TripCardSkeleton } from ".";
 
 export const HomePageSkeleton = () => (
   <div className="min-h-screen from-blue-50 via-white to-purple-50">
