@@ -25,7 +25,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { EditTripModal } from "../../components/EditTripModal";
 import { ShareTripModal } from "../../components/ShareTripModal";
-import { TripPageSkeleton } from "../../components/skeleton";
+import { TripPageSkeleton } from "../../components/Skeleton";
 import { TripMenu } from "../../components/TripMenu";
 import {
   useCurrency,
@@ -175,7 +175,7 @@ const TripPage = () => {
                       isEnded
                         ? "bg-linear-to-r from-gray-500 to-gray-600"
                         : colorScheme === "dark"
-                          ? "bg-linear-to-r from-blue-400 to-cyan-400"
+                          ? "bg-linear-to-r from-orange-400 to-orange-500"
                           : "bg-linear-to-r from-orange-500 to-orange-600"
                     }`}
                   >
@@ -318,6 +318,8 @@ const TripPage = () => {
         tripId={tripId || ""}
         participants={trip.participants || []}
         totalExpense={trip.totalExpense || 0}
+        totalOriginalExpense={trip.totalOriginalExpense || 0}
+        mainCurrency={trip.mainCurrency}
         isEnded={isEnded}
       />
 

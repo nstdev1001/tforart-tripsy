@@ -14,7 +14,7 @@ import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
 import { EditTripModal } from "../../components/EditTripModal";
 import SimpleFooter from "../../components/SimpleFooter";
-import { TripCardSkeleton } from "../../components/skeleton";
+import { TripCardSkeleton } from "../../components/Skeleton";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useTrips } from "../../hooks/useTrips";
