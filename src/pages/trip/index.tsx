@@ -23,12 +23,12 @@ import {
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { CurrencyCounter } from "../../components/CurrencyCounter";
 import { EditTripModal } from "../../components/EditTripModal";
 import { ShareTripModal } from "../../components/ShareTripModal";
 import { TripPageSkeleton } from "../../components/Skeleton";
 import { TripMenu } from "../../components/TripMenu";
 import {
-  useCurrency,
   useGetExpenses,
   useTrip,
   useTripActions,
@@ -47,7 +47,6 @@ import {
 const TripPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
-  const { formatCurrency } = useCurrency();
   const { vibrateShort, vibrateMedium, vibrateDouble } = useVibrate();
   const { user } = useUserStore();
   const { colorScheme } = useMantineColorScheme();
@@ -179,10 +178,10 @@ const TripPage = () => {
                           : "bg-linear-to-r from-orange-500 to-orange-600"
                     }`}
                   >
-                    {formatCurrency(
-                      trip.totalOriginalExpense ?? 0,
-                      trip.mainCurrency,
-                    )}
+                    <CurrencyCounter
+                      amount={trip.totalOriginalExpense ?? 0}
+                      currency={trip.mainCurrency}
+                    />
                   </Title>
                 )}
 
@@ -197,7 +196,7 @@ const TripPage = () => {
                         : "bg-linear-to-r from-blue-600 to-indigo-600"
                   }`}
                 >
-                  {formatCurrency(trip.totalExpense || 0)}
+                  <CurrencyCounter amount={trip.totalExpense || 0} />
                 </Title>
               </Stack>
 

@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { CurrencyCounter } from "../../../components/CurrencyCounter";
 import { TransparentTabs } from "../../../components/TransparentTabs";
 import {
   useCheckIsParticipant,
@@ -56,22 +57,27 @@ export const TripSummaryModal = ({
     totalOriginalExpense ?? 0,
   );
   const showForeignCurrency = mainCurrency !== VND_CURRENCY;
+
   const participantRowClassName =
     colorScheme === "dark"
       ? "flex flex-col justify-between rounded-md border border-gray-700 p-2 md:flex-row md:items-center"
       : "flex flex-col justify-between rounded-md border border-gray-200 p-2 md:flex-row md:items-center";
+
   const settlementCardClassName =
     colorScheme === "dark"
       ? "rounded-lg bg-gray-800 p-2 shadow-md"
       : "rounded-lg bg-gray-100 p-2 shadow-md";
+
   const formatAmount = (amount: number, currency: string) =>
     currency === VND_CURRENCY
       ? formatCurrency(amount)
       : formatCurrency(amount, currency);
+
   const getParticipantSpent = (participant: Participant, currency: string) =>
     currency === VND_CURRENCY
       ? participant.totalSpent
       : (participant.totalOriginalSpent ?? 0);
+
   const renderSummaryPanel = (config: {
     currency: string;
     total: number;
@@ -101,10 +107,10 @@ export const TripSummaryModal = ({
                 Cái giá phải trả:
               </Text>
               <Text size="md" fw={600} c={averageColor}>
-                {formatAmount(
-                  Math.round(settlement.averagePerPerson),
-                  currency,
-                )}
+                <CurrencyCounter
+                  amount={Math.round(settlement.averagePerPerson)}
+                  currency={currency}
+                />
                 /người
               </Text>
             </Group>
