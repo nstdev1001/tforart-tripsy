@@ -1,3 +1,39 @@
+import type { CurrencyCode } from "../config/currency";
+import { currencyLocaleMap } from "../config/currency";
+
+const DEFAULT_LOCALE = "vi-VN";
+
+const formatterCache = new Map<string, Intl.NumberFormat>();
+
+const getCurrencyLocale = (currency: string) =>
+  currencyLocaleMap[currency as CurrencyCode] ?? DEFAULT_LOCALE;
+
+const getCurrencyFormatter = (
+  currency: string,
+  minimumFractionDigits: number,
+  maximumFractionDigits: number,
+) => {
+  const locale = getCurrencyLocale(currency);
+  const cacheKey = `${locale}|${currency}|${minimumFractionDigits}|${maximumFractionDigits}`;
+  const cached = formatterCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const formatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits,
+    maximumFractionDigits,
+  });
+
+  formatterCache.set(cacheKey, formatter);
+
+  return formatter;
+};
+
 export const useCurrency = () => {
   const formatCurrency = (
     amount: number,
@@ -5,13 +41,11 @@ export const useCurrency = () => {
     minimumFractionDigits: number = 0,
     maximumFractionDigits: number = 2,
   ): string => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: mainCurrency,
-      currencyDisplay: "narrowSymbol",
+    return getCurrencyFormatter(
+      mainCurrency,
       minimumFractionDigits,
       maximumFractionDigits,
-    }).format(amount);
+    ).format(amount);
   };
 
   const formatShortCurrency = (amount: number): string => {
