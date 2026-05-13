@@ -109,9 +109,20 @@ export const TripCard = ({ trip, onEdit }: TripCardProps) => {
             >
               {trip.name}
             </Text>
-            <Text fw={700} size="lg" c={isEnded ? "gray" : "green"} mt="xs">
-              {formatCurrency(trip.totalExpense || 0)}
-            </Text>
+            <Group gap={5} align="flex-start">
+              {trip.mainCurrency !== "VND" && (
+                <Text span fw={700} size="lg" c={isEnded ? "gray" : "orange"}>
+                  {formatCurrency(
+                    trip.totalOriginalExpense || 0,
+                    trip.mainCurrency,
+                  )}
+                </Text>
+              )}
+              {trip.mainCurrency !== "VND" && "/"}
+              <Text span fw={700} size="lg" c={isEnded ? "gray" : "blue"}>
+                {formatCurrency(trip.totalExpense || 0)}
+              </Text>
+            </Group>
           </div>
 
           <Group gap="xs">

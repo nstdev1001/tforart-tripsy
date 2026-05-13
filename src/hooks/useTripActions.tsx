@@ -1,6 +1,6 @@
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRemoveParticipant } from ".";
 import type { Expense } from "../types/trip";
@@ -20,79 +20,99 @@ export const useTripActions = (tripId?: string) => {
     null,
   );
 
-  const handleToggleExpenseDetail = (participantId: string) => {
+  const handleToggleExpenseDetail = useCallback((participantId: string) => {
     setExpandedParticipant((prev) =>
       prev === participantId ? null : participantId,
     );
-  };
+  }, []);
 
-  const getParticipantExpenses = (participantId: string): Expense[] => {
-    return (
-      expenses?.filter((expense) => expense.paidBy === participantId) || []
-    );
-  };
+  const getParticipantExpenses = useCallback(
+    (participantId: string): Expense[] => {
+      return (
+        expenses?.filter((expense) => expense.paidBy === participantId) || []
+      );
+    },
+    [expenses],
+  );
 
-  const handleDeleteExpense = (expense: Expense) => {
-    modals.openConfirmModal({
-      title: "Xóa chi tiêu",
-      children: (
-        <Text size="sm">
-          Bạn có chắc chắn muốn xóa chi tiêu "{expense.description}" (
-          {formatCurrency(expense.amount)})?
-        </Text>
-      ),
-      labels: { confirm: "Xóa", cancel: "Hủy" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        if (expense.id && tripId) {
-          deleteExpense.mutate({
-            expenseId: expense.id,
-            tripId,
-            amount: expense.amount,
-            paidBy: expense.paidBy,
-            originalAmount: expense.originalAmount,
-          });
-        }
-      },
-      centered: true,
-    });
-  };
+  const handleDeleteExpense = useCallback(
+    (expense: Expense) => {
+      modals.openConfirmModal({
+        title: "Xóa chi tiêu",
+        children: (
+          <Text size="sm">
+            Bạn có chắc chắn muốn xóa chi tiêu "{expense.description}" (
+            {formatCurrency(expense.amount)})?
+          </Text>
+        ),
+        labels: { confirm: "Xóa", cancel: "Hủy" },
+        confirmProps: { color: "red" },
+        onConfirm: () => {
+          if (expense.id && tripId) {
+            deleteExpense.mutate({
+              expenseId: expense.id,
+              tripId,
+              amount: expense.amount,
+              paidBy: expense.paidBy,
+              originalAmount: expense.originalAmount,
+            });
+          }
+        },
+        centered: true,
+      });
+    },
+    [deleteExpense, tripId, formatCurrency],
+  );
 
-  const handleDeleteParticipant = (participantId: string) => {
-    modals.openConfirmModal({
-      title: "Xóa thành viên",
-      children: (
-        <Text size="sm">
-          Bạn có chắc chắn muốn xóa thành viên này? Tất cả chi tiêu liên quan sẽ
-          bị mất.
-        </Text>
-      ),
-      labels: { confirm: "Xóa", cancel: "Hủy" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        if (tripId) {
-          deleteParticipant.mutate({ tripId, participantId });
-        }
-      },
-      centered: true,
-    });
-  };
+  const handleDeleteParticipant = useCallback(
+    (participantId: string) => {
+      modals.openConfirmModal({
+        title: "Xóa thành viên",
+        children: (
+          <Text size="sm">
+            Bạn có chắc chắn muốn xóa thành viên này? Tất cả chi tiêu liên quan
+            sẽ bị mất.
+          </Text>
+        ),
+        labels: { confirm: "Xóa", cancel: "Hủy" },
+        confirmProps: { color: "red" },
+        onConfirm: () => {
+          if (tripId) {
+            deleteParticipant.mutate({ tripId, participantId });
+          }
+        },
+        centered: true,
+      });
+    },
+    [deleteParticipant, tripId],
+  );
 
-  const handleDeleteTrip = () => {
+  const handleDeleteTrip = useCallback(() => {
     if (tripId) {
       deleteTrip.mutate(tripId, {
         onSuccess: () => navigate("/"),
       });
     }
-  };
+  }, [deleteTrip, tripId, navigate]);
 
-  return {
-    expandedParticipant,
-    handleToggleExpenseDetail,
-    getParticipantExpenses,
-    handleDeleteExpense,
-    handleDeleteParticipant,
-    handleDeleteTrip,
-    deleteExpenseLoading: deleteExpense.isPending,
-  };
+  return useMemo(
+    () => ({
+      expandedParticipant,
+      handleToggleExpenseDetail,
+      getParticipantExpenses,
+      handleDeleteExpense,
+      handleDeleteParticipant,
+      handleDeleteTrip,
+      deleteExpenseLoading: deleteExpense.isPending,
+    }),
+    [
+      expandedParticipant,
+      handleToggleExpenseDetail,
+      getParticipantExpenses,
+      handleDeleteExpense,
+      handleDeleteParticipant,
+      handleDeleteTrip,
+      deleteExpense.isPending,
+    ],
+  );
 };

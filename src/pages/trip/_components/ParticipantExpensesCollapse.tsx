@@ -55,8 +55,8 @@ export const ParticipantExpensesCollapse = ({
               onClick={(e) => e.stopPropagation()}
             >
               <Group justify="space-between">
-                <div className="max-w-[150px] md:max-w-[400px]">
-                  <Text size="sm" fw={500}>
+                <div className="min-w-0 max-w-[150px] md:max-w-[400px]">
+                  <Text size="sm" fw={500} className="wrap-break-word">
                     {expense.description}
                   </Text>
                   <Text size="xs" c="dimmed">
@@ -67,7 +67,8 @@ export const ParticipantExpensesCollapse = ({
                     {expense.addExpenseBy &&
                       expense.addExpenseBy !== expense.paidBy && (
                         <Text span c="dimmed">
-                          Thêm bởi: {expense.addExpenseByName}
+                          Thêm bởi: <br />
+                          {expense.addExpenseByName}
                         </Text>
                       )}
                   </Text>
