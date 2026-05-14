@@ -23,11 +23,16 @@ import {
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { AnnouncementBanner } from "../../components/AnnouncementBanner";
 import { CurrencyCounter } from "../../components/CurrencyCounter";
 import { EditTripModal } from "../../components/EditTripModal";
 import { ShareTripModal } from "../../components/ShareTripModal";
 import { TripPageSkeleton } from "../../components/Skeleton";
 import { TripMenu } from "../../components/TripMenu";
+import {
+  ANNOUNCEMENT_ENABLED,
+  ANNOUNCEMENT_MESSAGE,
+} from "../../config/announcement";
 import {
   useGetExpenses,
   useTrip,
@@ -153,6 +158,10 @@ const TripPage = () => {
               <Badge color="dark" variant="filled" size="sm">
                 Đã kết thúc
               </Badge>
+            )}
+
+            {ANNOUNCEMENT_ENABLED && (
+              <AnnouncementBanner message={ANNOUNCEMENT_MESSAGE} />
             )}
           </Stack>
         </Container>

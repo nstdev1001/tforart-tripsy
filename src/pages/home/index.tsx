@@ -12,10 +12,15 @@ import {
 } from "@mantine/core";
 import { LogOut, Plus } from "lucide-react";
 import { useState } from "react";
+import { AnnouncementBanner } from "../../components/AnnouncementBanner";
 import { EditTripModal } from "../../components/EditTripModal";
 import SimpleFooter from "../../components/SimpleFooter";
 import { TripCardSkeleton } from "../../components/Skeleton";
 import { ThemeToggle } from "../../components/ThemeToggle";
+import {
+  ANNOUNCEMENT_ENABLED,
+  ANNOUNCEMENT_MESSAGE,
+} from "../../config/announcement";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useTrips } from "../../hooks/useTrips";
 import { useUserStore } from "../../hooks/useUserStore";
@@ -95,6 +100,10 @@ export const HomePage = () => {
               </Group>
             </Group>
           </Paper>
+
+          {ANNOUNCEMENT_ENABLED && (
+            <AnnouncementBanner message={ANNOUNCEMENT_MESSAGE} />
+          )}
 
           <Group justify="space-between" align="center">
             <Group>
