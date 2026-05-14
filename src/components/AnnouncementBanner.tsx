@@ -17,7 +17,7 @@ export const AnnouncementBanner = ({ message }: AnnouncementBannerProps) => {
       <div className="flex items-start gap-2">
         <CircleAlert
           size={16}
-          className="text-amber-500 mt-[2px] shrink-0"
+          className="text-amber-500 mt-0.5 shrink-0"
           aria-hidden="true"
         />
         <Text size="sm" className="text-amber-900">
