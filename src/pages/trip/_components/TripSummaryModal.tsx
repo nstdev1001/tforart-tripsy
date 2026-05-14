@@ -12,7 +12,7 @@ import {
 import { modals } from "@mantine/modals";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { CurrencyCounter } from "../../../components/CurrencyCounter";
-import { TransparentTabs } from "../../../components/TransparentTabs";
+import { TransparentTabs } from "../../../components/transparent-tab";
 import {
   useCheckIsParticipant,
   useCurrency,

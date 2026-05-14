@@ -15,7 +15,7 @@ import { useState } from "react";
 import { AnnouncementBanner } from "../../components/AnnouncementBanner";
 import { EditTripModal } from "../../components/EditTripModal";
 import SimpleFooter from "../../components/SimpleFooter";
-import { TripCardSkeleton } from "../../components/Skeleton";
+import { TripCardSkeleton } from "../../components/skeleton";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import {
   ANNOUNCEMENT_ENABLED,

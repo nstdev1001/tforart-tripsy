@@ -27,7 +27,7 @@ import { AnnouncementBanner } from "../../components/AnnouncementBanner";
 import { CurrencyCounter } from "../../components/CurrencyCounter";
 import { EditTripModal } from "../../components/EditTripModal";
 import { ShareTripModal } from "../../components/ShareTripModal";
-import { TripPageSkeleton } from "../../components/Skeleton";
+import { TripPageSkeleton } from "../../components/skeleton";
 import { TripMenu } from "../../components/TripMenu";
 import {
   ANNOUNCEMENT_ENABLED,
